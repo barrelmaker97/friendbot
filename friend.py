@@ -39,7 +39,7 @@ rev_names = {
         "jason" : "UCFEBHEAH",
         "hannah" : "UCGT4D0EQ",
         "josh" : "UCF7J89HA",
-        "sopia" : "UCHA3NA8N",
+        "sophia" : "UCHA3NA8N",
         "jill" : "UCEMX3DRP",
         "dan" : "UCGA9N1K9",
         "fiona" : "UCJR5HL3F",
