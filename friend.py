@@ -49,25 +49,29 @@ rev_names = {
 
 # Reading arguments
 try:
-    userID = rev_names[sys.argv[1]]
+    export = sys.argv[1]
+except:
+    print("Please provide a Slack export directory")
+    sys.exit(1)
+try:
+    userID = rev_names[sys.argv[2]]
 except:
     print("Please select a user or all")
     sys.exit(1)
 try:
-    if (sys.argv[2] == "all"):
+    if (sys.argv[3] == "all"):
         channel = ""
     else:
-        channel = sys.argv[2]
+        channel = sys.argv[3]
 except:
     print("Please select a channel or all")
     sys.exit(1)
 try:
-    sentences = int(sys.argv[3])
+    sentences = int(sys.argv[4])
 except:
     sentences = 10
 
-directory_in_str = "../export"
-channel_directory = directory_in_str.format(channel)
+channel_directory = export.format(channel)
 pathlist = Path(channel_directory).glob('**/*.json')
 regex = re.compile(r'<(?:[^"\\]|\\.)*>', re.IGNORECASE)
 fulltext = ""
