@@ -71,7 +71,7 @@ try:
 except:
     sentences = 10
 
-channel_directory = export.format(channel)
+channel_directory = "{}/{}".format(export, channel)
 pathlist = Path(channel_directory).glob('**/*.json')
 regex = re.compile(r'<(?:[^"\\]|\\.)*>', re.IGNORECASE)
 fulltext = ""
@@ -83,21 +83,20 @@ for path in pathlist:
         for message in data:
             subtype = message.get('subtype')
             if(subtype != "bot_message"):
-                if(userID == ""):
-                    text = message.get('text')
-                    if(type(text) == str):
-                        for name in names:
-                            text = text.replace(name, names[name])
-                        text = regex.sub("", text)
-                        text += "\n"
-                        fulltext += text
-                else:
-                    user = message.get('user')
-                    if (user == userID):
-                        text = message.get('text')
-                        text = regex.sub("", text)
-                        text += "\n"
-                        fulltext += text
+                text = str(message.get('text'))
+                for name in names:
+                    text = text.replace(name, names[name])
+                text = regex.sub("", text)
+                if(text != ""):
+                    if(userID == ""):
+                        if(type(text) == str):
+                            text += "\n"
+                            fulltext += text
+                    else:
+                        user = message.get('user')
+                        if (user == userID):
+                            text += "\n"
+                            fulltext += text
 
 text_model = markovify.NewlineText(fulltext)
 
