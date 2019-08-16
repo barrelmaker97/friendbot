@@ -47,32 +47,23 @@ rev_names = {
         "all" : ""
         }
 
-# Reading arguments
-try:
-    export = sys.argv[1]
-except:
-    print("Please provide a Slack export directory")
-    sys.exit(1)
-try:
-    userID = rev_names[sys.argv[2]]
-except:
-    print("Please select a user or all")
-    sys.exit(1)
-try:
-    if (sys.argv[3] == "all"):
-        channel = ""
-    else:
-        channel = sys.argv[3]
-except:
-    print("Please select a channel or all")
-    sys.exit(1)
-try:
-    sentences = int(sys.argv[4])
-except:
-    sentences = 10
+def getUserID(user):
+    try:
+        return rev_names[user]
+    except:
+        return None
+
+def getChannel(channel):
+    try:
+        if (channel == "all"):
+            return ""
+        else:
+            return channel
+    except:
+        return None
 
 
-def processCorpus(export, channel, user):
+def generateCorpus(export, channel, userID):
     channel_directory = "{}/{}".format(export, channel)
     pathlist = Path(channel_directory).glob('**/*.json')
     regex = re.compile(r'<(?:[^"\\]|\\.)*>', re.IGNORECASE)
@@ -100,10 +91,29 @@ def processCorpus(export, channel, user):
                                 fulltext += text
     return fulltext
 
-corpus = processCorpus(export, channel, userID)
-text_model = markovify.NewlineText(corpus)
+def generateSentence(corpus, count):
+    sentences = []
+    text_model = markovify.NewlineText(corpus)
+    for i in range(count):
+        sentence = text_model.make_sentence(tries=100)
+        if(type(sentence) == str):
+            sentences.append(sentence)
+    return sentences
 
-for i in range(sentences):
-    sentence = text_model.make_sentence()
-    if(type(sentence) == str):
+if __name__ == '__main__':
+    # Reading arguments
+    try:
+        export = sys.argv[1]
+    except:
+        print("Please provide a Slack export directory")
+        sys.exit(1)
+    userID = getUserID(sys.argv[2])
+    channel = getChannel(sys.argv[3])
+    try:
+        count = int(sys.argv[4])
+    except:
+        count = 10
+    corpus = generateCorpus(export, channel, userID)
+    sentences = generateSentence(corpus, count)
+    for sentence in sentences:
         print(sentence)
