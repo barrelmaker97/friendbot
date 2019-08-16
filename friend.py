@@ -62,7 +62,6 @@ def getChannel(channel):
     except:
         return None
 
-
 def generateCorpus(export, channel, userID):
     channel_directory = "{}/{}".format(export, channel)
     pathlist = Path(channel_directory).glob('**/*.json')
@@ -91,17 +90,13 @@ def generateCorpus(export, channel, userID):
                                 fulltext += text
     return fulltext
 
-def generateSentence(corpus, count):
-    sentences = []
+def generateSentence(corpus):
     text_model = markovify.NewlineText(corpus)
-    for i in range(count):
-        sentence = text_model.make_sentence(tries=100)
-        if(type(sentence) == str):
-            sentences.append(sentence)
-    return sentences
+    sentence = text_model.make_sentence(tries=100)
+    if(type(sentence) == str):
+        return sentence
 
 if __name__ == '__main__':
-    # Reading arguments
     try:
         export = sys.argv[1]
     except:
@@ -109,11 +104,6 @@ if __name__ == '__main__':
         sys.exit(1)
     userID = getUserID(sys.argv[2])
     channel = getChannel(sys.argv[3])
-    try:
-        count = int(sys.argv[4])
-    except:
-        count = 10
     corpus = generateCorpus(export, channel, userID)
-    sentences = generateSentence(corpus, count)
-    for sentence in sentences:
-        print(sentence)
+    sentence = generateSentence(corpus)
+    print(sentence)
