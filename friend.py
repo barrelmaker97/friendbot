@@ -71,34 +71,37 @@ try:
 except:
     sentences = 10
 
-channel_directory = "{}/{}".format(export, channel)
-pathlist = Path(channel_directory).glob('**/*.json')
-regex = re.compile(r'<(?:[^"\\]|\\.)*>', re.IGNORECASE)
-fulltext = ""
 
-for path in pathlist:
-    path_in_str = str(path)
-    with open(path_in_str, encoding="utf8") as f:
-        data = json.load(f)
-        for message in data:
-            subtype = message.get('subtype')
-            if(subtype != "bot_message"):
-                text = str(message.get('text'))
-                for name in names:
-                    text = text.replace(name, names[name])
-                text = regex.sub("", text)
-                if(text != ""):
-                    if(userID == ""):
-                        if(type(text) == str):
-                            text += "\n"
-                            fulltext += text
-                    else:
-                        user = message.get('user')
-                        if (user == userID):
-                            text += "\n"
-                            fulltext += text
+def processCorpus(export, channel, user):
+    channel_directory = "{}/{}".format(export, channel)
+    pathlist = Path(channel_directory).glob('**/*.json')
+    regex = re.compile(r'<(?:[^"\\]|\\.)*>', re.IGNORECASE)
+    fulltext = ""
+    for path in pathlist:
+        path_in_str = str(path)
+        with open(path_in_str, encoding="utf8") as f:
+            data = json.load(f)
+            for message in data:
+                subtype = message.get('subtype')
+                if(subtype != "bot_message"):
+                    text = str(message.get('text'))
+                    for name in names:
+                        text = text.replace(name, names[name])
+                    text = regex.sub("", text)
+                    if(text != ""):
+                        if(userID == ""):
+                            if(type(text) == str):
+                                text += "\n"
+                                fulltext += text
+                        else:
+                            user = message.get('user')
+                            if (user == userID):
+                                text += "\n"
+                                fulltext += text
+    return fulltext
 
-text_model = markovify.NewlineText(fulltext)
+corpus = processCorpus(export, channel, userID)
+text_model = markovify.NewlineText(corpus)
 
 for i in range(sentences):
     sentence = text_model.make_sentence()
