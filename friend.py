@@ -81,8 +81,9 @@ def generateCorpus(export, channel, userID):
                 if(userID != "" and user != userID):
                     break
                 text = str(message.get('text'))
-                for name in names:
-                    text = text.replace(name, names[name])
+                if("<@U" in text):
+                    for name in names:
+                        text = text.replace(name, names[name])
                 text = regex.sub("", text)
                 if(text != ""):
                     if(userID == ""):
