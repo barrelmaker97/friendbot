@@ -1,8 +1,8 @@
 from flask import request
 from app import app, corpus
 
-@app.route('/', methods = ['POST'])
-def sentence():
+@app.route('/sentence', methods = ['POST'])
+def create_sentence():
     data = request.form
     params = data['text'].split()
     channel = corpus.getChannel(params[0])
