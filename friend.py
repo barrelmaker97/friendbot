@@ -77,17 +77,20 @@ def generateCorpus(export, channel, userID):
         for message in data:
             subtype = message.get('subtype')
             if(subtype != "bot_message"):
-                user = message.get('user')
-                if(userID and user != userID):
-                    break
                 text = str(message.get('text'))
                 if("<@U" in text):
                     for name in names:
                         text = text.replace(name, names[name])
                 text = regex.sub("", text)
                 if(text):
-                    text += "\n"
-                    fulltext += text
+                    if(not userID):
+                        text += "\n"
+                        fulltext += text
+                    else:
+                        user = message.get('user')
+                        if (user == userID):
+                            text += "\n"
+                            fulltext += text
     return fulltext
 
 def generateSentence(corpus):
@@ -105,5 +108,6 @@ if __name__ == '__main__':
     userID = getUserID(sys.argv[2])
     channel = getChannel(sys.argv[3])
     corpus = generateCorpus(export, channel, userID)
+    print(len(corpus.splitlines(True)))
     sentence = generateSentence(corpus)
     print(sentence)
