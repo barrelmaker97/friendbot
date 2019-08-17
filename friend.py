@@ -108,6 +108,6 @@ if __name__ == '__main__':
     userID = getUserID(sys.argv[2])
     channel = getChannel(sys.argv[3])
     corpus = generateCorpus(export, channel, userID)
-    print(len(corpus.splitlines(True)))
+    print("Number of lines in corpus: {}".format(len(corpus.splitlines(True))))
     sentence = generateSentence(corpus)
     print(sentence)
