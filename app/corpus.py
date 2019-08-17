@@ -62,7 +62,7 @@ def getChannel(channel):
     except:
         return None
 
-def readJsonFile(path):
+def _readJsonFile(path):
     with open(path) as f:
         return json.load(f)
 
@@ -73,7 +73,7 @@ def generateCorpus(export, channel, userID):
     fulltext = ""
     for path in pathlist:
         path_in_str = str(path)
-        data = readJsonFile(path_in_str)
+        data = _readJsonFile(path_in_str)
         for message in data:
             subtype = message.get('subtype')
             if(subtype != "bot_message"):
