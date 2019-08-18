@@ -1,5 +1,5 @@
 from flask import request
-from app import app, corpus
+from friendbot import app, corpus
 
 @app.route('/sentence', methods = ['POST'])
 def create_sentence():
