@@ -16,7 +16,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     packages=find_packages(),
-    python_requires='>=3.5'
+    python_requires='>=3.5',
     install_requires=[
         'flask',
         'markovify'
