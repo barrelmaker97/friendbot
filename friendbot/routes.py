@@ -7,6 +7,6 @@ def create_sentence():
     params = data['text'].split()
     channel = corpus.getChannel(params[0])
     userID = corpus.getUserID(params[1])
-    fulltext = corpus.generateCorpus("../export", channel, userID)
+    fulltext = corpus.generateCorpus(app.config['EXPORT_DIR'], channel, userID)
     sentence = corpus.generateSentence(fulltext)
     return sentence
