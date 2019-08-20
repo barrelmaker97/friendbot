@@ -49,18 +49,25 @@ rev_names = {
 
 def getUserID(user):
     try:
-        return rev_names[user]
+        userID = rev_names[user]
+        return userID
     except:
-        return None
+        raise Exception("User {} not found".format(user))
 
-def getChannel(channel):
-    try:
-        if (channel == "all"):
-            return ""
-        else:
+def getChannel(channel, export):
+    if (channel == "all"):
+        return ""
+    else:
+        channels = []
+        with open("{}/channels.json".format(export)) as f:
+            data = json.load(f)
+        for channel in data:
+            name = channel.get('name')
+            channels.append(name)
+        if(channel in channels):
             return channel
-    except:
-        return None
+        else:
+            raise Exception("Channel {} not found".format(channel))
 
 def _readJsonFile(path):
     with open(path) as f:
@@ -105,8 +112,8 @@ if __name__ == '__main__':
     except:
         print("Please provide a Slack export directory")
         sys.exit(1)
-    userID = getUserID(sys.argv[2])
-    channel = getChannel(sys.argv[3])
+    channel = getChannel(sys.argv[2])
+    userID = getUserID(sys.argv[3])
     corpus = generateCorpus(export, channel, userID)
     print("Number of lines in corpus: {}".format(len(corpus.splitlines(True))))
     sentence = generateSentence(corpus)
