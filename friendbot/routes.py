@@ -10,11 +10,17 @@ def create_sentence():
     try:
         channel = corpus.getChannel(params[0], export)
     except:
-        return jsonify(text="Error: Channel not found")
+        resp = jsonify(text="Error: Channel not found")
+        resp.headers['Friendbot-Error'] = 'True'
+        return resp
     try:
         userID = corpus.getUserID(params[1])
     except:
-        return jsonify(text="Error: User not found")
+        resp = jsonify(text="Error: User not found")
+        resp.headers['Friendbot-Error'] = 'True'
+        return resp
     fulltext = corpus.generateCorpus(export, channel, userID)
     sentence = corpus.generateSentence(fulltext)
-    return jsonify(text=sentence)
+    resp = jsonify(text=sentence)
+    resp.headers['Friendbot-Error'] = 'False'
+    return resp

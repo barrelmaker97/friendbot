@@ -22,8 +22,9 @@ def step_impl(context, status):
     print("Received Status Code: {}".format(context.res.status_code))
     assert context.res.status_code == status
 
-@then('we will receive "{word}"')
-def step_impl(context, word):
-    data = context.res.data
-    print("Received data: {}".format(data))
-    assert bytes(word, 'utf-8') in data
+@then('we will get a {key}: {value} header')
+def step_impl(context, key, value):
+    headers = context.res.headers
+    print("\nReceived headers: \n{}".format(headers))
+    data = headers[key]
+    assert value in data
