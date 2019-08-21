@@ -10,11 +10,11 @@ def create_sentence():
     try:
         channel = corpus.getChannel(params[0], export)
     except:
-        return jsonify(text="Channel not found")
+        return jsonify(text="Error: Channel not found")
     try:
         userID = corpus.getUserID(params[1])
     except:
-        return jsonify(text="User not found")
+        return jsonify(text="Error: User not found")
     fulltext = corpus.generateCorpus(export, channel, userID)
     sentence = corpus.generateSentence(fulltext)
     return jsonify(text=sentence)

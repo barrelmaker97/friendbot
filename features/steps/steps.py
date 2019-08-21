@@ -18,6 +18,12 @@ def step_impl(context, channel, user, endpoint):
 @then('we will get a {status} status code')
 def step_impl(context, status):
     status = int(status)
-    print("Expected: {}".format(status))
-    print("Actual: {}".format(context.res.status_code))
+    print("Expected Status Code: {}".format(status))
+    print("Received Status Code: {}".format(context.res.status_code))
     assert context.res.status_code == status
+
+@then('we will receive "{word}"')
+def step_impl(context, word):
+    data = context.res.data
+    print("Received data: {}".format(data))
+    assert bytes(word, 'utf-8') in data
