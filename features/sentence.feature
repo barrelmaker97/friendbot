@@ -1,8 +1,23 @@
 Feature: Generating Sentences
 
-	Scenario: Request a sentence
+	Scenario: Request a sentence using all data
 		Given friendbot is running
 		When we make a POST request for channel all user all at the /sentence endpoint
+		Then we will get a 200 status code
+
+	Scenario: Request a sentence using a specific user
+		Given friendbot is running
+		When we make a POST request for channel general user all at the /sentence endpoint
+		Then we will get a 200 status code
+
+	Scenario: Request a sentence using a specific channel
+		Given friendbot is running
+		When we make a POST request for channel all user nolan at the /sentence endpoint
+		Then we will get a 200 status code
+
+	Scenario: Request a sentence using a specific channel and user
+		Given friendbot is running
+		When we make a POST request for channel general user nolan at the /sentence endpoint
 		Then we will get a 200 status code
 
 	Scenario: Request a sentence for a missing channel
