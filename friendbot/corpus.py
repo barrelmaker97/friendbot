@@ -54,8 +54,8 @@ def getUserID(user):
     except:
         raise Exception("User {} not found".format(user))
 
-def getChannel(channel, export):
-    if (channel == "all"):
+def getChannel(channel_name, export):
+    if (channel_name == "all"):
         return ""
     else:
         channels = []
@@ -64,8 +64,8 @@ def getChannel(channel, export):
         for channel in data:
             name = channel.get('name')
             channels.append(name)
-        if(channel in channels):
-            return channel
+        if(channel_name in channels):
+            return channel_name
         else:
             raise Exception("Channel {} not found".format(channel))
 
