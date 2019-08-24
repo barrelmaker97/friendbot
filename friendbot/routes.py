@@ -2,8 +2,8 @@ from flask import request, jsonify
 from friendbot import app, corpus
 
 export = app.config['EXPORT_DIR']
-names = corpus.getUserIDs(export)
-rev_names = corpus.getUserIDsRev(export)
+userIDs = corpus.getUserIDs(export)
+names = corpus.getNames(export)
 
 @app.route('/sentence', methods = ['POST'])
 def create_sentence():
@@ -16,12 +16,12 @@ def create_sentence():
         resp.headers['Friendbot-Error'] = 'True'
         return resp
     try:
-        userID = corpus.interpretName(params[1], rev_names)
+        userID = corpus.interpretName(params[1], names)
     except:
         resp = jsonify(text="Error: User not found")
         resp.headers['Friendbot-Error'] = 'True'
         return resp
-    fulltext = corpus.generateCorpus(export, channel, userID, names)
+    fulltext = corpus.generateCorpus(export, channel, userID, userIDs)
     sentence = corpus.generateSentence(fulltext)
     resp = jsonify(text=sentence)
     resp.headers['Friendbot-Error'] = 'False'

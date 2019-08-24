@@ -6,37 +6,37 @@ import sys
 import markovify
 
 def getUserIDs(export):
+    user_ids = {}
+    users_file = "{}/users.json".format(export)
+    data = _readJsonFile(users_file)
+    for user in data:
+        real_name = user.get('real_name')
+        if(real_name):
+            user_id = user.get('id')
+            format_user_id = "<@{}>".format(user_id)
+            user_ids.update({format_user_id : real_name})
+    return user_ids
+
+def getNames(export):
     names = {}
     users_file = "{}/users.json".format(export)
     data = _readJsonFile(users_file)
     for user in data:
-        realName = user.get('real_name')
-        if(realName):
-            userID = user.get('id')
-            format_userID = "<@{}>".format(userID)
-            names.update({format_userID : realName})
+        real_name = user.get('real_name')
+        if(real_name):
+            user_id = user.get('id')
+            first_name = real_name.split()[0]
+            names.update({first_name.lower() : user_id})
     return names
 
-def getUserIDsRev(export):
-    rev_names = {}
-    users_file = "{}/users.json".format(export)
-    data = _readJsonFile(users_file)
-    for user in data:
-        realName = user.get('real_name')
-        if(realName):
-            userID = user.get('id')
-            first_name = realName.split()[0]
-            rev_names.update({first_name.lower() : userID})
-    return rev_names
-
-def interpretName(user, rev_names):
-    if (user == "all"):
+def interpretName(name, names):
+    if (name == "all"):
         return ""
     try:
-        userID = rev_names[user]
-        return userID
+        user_id = names[name]
+        return user_id
     except:
-        raise Exception("User {} not found".format(user))
+        raise Exception("User with name {} not found".format(name))
 
 def interpretChannel(channel_name, export):
     if (channel_name == "all"):
@@ -91,11 +91,11 @@ def generateSentence(corpus):
 
 if __name__ == '__main__':
     export = path.expanduser(environ['EXPORT_DIR'])
-    names = getUserIDs(export)
-    rev_names = getUserIDsRev(export)
+    userIDs = getUserIDs(export)
+    names = getNames(export)
     channel = interpretChannel(sys.argv[1], export)
-    userID = interpretName(sys.argv[2], rev_names)
-    corpus = generateCorpus(export, channel, userID, names)
+    userID = interpretName(sys.argv[2], names)
+    corpus = generateCorpus(export, channel, userID, userIDs)
     print("Number of lines in corpus: {}".format(len(corpus.splitlines(True))))
     sentence = generateSentence(corpus)
     print(sentence)
