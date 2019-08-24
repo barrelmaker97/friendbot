@@ -4,13 +4,14 @@ from friendbot import app, corpus
 export = app.config['EXPORT_DIR']
 userIDs = corpus.getUserIDs(export)
 names = corpus.getNames(export)
+channels = corpus.getChannels(export)
 
 @app.route('/sentence', methods = ['POST'])
 def create_sentence():
     data = request.form
     params = data['text'].split()
     try:
-        channel = corpus.interpretChannel(params[0], export)
+        channel = corpus.interpretChannel(params[0], channels)
     except:
         resp = jsonify(text="Error: Channel not found")
         resp.headers['Friendbot-Error'] = 'True'

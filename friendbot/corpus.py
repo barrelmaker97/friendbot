@@ -29,6 +29,15 @@ def getNames(export):
             names.update({first_name.lower() : user_id})
     return names
 
+def getChannels(export):
+    channels = []
+    channels_file = "{}/channels.json".format(export)
+    data = _readJsonFile(channels_file)
+    for channel in data:
+        name = channel.get('name')
+        channels.append(name)
+    return channels
+
 def interpretName(name, names):
     if (name == "all"):
         return ""
@@ -38,19 +47,13 @@ def interpretName(name, names):
     except:
         raise Exception("User with name {} not found".format(name))
 
-def interpretChannel(channel_name, export):
-    if (channel_name == "all"):
+def interpretChannel(channel, channels):
+    if (channel == "all"):
         return ""
-    channels = []
-    channels_file = "{}/channels.json".format(export)
-    data = _readJsonFile(channels_file)
-    for channel in data:
-        name = channel.get('name')
-        channels.append(name)
-    if(channel_name in channels):
-        return channel_name
+    if(channel in channels):
+        return channel
     else:
-        raise Exception("Channel {} not found".format(channel_name))
+        raise Exception("Channel {} not found".format(channel))
 
 def _readJsonFile(path):
     with open(path) as f:
@@ -93,7 +96,8 @@ if __name__ == '__main__':
     export = path.expanduser(environ['EXPORT_DIR'])
     userIDs = getUserIDs(export)
     names = getNames(export)
-    channel = interpretChannel(sys.argv[1], export)
+    channels = getChannels(export)
+    channel = interpretChannel(sys.argv[1], channels)
     userID = interpretName(sys.argv[2], names)
     corpus = generateCorpus(export, channel, userID, userIDs)
     print("Number of lines in corpus: {}".format(len(corpus.splitlines(True))))
