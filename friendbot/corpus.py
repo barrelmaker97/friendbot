@@ -1,79 +1,62 @@
+from os import environ, path
 from pathlib import Path
 import json
 import re
 import sys
 import markovify
 
-names = {
-        "<@UCF55PTPV>" : "Nolan",
-        "<@UCFDECFUM>" : "Ailysh",
-        "<@UCEH553R6>" : "Matt",
-        "<@UCF2BKUG4>" : "Ryan",
-        "<@UCF90GYUA>" : "Jake",
-        "<@UCF58F6LB>" : "Caroline",
-        "<@UCGQSFL5C>" : "Grace",
-        "<@UCGK09UJ2>" : "Halley",
-        "<@UCGA2GQJ3>" : "Maegan",
-        "<@UCGA0K9PZ>" : "Trevor",
-        "<@UCFEBHEAH>" : "Jason",
-        "<@UCGT4D0EQ>" : "Hannah",
-        "<@UCF7J89HA>" : "Josh",
-        "<@UCHA3NA8N>" : "Sophia",
-        "<@UCEMX3DRP>" : "Jill",
-        "<@UCGA9N1K9>" : "Dan",
-        "<@UCJR5HL3F>" : "Fiona",
-        "<@UDH10MC7K>" : "Olsi"
-        }
+def getUserIDs(export):
+    names = {}
+    users_file = "{}/users.json".format(export)
+    data = _readJsonFile(users_file)
+    for user in data:
+        realName = user.get('real_name')
+        if(realName):
+            userID = user.get('id')
+            format_userID = "<@{}>".format(userID)
+            names.update({format_userID : realName})
+    return names
 
-rev_names = {
-        "nolan" : "UCF55PTPV",
-        "ailysh" : "UCFDECFUM",
-        "matt" : "UCEH553R6",
-        "ryan" : "UCF2BKUG4",
-        "jake" : "UCF90GYUA",
-        "caroline" : "UCF58F6LB",
-        "grace" : "UCGQSFL5C",
-        "halley" : "UCGK09UJ2",
-        "maegan" : "UCGA2GQJ3",
-        "trevor" : "UCGA0K9PZ",
-        "jason" : "UCFEBHEAH",
-        "hannah" : "UCGT4D0EQ",
-        "josh" : "UCF7J89HA",
-        "sophia" : "UCHA3NA8N",
-        "jill" : "UCEMX3DRP",
-        "dan" : "UCGA9N1K9",
-        "fiona" : "UCJR5HL3F",
-        "olsi" : "UDH10MC7K",
-        "all" : ""
-        }
+def getUserIDsRev(export):
+    rev_names = {}
+    users_file = "{}/users.json".format(export)
+    data = _readJsonFile(users_file)
+    for user in data:
+        realName = user.get('real_name')
+        if(realName):
+            userID = user.get('id')
+            first_name = realName.split()[0]
+            rev_names.update({first_name.lower() : userID})
+    return rev_names
 
-def getUserID(user):
+def interpretName(user, rev_names):
+    if (user == "all"):
+        return ""
     try:
         userID = rev_names[user]
         return userID
     except:
         raise Exception("User {} not found".format(user))
 
-def getChannel(channel_name, export):
+def interpretChannel(channel_name, export):
     if (channel_name == "all"):
         return ""
+    channels = []
+    channels_file = "{}/channels.json".format(export)
+    data = _readJsonFile(channels_file)
+    for channel in data:
+        name = channel.get('name')
+        channels.append(name)
+    if(channel_name in channels):
+        return channel_name
     else:
-        channels = []
-        channels_file = "{}/channels.json".format(export)
-        data = _readJsonFile(channels_file)
-        for channel in data:
-            name = channel.get('name')
-            channels.append(name)
-        if(channel_name in channels):
-            return channel_name
-        else:
-            raise Exception("Channel {} not found".format(channel))
+        raise Exception("Channel {} not found".format(channel_name))
 
 def _readJsonFile(path):
     with open(path) as f:
         return json.load(f)
 
-def generateCorpus(export, channel, userID):
+def generateCorpus(export, channel, userID, names):
     channel_directory = "{}/{}".format(export, channel)
     pathlist = Path(channel_directory).glob('**/*.json')
     regex = re.compile(r'<(?:[^"\\]|\\.)*>', re.IGNORECASE)
@@ -107,14 +90,12 @@ def generateSentence(corpus):
         return sentence
 
 if __name__ == '__main__':
-    try:
-        export = sys.argv[1]
-    except:
-        print("Please provide a Slack export directory")
-        sys.exit(1)
-    channel = getChannel(sys.argv[2])
-    userID = getUserID(sys.argv[3])
-    corpus = generateCorpus(export, channel, userID)
+    export = path.expanduser(environ['EXPORT_DIR'])
+    names = getUserIDs(export)
+    rev_names = getUserIDsRev(export)
+    channel = interpretChannel(sys.argv[1], export)
+    userID = interpretName(sys.argv[2], rev_names)
+    corpus = generateCorpus(export, channel, userID, names)
     print("Number of lines in corpus: {}".format(len(corpus.splitlines(True))))
     sentence = generateSentence(corpus)
     print(sentence)
