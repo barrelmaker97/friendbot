@@ -59,8 +59,8 @@ def getChannel(channel_name, export):
         return ""
     else:
         channels = []
-        with open("{}/channels.json".format(export)) as f:
-            data = json.load(f)
+        channels_file = "{}/channels.json".format(export)
+        data = _readJsonFile(channels_file)
         for channel in data:
             name = channel.get('name')
             channels.append(name)
