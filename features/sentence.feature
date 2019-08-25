@@ -14,13 +14,13 @@ Feature: Generating Sentences
 
 	Scenario: Request a sentence using a specific user
 		Given friendbot is running
-		When we make a POST request for channel all user nolan at the /sentence endpoint
+		When we make a POST request for channel all user john at the /sentence endpoint
 		Then we will get a 200 status code
 		And we will get a Friendbot-Error: False header
 
 	Scenario: Request a sentence using a specific channel and user
 		Given friendbot is running
-		When we make a POST request for channel general user nolan at the /sentence endpoint
+		When we make a POST request for channel general user john at the /sentence endpoint
 		Then we will get a 200 status code
 		And we will get a Friendbot-Error: False header
 
