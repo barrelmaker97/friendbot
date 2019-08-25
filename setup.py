@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="friendbot",
-    version="0.0.1",
+    version="0.0.0",
     author="Nolan Cooper",
     author_email="nolancooper97@gmail.com",
     description="Markov-chain based chatbot which uses Slack messages as its corpus",

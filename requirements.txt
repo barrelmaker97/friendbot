@@ -8,7 +8,6 @@ markovify==0.7.2
 MarkupSafe==1.1.1
 parse==1.12.1
 parse-type==0.5.2
-pkg-resources==0.0.0
 python-dotenv==0.10.3
 six==1.12.0
 Unidecode==1.1.1
