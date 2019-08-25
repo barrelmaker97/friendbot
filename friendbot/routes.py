@@ -2,12 +2,27 @@ from flask import request, jsonify
 from friendbot import app, corpus
 
 export = app.config['EXPORT_DIR']
-userIDs = corpus.getUserIDs(export)
-names = corpus.getNames(export)
-channels = corpus.getChannels(export)
+try:
+    userIDs = corpus.getUserIDs(export)
+    app.logger.info("User IDs loaded from export")
+except:
+    app.logger.error("User IDs not loaded!")
+
+try:
+    names = corpus.getNames(export)
+    app.logger.info("Names loaded from export")
+except:
+    app.logger.error("Names not loaded!")
+
+try:
+    channels = corpus.getChannels(export)
+    app.logger.info("Channels loaded from export")
+except:
+    app.logger.error("Channels not loaded!")
 
 @app.route('/sentence', methods = ['POST'])
 def create_sentence():
+    app.logger.info("Request at /sentence endpoint from {}".format(request.host))
     data = request.form
     params = data['text'].split()
     try:
