@@ -6,9 +6,15 @@ itsdangerous==1.1.0
 Jinja2==2.10.1
 markovify==0.7.2
 MarkupSafe==1.1.1
+mccabe==0.6.1
 parse==1.12.1
 parse-type==0.5.2
+pycodestyle==2.5.0
+pydocstyle==4.0.1
+pyflakes==2.1.1
+pylama==7.7.1
 python-dotenv==0.10.3
 six==1.12.0
+snowballstemmer==1.9.0
 Unidecode==1.1.1
 Werkzeug==0.15.5
