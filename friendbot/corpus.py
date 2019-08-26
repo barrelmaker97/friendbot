@@ -1,9 +1,10 @@
-from os import environ, path
 from pathlib import Path
+import os
 import json
 import re
 import sys
 import markovify
+
 
 def getUserIDs(export):
     user_ids = {}
@@ -14,8 +15,9 @@ def getUserIDs(export):
         if(real_name):
             user_id = user.get('id')
             format_user_id = "<@{}>".format(user_id)
-            user_ids.update({format_user_id : real_name})
+            user_ids.update({format_user_id: real_name})
     return user_ids
+
 
 def getNames(export):
     names = {}
@@ -26,8 +28,9 @@ def getNames(export):
         if(real_name):
             user_id = user.get('id')
             first_name = real_name.split()[0]
-            names.update({first_name.lower() : user_id})
+            names.update({first_name.lower(): user_id})
     return names
+
 
 def getChannels(export):
     channels = []
@@ -38,14 +41,13 @@ def getChannels(export):
         channels.append(name)
     return channels
 
+
 def interpretName(name, names):
     if (name == "all"):
         return ""
-    try:
-        user_id = names[name]
-        return user_id
-    except:
-        raise Exception("User with name {} not found".format(name))
+    user_id = names[name]
+    return user_id
+
 
 def interpretChannel(channel, channels):
     if (channel == "all"):
@@ -55,9 +57,11 @@ def interpretChannel(channel, channels):
     else:
         raise Exception("Channel {} not found".format(channel))
 
+
 def _readJsonFile(path):
     with open(path) as f:
         return json.load(f)
+
 
 def generateCorpus(export, channel, userID, names):
     channel_directory = "{}/{}".format(export, channel)
@@ -86,14 +90,16 @@ def generateCorpus(export, channel, userID, names):
                             fulltext += text
     return fulltext
 
+
 def generateSentence(corpus):
     text_model = markovify.NewlineText(corpus)
     sentence = text_model.make_sentence(tries=100)
     if(type(sentence) == str):
         return sentence
 
+
 if __name__ == '__main__':
-    export = path.expanduser(environ['EXPORT_DIR'])
+    export = os.path.expanduser(os.environ['EXPORT_DIR'])
     userIDs = getUserIDs(export)
     names = getNames(export)
     channels = getChannels(export)

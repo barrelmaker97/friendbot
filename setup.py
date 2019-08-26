@@ -3,12 +3,14 @@ from setuptools import find_packages, setup
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+desc = "Markov-chain based chatbot which uses Slack messages as its corpus",
+
 setup(
     name="friendbot",
     version="0.0.0",
     author="Nolan Cooper",
     author_email="nolancooper97@gmail.com",
-    description="Markov-chain based chatbot which uses Slack messages as its corpus",
+    description=desc,
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/barrelmaker97/friendbot",
