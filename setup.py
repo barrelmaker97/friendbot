@@ -1,4 +1,12 @@
 from setuptools import find_packages, setup
+import os
+
+NAME = "friendbot"
+HERE = os.path.abspath(os.path.dirname(__file__))
+
+version_ns = {}
+with open(os.path.join(HERE, NAME, '__version__.py')) as f:
+    exec(f.read(), {}, version_ns)
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -7,7 +15,7 @@ desc = "Markov-chain based chatbot which uses Slack messages as its corpus",
 
 setup(
     name="friendbot",
-    version="0.0.0",
+    version=version_ns['__version__'],
     author="Nolan Cooper",
     author_email="nolancooper97@gmail.com",
     description=desc,
