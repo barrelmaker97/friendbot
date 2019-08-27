@@ -45,8 +45,7 @@ def getChannels(export):
 def interpretName(name, names):
     if (name == "all"):
         return ""
-    user_id = names[name]
-    return user_id
+    return names[name]
 
 
 def interpretChannel(channel, channels):
