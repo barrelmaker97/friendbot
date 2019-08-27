@@ -1,5 +1,7 @@
 venv/
 
+.coverage
+
 *.pyc
 __pycache__/
 
