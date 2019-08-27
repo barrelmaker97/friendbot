@@ -8,6 +8,9 @@ install:
     - pip install flask
     - pip install markovify
     - pip install pylama
+    - pip install coveralls
 script:
     - behave
     - pylama features/ friendbot/ setup.py --skip friendbot/__init__.py
+    - coverage run --include="./friendbot/*" -m behave
+after_success: coveralls
