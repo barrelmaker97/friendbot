@@ -26,11 +26,19 @@ except Exception as ex:
 
 @app.route("/sentence", methods=['POST'])
 def create_sentence():
-    app.logger.info("Request at /sentence from {}".format(request.host))
     data = request.form
     params = data['text'].split()
+    if(len(params) == 0):
+        req_channel = "all"
+        req_user = "all"
+    else:
+        req_channel = params[0].lower()
+        req_user = params[1].lower()
+    msg = "/sentence from {} Channel: {} User: {}".format(
+            request.host, req_channel, req_user)
+    app.logger.info(msg)
     try:
-        channel = corpus.interpretChannel(params[0], channels)
+        channel = corpus.interpretChannel(req_channel, channels)
     except Exception as ex:
         ex_name = "An exception of type {} occurred.".format(type(ex).__name__)
         app.logger.error("{} Channel not found!".format(ex_name))
@@ -38,7 +46,7 @@ def create_sentence():
         resp.headers['Friendbot-Error'] = 'True'
         return resp
     try:
-        userID = corpus.interpretName(params[1], names)
+        userID = corpus.interpretName(req_user, names)
     except Exception as ex:
         ex_name = "An exception of type {} occurred.".format(type(ex).__name__)
         app.logger.error("{} User not found!".format(ex_name))
