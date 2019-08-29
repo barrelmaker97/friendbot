@@ -26,7 +26,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     packages=find_packages(),
-    python_requires='>=3.5',
+    python_requires='>=3.4',
     install_requires=[
         'flask',
         'markovify'
@@ -35,6 +35,7 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
