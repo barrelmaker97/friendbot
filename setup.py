@@ -11,7 +11,7 @@ with open(os.path.join(HERE, NAME, '__version__.py')) as f:
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-desc = "Markov-chain based chatbot which uses Slack messages as its corpus",
+desc = "Markov-chain based chatbot which uses Slack messages as its corpus"
 
 setup(
     name="friendbot",
