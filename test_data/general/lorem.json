@@ -73,5 +73,10 @@
         "type": "message",
         "text": "Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy.",
         "user": "UCF55PTPV"
+    },
+    {
+        "type": "message",
+        "text": "My name is <@UCF55PTPV>",
+        "user": "UCF55PTPV"
     }
 ]
