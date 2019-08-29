@@ -1,8 +1,6 @@
 from pathlib import Path
-import os
 import json
 import re
-import sys
 import markovify
 
 
@@ -95,16 +93,3 @@ def generateSentence(corpus):
     sentence = text_model.make_sentence(tries=100)
     if(type(sentence) == str):
         return sentence
-
-
-if __name__ == '__main__':
-    export = os.path.expanduser(os.environ['EXPORT_DIR'])
-    userIDs = getUserIDs(export)
-    names = getNames(export)
-    channels = getChannels(export)
-    channel = interpretChannel(sys.argv[1], channels)
-    userID = interpretName(sys.argv[2], names)
-    corpus = generateCorpus(export, channel, userID, userIDs)
-    print("Number of lines in corpus: {}".format(len(corpus.splitlines(True))))
-    sentence = generateSentence(corpus)
-    print(sentence)
