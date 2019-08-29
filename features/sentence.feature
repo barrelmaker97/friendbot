@@ -10,7 +10,7 @@ Feature: Generating Sentences
 		Given friendbot is running
 		When we make a POST request for channel all user all at /sentence
 		Then we will get a 200 status code
-		And we will get a Friendbot-Corpus-Lines: 17 header
+		And we will get a Friendbot-Corpus-Lines: 18 header
 
 	Scenario: Request a sentence with no selections
 		Given friendbot is running
