@@ -6,6 +6,12 @@ Feature: Generating Sentences
 		Then we will get a 200 status code
 		And we will get a Friendbot-Error: False header
 
+	Scenario: Request a sentence with no selections
+		Given friendbot is running
+		When we make a blank POST request at /sentence
+		Then we will get a 200 status code
+		And we will get a Friendbot-Error: False header
+
 	Scenario: Request a sentence using a specific channel
 		Given friendbot is running
 		When we make a POST request for channel general user all at /sentence

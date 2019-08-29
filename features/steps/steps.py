@@ -19,6 +19,12 @@ def post_endpoint(context, channel, user, endpoint):
     assert context.res
 
 
+@when('we make a blank POST request at {endpoint}')
+def post_endpoint_blank(context, endpoint):
+    context.res = context.client.post(endpoint, data=dict(text=""))
+    assert context.res
+
+
 @then('we will get a {status} status code')
 def get_code(context, status):
     status = int(status)
