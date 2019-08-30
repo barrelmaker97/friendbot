@@ -25,23 +25,18 @@ def create_sentence():
     data = request.form
     params = data['text'].split()
     if(len(params) == 0):
-        req_channel = "all"
-        req_user = "all"
+        channel = ""
+        user = ""
     else:
-        req_channel = params[0]
-        req_user = params[1]
-    msg = "/sentence from {} Channel: {} User: {}".format(
-            request.host, req_channel, req_user)
-    app.logger.info(msg)
-    try:
-        channel = corpus.verifyChannel(req_channel, channels)
-        user = corpus.verifyUser(req_user, users)
-    except Exception as ex:
-        message = str(ex)
-        app.logger.error(message)
-        resp = jsonify(text=message)
-        resp.headers['Friendbot-Error'] = 'True'
-        return resp
+        try:
+            channel = corpus.verifyChannel(params[0], channels)
+            user = corpus.verifyUser(params[1], users)
+        except Exception as ex:
+            message = str(ex)
+            app.logger.error(message)
+            resp = jsonify(text=message)
+            resp.headers['Friendbot-Error'] = 'True'
+            return resp
     fulltext = corpus.generateCorpus(
             export, channel, user, channel_dict, user_dict)
     num_lines = len(fulltext.splitlines(True))
@@ -49,4 +44,7 @@ def create_sentence():
     resp = jsonify(text=sentence)
     resp.headers['Friendbot-Error'] = 'False'
     resp.headers['Friendbot-Corpus-Lines'] = num_lines
+    msg = "/sentence from {} Channel: {} User: {}".format(
+            request.host, channel, user)
+    app.logger.info(msg)
     return resp
