@@ -50,8 +50,6 @@ def getChannels(export):
 
 
 def verifyUser(user, users):
-    if (user == "all"):
-        return ""
     try:
         result = re.search('<@(.*)>', user)
         clean = result.group(1)
@@ -64,8 +62,6 @@ def verifyUser(user, users):
 
 
 def verifyChannel(channel, channels):
-    if (channel == "all"):
-        return ""
     try:
         result = re.search('<#(.*)>', channel)
         clean = result.group(1)
@@ -83,10 +79,10 @@ def _readJsonFile(path):
 
 
 def generateCorpus(export, channel, userID, channel_dict, user_dict):
-    if (channel):
-        channel_directory = "{}/{}".format(export, channel_dict[channel])
-    else:
+    if (channel == "None"):
         channel_directory = export
+    else:
+        channel_directory = "{}/{}".format(export, channel_dict[channel])
     pathlist = Path(channel_directory).glob('**/*.json')
     regex = re.compile(r'<(?:[^"\\]|\\.)*>', re.IGNORECASE)
     fulltext = ""
@@ -102,7 +98,7 @@ def generateCorpus(export, channel, userID, channel_dict, user_dict):
                         text = text.replace(user, user_dict[user])
                 text = regex.sub("", text)
                 if(text):
-                    if(not userID):
+                    if(userID == "None"):
                         text += "\n"
                         fulltext += text
                     else:
