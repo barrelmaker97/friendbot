@@ -75,8 +75,8 @@ def generateCorpus(export, channel, userID, user_dict):
             if(subtype != "bot_message"):
                 text = str(message.get('text'))
                 if("<@U" in text):
-                    for name in user_dict:
-                        text = text.replace(name, user_dict[name])
+                    for user in user_dict:
+                        text = text.replace(user, user_dict[user])
                 text = regex.sub("", text)
                 if(text):
                     if(not userID):
