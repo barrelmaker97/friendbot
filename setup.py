@@ -27,6 +27,7 @@ setup(
     zip_safe=False,
     packages=find_packages(),
     python_requires='>=3.4',
+    keywords="markov chatbot wsgi slack",
     install_requires=[
         'flask',
         'markovify'
