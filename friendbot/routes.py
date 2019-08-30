@@ -34,18 +34,11 @@ def create_sentence():
     app.logger.info(msg)
     try:
         channel = corpus.verifyChannel(req_channel, channels)
-    except Exception as ex:
-        ex_name = "An exception of type {} occurred.".format(type(ex).__name__)
-        app.logger.error("{} Channel not found!".format(ex_name))
-        resp = jsonify(text="Error: Channel not found")
-        resp.headers['Friendbot-Error'] = 'True'
-        return resp
-    try:
         user = corpus.verifyUser(req_user, users)
     except Exception as ex:
-        ex_name = "An exception of type {} occurred.".format(type(ex).__name__)
-        app.logger.error("{} User not found!".format(ex_name))
-        resp = jsonify(text="Error: User not found")
+        message = str(ex)
+        app.logger.error(message)
+        resp = jsonify(text=message)
         resp.headers['Friendbot-Error'] = 'True'
         return resp
     fulltext = corpus.generateCorpus(export, channel, user, user_dict)

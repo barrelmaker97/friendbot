@@ -40,8 +40,11 @@ def getChannels(export):
 def verifyUser(user, users):
     if (user == "all"):
         return ""
-    result = re.search('<@(.*)>', user)
-    clean = result.group(1)
+    try:
+        result = re.search('<@(.*)>', user)
+        clean = result.group(1)
+    except Exception:
+        raise Exception("Could not parse user ID {}".format(user))
     if(clean in users):
         return clean
     else:
