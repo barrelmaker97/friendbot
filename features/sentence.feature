@@ -36,15 +36,21 @@ Feature: Generating Sentences
 		Then we will get a 200 status code
 		And we will get a Friendbot-Error: False header
 
-	Scenario: Request a sentence for a missing channel
+	Scenario: Request a sentence with an incorrectly formatted channel
 		Given friendbot is running
 		When we make a POST request for channel TEST user all at /sentence
 		Then we will get a 200 status code
 		And we will get a Friendbot-Error: True header
 
-	Scenario: Request a sentence for a missing user
+	Scenario: Request a sentence with an incorrectly formatted user
 		Given friendbot is running
 		When we make a POST request for channel all user TEST at /sentence
+		Then we will get a 200 status code
+		And we will get a Friendbot-Error: True header
+
+	Scenario: Request a sentence for a non existent user
+		Given friendbot is running
+		When we make a POST request for channel all user <@U12345678> at /sentence
 		Then we will get a 200 status code
 		And we will get a Friendbot-Error: True header
 
