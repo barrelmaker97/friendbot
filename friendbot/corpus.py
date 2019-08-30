@@ -53,24 +53,28 @@ def verifyUser(user, users):
     try:
         result = re.search('<@(.*)>', user)
         clean = result.group(1)
+        params = clean.split('|')
+        final = params[0]
     except Exception:
         raise Exception("Could not parse user ID {}".format(user))
-    if(clean in users):
-        return clean
+    if(final in users):
+        return final
     else:
-        raise Exception("User {} not found".format(clean))
+        raise Exception("User {} not found".format(final))
 
 
 def verifyChannel(channel, channels):
     try:
         result = re.search('<#(.*)>', channel)
         clean = result.group(1)
+        params = clean.split('|')
+        final = params[0]
     except Exception:
         raise Exception("Could not parse channel ID {}".format(channel))
-    if(clean in channels):
-        return clean
+    if(final in channels):
+        return final
     else:
-        raise Exception("Channel {} not found".format(channel))
+        raise Exception("Channel {} not found".format(final))
 
 
 def _readJsonFile(path):
