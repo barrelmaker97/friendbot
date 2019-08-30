@@ -5,6 +5,7 @@ export = app.config['EXPORT_DIR']
 
 try:
     channels = corpus.getChannels(export)
+    channel_dict = corpus.getChannelDict(export)
     app.logger.info("Channels loaded from export")
 except Exception as ex:
     ex_name = "An exception of type {} occurred.".format(type(ex).__name__)
@@ -41,7 +42,8 @@ def create_sentence():
         resp = jsonify(text=message)
         resp.headers['Friendbot-Error'] = 'True'
         return resp
-    fulltext = corpus.generateCorpus(export, channel, user, user_dict)
+    fulltext = corpus.generateCorpus(
+            export, channel, user, channel_dict, user_dict)
     num_lines = len(fulltext.splitlines(True))
     sentence = corpus.generateSentence(fulltext)
     resp = jsonify(text=sentence)

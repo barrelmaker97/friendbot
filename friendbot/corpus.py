@@ -17,6 +17,18 @@ def getUserDict(export):
     return user_dict
 
 
+def getChannelDict(export):
+    channel_dict = {}
+    channels_file = "{}/channels.json".format(export)
+    data = _readJsonFile(channels_file)
+    for channel in data:
+        name = channel.get('name')
+        if(name):
+            channel_id = channel.get('id')
+            channel_dict.update({channel_id: name})
+    return channel_dict
+
+
 def getUsers(export):
     users = []
     users_file = "{}/users.json".format(export)
@@ -32,8 +44,8 @@ def getChannels(export):
     channels_file = "{}/channels.json".format(export)
     data = _readJsonFile(channels_file)
     for channel in data:
-        name = channel.get('name')
-        channels.append(name)
+        channel_id = channel.get('id')
+        channels.append(channel_id)
     return channels
 
 
@@ -54,8 +66,13 @@ def verifyUser(user, users):
 def verifyChannel(channel, channels):
     if (channel == "all"):
         return ""
-    if(channel in channels):
-        return channel
+    try:
+        result = re.search('<#(.*)>', channel)
+        clean = result.group(1)
+    except Exception:
+        raise Exception("Could not parse channel ID {}".format(channel))
+    if(clean in channels):
+        return clean
     else:
         raise Exception("Channel {} not found".format(channel))
 
@@ -65,8 +82,11 @@ def _readJsonFile(path):
         return json.load(f)
 
 
-def generateCorpus(export, channel, userID, user_dict):
-    channel_directory = "{}/{}".format(export, channel)
+def generateCorpus(export, channel, userID, channel_dict, user_dict):
+    if (channel):
+        channel_directory = "{}/{}".format(export, channel_dict[channel])
+    else:
+        channel_directory = export
     pathlist = Path(channel_directory).glob('**/*.json')
     regex = re.compile(r'<(?:[^"\\]|\\.)*>', re.IGNORECASE)
     fulltext = ""
