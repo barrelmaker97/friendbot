@@ -39,16 +39,6 @@ def getUsers(export):
     return users
 
 
-def getChannels(export):
-    channels = []
-    channels_file = "{}/channels.json".format(export)
-    data = _readJsonFile(channels_file)
-    for channel in data:
-        channel_id = channel.get('id')
-        channels.append(channel_id)
-    return channels
-
-
 def verifyUser(user, users):
     try:
         result = re.search('<@(.*)>', user)
