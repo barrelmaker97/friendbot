@@ -3,6 +3,8 @@ import json
 import re
 import markovify
 
+regex = re.compile(r'<(?:[^"\\]|\\.)*>', re.IGNORECASE)
+
 
 def getUserDict(export):
     user_dict = {}
@@ -67,7 +69,6 @@ def generateCorpus(export, channel, userID, channel_dict, user_dict):
     else:
         channel_directory = "{}/{}".format(export, channel_dict[channel])
     pathlist = Path(channel_directory).glob('**/*.json')
-    regex = re.compile(r'<(?:[^"\\]|\\.)*>', re.IGNORECASE)
     fulltext = ""
     for path in pathlist:
         path_in_str = str(path)
