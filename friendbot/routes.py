@@ -28,10 +28,10 @@ def create_sentence():
     user = "None"
     for param in params:
         try:
-            channel = corpus.verifyChannel(param, channels)
+            channel = corpus.parseArg(param, channels)
         except Exception:
             try:
-                user = corpus.verifyUser(param, users)
+                user = corpus.parseArg(param, users)
             except Exception as ex:
                 return errorResponse(ex)
     fulltext = corpus.generateCorpus(

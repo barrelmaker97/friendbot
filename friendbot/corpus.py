@@ -30,32 +30,18 @@ def getChannelDict(export):
     return channel_dict
 
 
-def verifyUser(user, users):
+def parseArg(arg, options):
     try:
-        result = re.search('<@(.*)>', user)
+        result = re.search('<.(.*)>', arg)
         clean = result.group(1)
         params = clean.split('|')
         final = params[0]
     except Exception:
-        raise Exception("Could not parse user ID {}".format(user))
-    if(final in users):
+        raise Exception("Could not parse argument {}".format(arg))
+    if(final in options):
         return final
     else:
-        raise Exception("User {} not found".format(final))
-
-
-def verifyChannel(channel, channels):
-    try:
-        result = re.search('<#(.*)>', channel)
-        clean = result.group(1)
-        params = clean.split('|')
-        final = params[0]
-    except Exception:
-        raise Exception("Could not parse channel ID {}".format(channel))
-    if(final in channels):
-        return final
-    else:
-        raise Exception("Channel {} not found".format(final))
+        raise Exception("Argument {} not found".format(final))
 
 
 def _readJsonFile(path):
