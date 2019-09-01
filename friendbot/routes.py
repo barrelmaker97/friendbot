@@ -4,8 +4,8 @@ from friendbot import app, corpus
 export = app.config['EXPORT_DIR']
 
 try:
-    channels = corpus.getChannels(export)
     channel_dict = corpus.getChannelDict(export)
+    channels = channel_dict.keys()
     app.logger.info("Channels loaded from export")
 except Exception as ex:
     ex_name = "An exception of type {} occurred.".format(type(ex).__name__)
