@@ -39,12 +39,13 @@ def create_sentence():
     num_lines = len(fulltext.splitlines(True))
     sentence = corpus.generateSentence(fulltext)
     resp = jsonify(text=sentence)
-    resp.headers['Friendbot-Error'] = 'False'
+    error = 'False'
+    resp.headers['Friendbot-Error'] = error
     resp.headers['Friendbot-Corpus-Lines'] = num_lines
     resp.headers['Friendbot-User'] = user
     resp.headers['Friendbot-Channel'] = channel
-    msg = "/sentence from {} Channel: {} User: {}".format(
-            request.host, channel, user)
+    msg = "/sentence Channel: {} User: {} Error: {} Lines: {}"
+    msg.format(channel, user, error, num_lines)
     app.logger.info(msg)
     return resp
 
