@@ -12,8 +12,7 @@ def getUserDict(export):
         real_name = user.get('real_name')
         if(real_name):
             user_id = user.get('id')
-            format_user_id = "<@{}>".format(user_id)
-            user_dict.update({format_user_id: real_name})
+            user_dict.update({user_id: real_name})
     return user_dict
 
 
@@ -27,16 +26,6 @@ def getChannelDict(export):
             channel_id = channel.get('id')
             channel_dict.update({channel_id: name})
     return channel_dict
-
-
-def getUsers(export):
-    users = []
-    users_file = "{}/users.json".format(export)
-    data = _readJsonFile(users_file)
-    for user in data:
-        user_id = user.get('id')
-        users.append(user_id)
-    return users
 
 
 def verifyUser(user, users):
@@ -89,7 +78,8 @@ def generateCorpus(export, channel, userID, channel_dict, user_dict):
                 text = str(message.get('text'))
                 if("<@U" in text):
                     for user in user_dict:
-                        text = text.replace(user, user_dict[user])
+                        format_user = "<@{}>".format(user)
+                        text = text.replace(format_user, user_dict[user])
                 text = regex.sub("", text)
                 if(text):
                     if(userID == "None"):

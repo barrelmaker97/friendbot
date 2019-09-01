@@ -12,8 +12,8 @@ except Exception as ex:
     app.logger.error("{} Channels not loaded!".format(ex_name))
 
 try:
-    users = corpus.getUsers(export)
     user_dict = corpus.getUserDict(export)
+    users = user_dict.keys()
     app.logger.info("Users loaded from export")
 except Exception as ex:
     ex_name = "An exception of type {} occurred.".format(type(ex).__name__)
