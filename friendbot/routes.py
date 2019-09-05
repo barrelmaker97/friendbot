@@ -38,7 +38,7 @@ def create_sentence():
             export, channel, user, channel_dict, user_dict)
     num_lines = len(fulltext.splitlines(True))
     sentence = corpus.generateSentence(fulltext)
-    resp = jsonify(text=sentence)
+    resp = jsonify(response_type="ephemeral",text=sentence)
     error = 'False'
     resp.headers['Friendbot-Error'] = error
     resp.headers['Friendbot-Corpus-Lines'] = num_lines
