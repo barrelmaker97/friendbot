@@ -1,5 +1,6 @@
 from flask import request, jsonify
 from friendbot import app, corpus
+import json
 
 export = app.config['EXPORT_DIR']
 
@@ -22,10 +23,10 @@ except Exception as ex:
 
 @app.route("/action", methods=['POST'])
 def take_action():
-    data = request.form
-    buttons = data['actions']
-    button = buttons[0]
-    msg = "/action {}".format(button)
+    data = request.get_data().decode('utf8')
+    json_data = json.loads(data)
+    button_value = json_data['actions'][0]['value']
+    msg = "/action {}".format(button_value)
     app.logger.info(msg)
     return ('', 204)
 
