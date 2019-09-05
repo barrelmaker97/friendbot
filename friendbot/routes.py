@@ -28,7 +28,7 @@ def take_action():
     button_value = json_data['actions'][0]['value']
     msg = "/action {}".format(button_value)
     app.logger.info(msg)
-    return ('', 204)
+    return ('', 200)
 
 
 @app.route("/sentence", methods=['POST'])

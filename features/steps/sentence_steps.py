@@ -1,4 +1,4 @@
-from behave import given, when, then
+from behave import when, then
 
 
 @when('we make a GET request at {endpoint}')
