@@ -38,7 +38,7 @@ def create_sentence():
             export, channel, user, channel_dict, user_dict)
     num_lines = len(fulltext.splitlines(True))
     sentence = corpus.generateSentence(fulltext)
-    resp = jsonify(response_type="ephemeral",text=sentence)
+    resp = createResponse(sentence)
     error = 'False'
     resp.headers['Friendbot-Error'] = error
     resp.headers['Friendbot-Corpus-Lines'] = num_lines
@@ -56,3 +56,53 @@ def errorResponse(ex):
     resp = jsonify(text=message)
     resp.headers['Friendbot-Error'] = 'True'
     return resp
+
+
+def createResponse(sentence):
+    resp_data = {
+            "response_type": "ephemeral",
+            "blocks": [
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "plain_text",
+                        "text": sentence
+                        }
+                    },
+                {
+                    "type": "actions",
+                    "elements": [
+                        {
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "emoji": True,
+                                "text": "Send"
+                                },
+                            "style": "primary",
+                            "value": "click_me_123"
+                        },
+                        {
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "emoji": True,
+                                "text": "Shuffle"
+                                },
+                            "value": "click_me_123"
+                        },
+                        {
+                            "type": "button",
+                            "text": {
+                                "type": "plain_text",
+                                "emoji": True,
+                                "text": "Cancel"
+                                },
+                            "style": "danger",
+                            "value": "click_me_123"
+                            }
+                        ]
+                    }
+                ]
+            }
+    return jsonify(resp_data)
