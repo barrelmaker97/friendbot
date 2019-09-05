@@ -91,7 +91,7 @@ def createResponse(sentence):
                                 "text": "Send"
                                 },
                             "style": "primary",
-                            "value": "click_me_123"
+                            "value": "send"
                         },
                         {
                             "type": "button",
@@ -100,7 +100,7 @@ def createResponse(sentence):
                                 "emoji": True,
                                 "text": "Shuffle"
                                 },
-                            "value": "click_me_123"
+                            "value": "shuffle"
                         },
                         {
                             "type": "button",
@@ -110,7 +110,7 @@ def createResponse(sentence):
                                 "text": "Cancel"
                                 },
                             "style": "danger",
-                            "value": "click_me_123"
+                            "value": "cancel"
                             }
                         ]
                     }
