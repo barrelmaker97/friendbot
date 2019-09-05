@@ -20,6 +20,16 @@ except Exception as ex:
     app.logger.error("{} Users not loaded!".format(ex_name))
 
 
+@app.route("/action", methods=['POST'])
+def take_action():
+    data = request.form
+    buttons = data['actions']
+    button = buttons[0]
+    msg = "/action {}".format(button)
+    app.logger.info(msg)
+    return ('', 204)
+
+
 @app.route("/sentence", methods=['POST'])
 def create_sentence():
     data = request.form
