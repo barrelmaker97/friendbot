@@ -1,9 +1,15 @@
-from behave import given, then
+from behave import given, when, then
 
 
 @given('friendbot is running')
 def flask_setup(context):
     assert context.client
+
+
+@when('we make a GET request at {endpoint}')
+def get_endpoint(context, endpoint):
+    context.res = context.client.get(endpoint)
+    assert context.res
 
 
 @then('we will get a {status} status code')

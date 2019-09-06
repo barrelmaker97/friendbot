@@ -1,12 +1,6 @@
 from behave import when, then
 
 
-@when('we make a GET request at {endpoint}')
-def get_endpoint(context, endpoint):
-    context.res = context.client.get(endpoint)
-    assert context.res
-
-
 @when('we make a POST request for {arg0} and {arg1} at {endpoint}')
 def post_two_args(context, arg0, arg1, endpoint):
     data = "{} {}".format(arg0, arg1)

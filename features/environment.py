@@ -9,5 +9,6 @@ def flaskr_client(context, *args, **kwargs):
     yield context.client
 
 
-def before_feature(context, feature):
-    use_fixture(flaskr_client, context)
+def before_tag(context, tag):
+    if tag == "PostStart":
+        use_fixture(flaskr_client, context)

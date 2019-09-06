@@ -9,16 +9,18 @@ try:
     channels = channel_dict.keys()
     app.logger.info("Channels loaded from export")
 except Exception as ex:
-    ex_name = "An exception of type {} occurred.".format(type(ex).__name__)
-    app.logger.error("{} Channels not loaded!".format(ex_name))
+    msg = "An exception of type {} occurred. Channels not loaded!"
+    format_msg = msg.format(type(ex).__name__)
+    app.logger.error(format_msg)
 
 try:
     user_dict = corpus.getUserDict(export)
     users = user_dict.keys()
     app.logger.info("Users loaded from export")
 except Exception as ex:
-    ex_name = "An exception of type {} occurred.".format(type(ex).__name__)
-    app.logger.error("{} Users not loaded!".format(ex_name))
+    msg = "An exception of type {} occurred. Users not loaded!"
+    format_msg = msg.format(type(ex).__name__)
+    app.logger.error(format_msg)
 
 
 @app.route("/action", methods=['POST'])

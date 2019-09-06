@@ -1,3 +1,4 @@
+@PostStart
 Feature: Generating Sentences
 
 	Scenario: Request a sentence with no selections
