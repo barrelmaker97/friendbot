@@ -6,5 +6,6 @@ import json
 def post_two_args(context, endpoint, path):
     with open(path) as f:
         data = json.load(f)
-    context.res = context.client.post(endpoint, data=dict(payload=json.dumps(data)))
+    data_dict = dict(payload=json.dumps(data))
+    context.res = context.client.post(endpoint, data=data_dict)
     assert context.res
