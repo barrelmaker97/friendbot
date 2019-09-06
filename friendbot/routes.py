@@ -25,7 +25,7 @@ except Exception as ex:
 
 @app.route("/action", methods=['POST'])
 def take_action():
-    data = request.get_data().decode('utf8')
+    data = request.form['payload']
     json_data = json.loads(data)
     button_value = json_data['actions'][0]['value']
     msg = "/action Button: {}"
