@@ -28,8 +28,9 @@ def take_action():
     data = request.get_data().decode('utf8')
     json_data = json.loads(data)
     button_value = json_data['actions'][0]['value']
-    msg = "/action {}".format(button_value)
-    app.logger.info(msg)
+    msg = "/action Button: {}"
+    format_msg = msg.format(button_value)
+    app.logger.info(format_msg)
     return ('', 200)
 
 
@@ -58,8 +59,8 @@ def create_sentence():
     resp.headers['Friendbot-User'] = user
     resp.headers['Friendbot-Channel'] = channel
     msg = "/sentence Channel: {} User: {} Error: {} Lines: {}"
-    msg.format(channel, user, error, num_lines)
-    app.logger.info(msg)
+    format_msg = msg.format(channel, user, error, num_lines)
+    app.logger.info(format_msg)
     return resp
 
 
