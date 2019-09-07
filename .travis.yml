@@ -6,6 +6,7 @@ python:
 - '3.7'
 git:
   depth: 3
+cache: pip
 install:
 - pip install behave
 - pip install flask
