@@ -4,6 +4,8 @@ python:
 - '3.5'
 - '3.6'
 - '3.7'
+git:
+  depth: 3
 install:
 - pip install behave
 - pip install flask
