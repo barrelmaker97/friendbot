@@ -28,16 +28,30 @@ def take_action():
     data = request.form["payload"]
     json_data = json.loads(data)
     button_value = json_data["actions"][0]["value"]
-    msg = "/action Button: {}"
-    format_msg = msg.format(button_value)
+    if button_value == "send":
+        # original_text = json_data["container"]["text"]
+        original_text = "You hit the send button"
+        resp = actionSend(original_text)
+        error = "False"
+    elif button_value == "shuffle":
+        resp = errorMessage()
+        error = "False"
+    elif button_value == "cancel":
+        resp = actionCancel()
+        error = "False"
+    else:
+        resp = errorMessage()
+        error = "True"
+    resp.headers["Friendbot-Error"] = error
+    msg = "/action Button: {} Error: {}"
+    format_msg = msg.format(button_value, error)
     app.logger.info(format_msg)
-    return ("", 200)
+    return resp
 
 
 @app.route("/sentence", methods=["POST"])
 def create_sentence():
-    data = request.form
-    params = data["text"].split()
+    params = request.form["text"].split()
     channel = "None"
     user = "None"
     for param in params:
@@ -51,7 +65,7 @@ def create_sentence():
     fulltext = corpus.generateCorpus(export, channel, user, channel_dict, user_dict)
     num_lines = len(fulltext.splitlines(True))
     sentence = corpus.generateSentence(fulltext)
-    resp = createResponse(sentence)
+    resp = createPrompt(sentence)
     error = "False"
     resp.headers["Friendbot-Error"] = error
     resp.headers["Friendbot-Corpus-Lines"] = num_lines
@@ -71,7 +85,26 @@ def errorResponse(ex):
     return resp
 
 
-def createResponse(sentence):
+def errorMessage():
+    resp_data = {
+        "response_type": "ephemeral",
+        "replace_original": False,
+        "text": "Sorry, that didn't work. Please try again.",
+    }
+    return jsonify(resp_data)
+
+
+def actionCancel():
+    resp_data = {"delete_original": True}
+    return jsonify(resp_data)
+
+
+def actionSend(sentence):
+    resp_data = {"replace_original": True, "text": sentence}
+    return jsonify(resp_data)
+
+
+def createPrompt(sentence):
     resp_data = {
         "response_type": "ephemeral",
         "blocks": [
