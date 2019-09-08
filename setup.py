@@ -5,7 +5,7 @@ NAME = "friendbot"
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 version_ns = {}
-with open(os.path.join(HERE, NAME, '__version__.py')) as f:
+with open(os.path.join(HERE, NAME, "__version__.py")) as f:
     exec(f.read(), {}, version_ns)
 
 with open("README.md", "r") as fh:
@@ -15,7 +15,7 @@ desc = "Markov-chain based chatbot which uses Slack messages as its corpus"
 
 setup(
     name="friendbot",
-    version=version_ns['__version__'],
+    version=version_ns["__version__"],
     author="Nolan Cooper",
     author_email="nolancooper97@gmail.com",
     description=desc,
@@ -26,13 +26,9 @@ setup(
     include_package_data=True,
     zip_safe=False,
     packages=find_packages(),
-    python_requires='>=3.4',
+    python_requires=">=3.4",
     keywords="markov chatbot wsgi slack",
-    install_requires=[
-        'flask',
-        'markovify',
-        'requests'
-    ],
+    install_requires=["flask", "markovify", "requests"],
     classifiers=[
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",

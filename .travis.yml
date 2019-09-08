@@ -11,7 +11,7 @@ install:
 - pip install flask markovify requests behave pylama coveralls
 - if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then pip install black; fi
 script:
-- if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then (black --check --diff friendbot features); fi
+- if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then (black --check --diff friendbot features setup.py); fi
 - pylama features/ friendbot/ setup.py
 - coverage run --include="./friendbot/*" -m behave
 after_success: coveralls
