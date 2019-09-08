@@ -1,9 +1,19 @@
 @PostStart
 Feature: Responding to Actions
 
-	Scenario: POST an action
+	Scenario: Send button is pressed
 		Given friendbot is running
-		When we make a POST request at /action using data from ./test_data/action.json
+		When we make a POST request at /action using ./test_data/actions/send.json
+		Then we will get a 200 status code
+
+	Scenario: Shuffle button is pressed
+		Given friendbot is running
+		When we make a POST request at /action using ./test_data/actions/shuffle.json
+		Then we will get a 200 status code
+
+	Scenario: Cancel button is pressed
+		Given friendbot is running
+		When we make a POST request at /action using ./test_data/actions/cancel.json
 		Then we will get a 200 status code
 
 	Scenario: Request at /action with the wrong method

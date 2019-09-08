@@ -25,10 +25,10 @@
 			"action_id": "HtKC",
 			"text": {
 				"type": "plain_text",
-				"text": "Send",
+				"text": "Cancel",
 				"emoji": true
 			},
-			"value": "click_me_123",
+			"value": "cancel",
 			"style": "primary",
 			"action_ts": "1567652620.317279"
 		}
