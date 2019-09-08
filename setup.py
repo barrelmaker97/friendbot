@@ -30,7 +30,8 @@ setup(
     keywords="markov chatbot wsgi slack",
     install_requires=[
         'flask',
-        'markovify'
+        'markovify',
+        'requests'
     ],
     classifiers=[
         "Intended Audience :: Developers",

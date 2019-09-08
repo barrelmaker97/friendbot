@@ -17,7 +17,7 @@
 		"text": "The contents of the original message where the action originated"
 	},
 	"trigger_id": "12466734323.1395872398",
-	"response_url": "https://www.postresponsestome.com/T123567/1509734234",
+	"response_url": "https://httpbin.org/anything",
 	"actions": [
 		{
 			"type": "button",
