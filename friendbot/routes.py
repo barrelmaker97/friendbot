@@ -84,7 +84,7 @@ def actionCancel():
 
 
 def actionSend(sentence):
-    payload = {"replace_original": True, "text": sentence}
+    payload = {"response_type": "in_channel", "delete_original": True, "text": sentence}
     return json.dumps(payload)
 
 
