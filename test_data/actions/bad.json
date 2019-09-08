@@ -1,0 +1,36 @@
+{
+	"type": "block_actions",
+	"team": {
+		"id": "T0CAG",
+		"domain": "acme-creamery"
+	},
+	"user": {
+		"id": "U0CA5",
+		"username": "Amy McGee",
+		"name": "Amy McGee",
+		"team_id": "T3MDE"
+	},
+	"api_app_id": "A0CA5",
+	"token": "Shh_its_a_seekrit",
+	"container": {
+		"type": "message",
+		"text": "The contents of the original message where the action originated"
+	},
+	"trigger_id": "12466734323.1395872398",
+	"response_url": "https://httpbin.org/anything",
+	"actions": [
+		{
+			"type": "button",
+			"block_id": "cMx",
+			"action_id": "HtKC",
+			"text": {
+				"type": "plain_text",
+				"text": "Bad Button",
+				"emoji": true
+			},
+			"value": "bad_value",
+			"style": "primary",
+			"action_ts": "1567652620.317279"
+		}
+	]
+}
