@@ -3,25 +3,11 @@ import requests
 import flask
 import json
 
-export = app.config["EXPORT_DIR"]
-
-try:
-    channel_dict = corpus.getChannelDict(export)
-    channels = channel_dict.keys()
-    app.logger.info("Channels loaded from export")
-except Exception as ex:
-    msg = "An exception of type {} occurred. Channels not loaded!"
-    format_msg = msg.format(type(ex).__name__)
-    app.logger.error(format_msg)
-
-try:
-    user_dict = corpus.getUserDict(export)
-    users = user_dict.keys()
-    app.logger.info("Users loaded from export")
-except Exception as ex:
-    msg = "An exception of type {} occurred. Users not loaded!"
-    format_msg = msg.format(type(ex).__name__)
-    app.logger.error(format_msg)
+export = app.config["EXPORT"]
+channel_dict = app.config["CHANNEL_DICT"]
+channels = app.config["CHANNELS"]
+user_dict = app.config["USER_DICT"]
+users = app.config["USERS"]
 
 
 @app.route("/action", methods=["POST"])
