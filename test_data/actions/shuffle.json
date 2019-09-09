@@ -28,7 +28,7 @@
 				"text": "Shuffle",
 				"emoji": true
 			},
-			"value": "shuffle",
+			"value": "None None",
 			"style": "primary",
 			"action_ts": "1567652620.317279"
 		}

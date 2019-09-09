@@ -28,7 +28,7 @@
 				"text": "Send",
 				"emoji": true
 			},
-			"value": "send",
+			"value": "This is a test sentence",
 			"style": "primary",
 			"action_ts": "1567652620.317279"
 		}

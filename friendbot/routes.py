@@ -20,14 +20,19 @@ def take_action():
     if button_text == "Send":
         payload = actionSend(button_value)
     elif button_text == "Shuffle":
-        payload = errorMessage()
+        params = button_value.split()
+        fulltext = corpus.generateCorpus(
+            export, params[1], params[0], channel_dict, user_dict
+        )
+        sentence = corpus.generateSentence(fulltext)
+        payload = createPrompt(sentence, params[0], params[1])
     elif button_text == "Cancel":
         payload = actionCancel()
     else:
         payload = errorMessage()
     requests.post(response_url, data=payload)
     msg = "/action Button: {}"
-    format_msg = msg.format(button_value)
+    format_msg = msg.format(button_text)
     app.logger.info(format_msg)
     return ("", 200)
 
@@ -48,7 +53,8 @@ def create_sentence():
     fulltext = corpus.generateCorpus(export, channel, user, channel_dict, user_dict)
     num_lines = len(fulltext.splitlines(True))
     sentence = corpus.generateSentence(fulltext)
-    resp = createPrompt(sentence, user, channel)
+    payload = createPrompt(sentence, user, channel)
+    resp = flask.Response(payload, mimetype="application/json")
     error = "False"
     resp.headers["Friendbot-Error"] = error
     resp.headers["Friendbot-Corpus-Lines"] = num_lines
@@ -88,7 +94,8 @@ def actionSend(sentence):
 
 
 def createPrompt(sentence, user, channel):
-    resp_data = {
+    payload = {
+        "delete_original": True,
         "response_type": "ephemeral",
         "blocks": [
             {"type": "section", "text": {"type": "plain_text", "text": sentence}},
@@ -120,4 +127,4 @@ def createPrompt(sentence, user, channel):
             },
         ],
     }
-    return flask.jsonify(resp_data)
+    return json.dumps(payload)
