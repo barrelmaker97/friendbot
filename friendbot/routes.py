@@ -15,14 +15,13 @@ def take_action():
     data = flask.request.form["payload"]
     json_data = json.loads(data)
     button_value = json_data["actions"][0]["value"]
+    button_text = json_data["actions"][0]["text"]["text"]
     response_url = json_data["response_url"]
-    if button_value == "send":
-        # original_text = json_data["container"]["text"]
-        original_text = "You hit the send button"
-        payload = actionSend(original_text)
-    elif button_value == "shuffle":
+    if button_text == "Send":
+        payload = actionSend(button_value)
+    elif button_text == "Shuffle":
         payload = errorMessage()
-    elif button_value == "cancel":
+    elif button_text == "Cancel":
         payload = actionCancel()
     else:
         payload = errorMessage()
@@ -49,7 +48,7 @@ def create_sentence():
     fulltext = corpus.generateCorpus(export, channel, user, channel_dict, user_dict)
     num_lines = len(fulltext.splitlines(True))
     sentence = corpus.generateSentence(fulltext)
-    resp = createPrompt(sentence)
+    resp = createPrompt(sentence, user, channel)
     error = "False"
     resp.headers["Friendbot-Error"] = error
     resp.headers["Friendbot-Corpus-Lines"] = num_lines
@@ -88,7 +87,7 @@ def actionSend(sentence):
     return json.dumps(payload)
 
 
-def createPrompt(sentence):
+def createPrompt(sentence, user, channel):
     resp_data = {
         "response_type": "ephemeral",
         "blocks": [
@@ -100,7 +99,7 @@ def createPrompt(sentence):
                         "type": "button",
                         "text": {"type": "plain_text", "emoji": True, "text": "Send"},
                         "style": "primary",
-                        "value": "send",
+                        "value": sentence,
                     },
                     {
                         "type": "button",
@@ -109,7 +108,7 @@ def createPrompt(sentence):
                             "emoji": True,
                             "text": "Shuffle",
                         },
-                        "value": "shuffle",
+                        "value": "{} {}".format(user, channel),
                     },
                     {
                         "type": "button",
