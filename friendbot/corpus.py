@@ -32,7 +32,9 @@ def getChannelDict(export):
 
 def parseArg(arg, options):
     try:
-        result = re.search("<.(.*)>", arg)
+        fix = arg.replace("&lt;", "<")
+        fix = fix.replace("&gt;", ">")
+        result = re.search("<.(.*)>", fix)
         clean = result.group(1)
         params = clean.split("|")
         final = params[0]

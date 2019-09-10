@@ -18,6 +18,14 @@ Feature: Generating Sentences
 		And we will get a Friendbot-Channel: CCF28A75J header
 		And we will get a Friendbot-User: None header
 
+	Scenario: Request a sentence using a specific channel with different formatting
+		Given friendbot is running
+		When we make a POST request for &lt;#CCF28A75J|channel&gt; at /sentence
+		Then we will get a 200 status code
+		And we will get a Friendbot-Error: False header
+		And we will get a Friendbot-Channel: CCF28A75J header
+		And we will get a Friendbot-User: None header
+
 	Scenario: Request a sentence using a specific user
 		Given friendbot is running
 		When we make a POST request for <@UCF55PTPV|user> at /sentence
@@ -37,6 +45,22 @@ Feature: Generating Sentences
 	Scenario: Request a sentence using a specific user and channel
 		Given friendbot is running
 		When we make a POST request for <@UCF55PTPV|user> and <#CCF28A75J|channel> at /sentence
+		Then we will get a 200 status code
+		And we will get a Friendbot-Error: False header
+		And we will get a Friendbot-Channel: CCF28A75J header
+		And we will get a Friendbot-User: UCF55PTPV header
+
+	Scenario: Request a sentence using a specific channel and user with different formatting
+		Given friendbot is running
+		When we make a POST request for &lt;#CCF28A75J|channel&gt; and <@UCF55PTPV|user> at /sentence
+		Then we will get a 200 status code
+		And we will get a Friendbot-Error: False header
+		And we will get a Friendbot-Channel: CCF28A75J header
+		And we will get a Friendbot-User: UCF55PTPV header
+
+	Scenario: Request a sentence using a specific user and channel with different formatting
+		Given friendbot is running
+		When we make a POST request for <@UCF55PTPV|user> and &lt;#CCF28A75J|channel&gt; at /sentence
 		Then we will get a 200 status code
 		And we will get a Friendbot-Error: False header
 		And we will get a Friendbot-Channel: CCF28A75J header
