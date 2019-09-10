@@ -17,6 +17,8 @@ def take_action():
     button_value = json_data["actions"][0]["value"]
     button_text = json_data["actions"][0]["text"]["text"]
     response_url = json_data["response_url"]
+    headers = {"Content-type": "application/json", "Accept": "text/plain"}
+    error = "False"
     if button_text == "Send":
         payload = actionSend(button_value)
     elif button_text == "Shuffle":
@@ -29,10 +31,12 @@ def take_action():
     elif button_text == "Cancel":
         payload = actionCancel()
     else:
+        error = "True"
         payload = errorMessage()
-    requests.post(response_url, data=payload)
-    msg = "/action Button: {}"
-    format_msg = msg.format(button_text)
+    headers.update({"Friendbot-Error": error})
+    requests.post(response_url, data=payload, headers=headers)
+    msg = "/action Button: {} Error: {}"
+    format_msg = msg.format(button_text, error)
     app.logger.info(format_msg)
     return ("", 200)
 
