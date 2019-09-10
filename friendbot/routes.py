@@ -99,7 +99,7 @@ def actionSend(sentence):
 
 def createPrompt(sentence, user, channel):
     payload = {
-        "delete_original": True,
+        "replace_original": True,
         "response_type": "ephemeral",
         "blocks": [
             {"type": "section", "text": {"type": "plain_text", "text": sentence}},
