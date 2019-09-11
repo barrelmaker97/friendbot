@@ -17,10 +17,12 @@ def take_action():
     button_value = json_data["actions"][0]["value"]
     button_text = json_data["actions"][0]["text"]["text"]
     response_url = json_data["response_url"]
+    user_id = json_data["user"]["id"]
+    real_name = user_dict[user_id]
     headers = {"Content-type": "application/json", "Accept": "text/plain"}
     error = "False"
     if button_text == "Send":
-        payload = actionSend(button_value)
+        payload = actionSend(button_value, real_name)
     elif button_text == "Shuffle":
         params = button_value.split()
         fulltext = corpus.generateCorpus(
@@ -35,8 +37,8 @@ def take_action():
         payload = errorMessage()
     headers.update({"Friendbot-Error": error})
     requests.post(response_url, data=payload, headers=headers)
-    msg = "/action Button: {} Error: {}"
-    format_msg = msg.format(button_text, error)
+    msg = "/action User: {} ({}) Button: {} Error: {}"
+    format_msg = msg.format(user_id, real_name, button_text, error)
     app.logger.info(format_msg)
     return ("", 200)
 
@@ -92,7 +94,8 @@ def actionCancel():
     return json.dumps(payload)
 
 
-def actionSend(sentence):
+def actionSend(sentence, real_name):
+    context_msg = "Sent by {}".format(real_name)
     payload = {
         "delete_original": True,
         "response_type": "in_channel",
@@ -100,7 +103,7 @@ def actionSend(sentence):
             {"type": "section", "text": {"type": "plain_text", "text": sentence}},
             {
                 "type": "context",
-                "elements": [{"type": "plain_text", "text": "This is context"}],
+                "elements": [{"type": "plain_text", "text": context_msg}],
             },
         ],
     }
