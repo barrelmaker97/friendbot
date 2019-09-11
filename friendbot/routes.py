@@ -93,7 +93,17 @@ def actionCancel():
 
 
 def actionSend(sentence):
-    payload = {"response_type": "in_channel", "delete_original": True, "text": sentence}
+    payload = {
+        "delete_original": True,
+        "response_type": "in_channel",
+        "blocks": [
+            {"type": "section", "text": {"type": "plain_text", "text": sentence}},
+            {
+                "type": "context",
+                "elements": [{"type": "plain_text", "text": "This is context"}],
+            },
+        ],
+    }
     return json.dumps(payload)
 
 
