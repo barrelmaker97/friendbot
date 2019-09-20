@@ -5,10 +5,9 @@ git:
   depth: 3
 cache: pip
 install:
-- pip install flask markovify requests behave pylama coveralls
-- if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then pip install black; fi
+- pip install flask markovify requests behave pylama coveralls black
 script:
-- if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then (black --check --diff friendbot features); fi
-- pylama features/ friendbot/
+- black --check --diff friendbot features
+- pylama features friendbot
 - coverage run --include="./friendbot/*" -m behave
 after_success: coveralls
