@@ -11,16 +11,7 @@ install:
 - pip install flask markovify requests behave pylama coveralls
 - if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then pip install black; fi
 script:
-- if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then (black --check --diff friendbot features setup.py); fi
-- pylama features/ friendbot/ setup.py
+- if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then (black --check --diff friendbot features); fi
+- pylama features/ friendbot/
 - coverage run --include="./friendbot/*" -m behave
 after_success: coveralls
-deploy:
-  provider: pypi
-  user: barrelmaker97
-  password:
-    secure: EVlChkASoQuNRpjlLhf9tAhfqmVOLUtlyY1wWIHY+C1ZR/S101Kkvu5Hy3btcR2Esd/8L/Xxczx1dLBVByZ5l2LXMMnoPdsMzlgUYwMpD6vPd5M72c8C7JcqSMbD/M4ZKp4CrynKVlGAsKWc9NXpPRPIBtwMxAMvOpgeET4b9deQQygMEH8YptyvZXCeXfKoSFfVyGX3F2H5HxzvQulApZCQIS2X/9iD7iiY+lm5A4qTkcQGbGjudFwHS4IHTqJGZf78tUWlT+g0ujZjgAcKcOURDI3+gcaLfhnFEjclI64afC97lvdcbJRxF8O+/Ixv8xOS7tievkeSCtbTmnNc8R2MhFcSkt4mAl1M0p4TBvmK5WL0cdNsnlQWlXNnZWcfbOr2wriyfzYZXFVqkAPWGtfSwrNRFN1Pqc3sOsSQgPT8mO6m7aUkaLDQpqc1k8WO4MTrY3nbebtJJWGrfyLza9ZAOVObfn+9iM6MJNxNeFc/UMS1Bvktdv91VBeXV7aUz3bXWIALt+UPqptqQ7DRiVF37Mk8sLHV0C5TZg8QhyD9v2/00wuDvzd/XhxKqcSMIz/s+eKXuDGQ5dJfowA0eJ5OSW6JTRI/N2am9N7313rnyzHfGJSyT8xdGtwYYvUHMv7Lw9n3B1SlB4gN2RoEU/tD6ORFBerBEQa5GXQiUyQ=
-  distributions: "sdist bdist_wheel"
-  skip_existing: true
-  on:
-    tags: true
