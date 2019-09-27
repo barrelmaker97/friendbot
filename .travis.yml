@@ -5,7 +5,8 @@ python:
 services:
 - docker
 before_install:
-- docker build -t $DOCKER_USERNAME/friendbot .
+- docker build -t barrelmaker97/friendbot .
+- docker run -v $(realpath ./test_data/export):/export barrelmaker97/friendbot
 git:
   depth: 3
 cache: pip
@@ -17,5 +18,5 @@ script:
 - coverage run --include="./friendbot/*" -m behave
 after_success:
 - coveralls
-- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-- docker push $DOCKER_USERNAME/friendbot:latest
+- echo "$DOCKER_PASSWORD" | docker login -u "barrelmaker97" --password-stdin
+- docker push barrelmaker97/friendbot:latest
