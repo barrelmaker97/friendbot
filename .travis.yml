@@ -1,6 +1,10 @@
 language: python
 python:
 - '3.7'
+services:
+- docker
+before_install:
+- docker build -t barrelmaker/friendbot .
 git:
   depth: 3
 cache: pip
@@ -10,4 +14,10 @@ script:
 - black --check --diff friendbot features
 - pylama features friendbot
 - coverage run --include="./friendbot/*" -m behave
-after_success: coveralls
+after_success:
+- coveralls
+- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+- docker push barrelmaker97/friendbot:latest
+env:
+  global:
+    secure: RF3OaHZdaKIbiY7bPnEmBn1Y9aOJRmThtNVorxJWFDekjUBbD4WvJVWJY5JJLi1cPiFyafhUpvysnTE5w6H1Q+tLJn6DuwVIWb7Mjbx/+9ylJvDR3agcTanDjTXLT7qgR6MLS1jDHwsz+880u1A0EvcFy5NoW5Nw7v13D3cmncxDWWeCtS+C4ww2J+6/h9IVfyeek6FrZsAyNVQZGRoAtfqMJ5NPGjBHzfkVIPSKslmbb3OrEIFUPvB4/JT0XEM6sgsCL86TRlmTVM3wZBdi52LRlPqDHLZFNscJuGq4KM3z0zzXn5svWJwjTRrkhtOhHT7KvtQFRN5x5lIXphRGj3woluJWjvTRpg3h/+Ks6UCuCuU9c7SCGAL/N4pNjHbD92tWciwb5bsHgJkypB7M5WnlYsqH3fu5NdoH2FeByRXtXkdF1dgr9+ssG8rxTdZE3pWyE+MPhX32JkZcmKN4RWsvpBZDZ/AnnIZuuD58DXOSUEJnlB49vtznRsgZ2SiOemDJI4JU/Pf1r0Xg8RqWb/gkeebpILYSVQsr5827T0okVmMeQwcDn54C0rNq3+Kda/ew9BeqEziLBUfE/lqwDvUMkzy6M8Bar4t/g5wkUUA9dqK4XBvw61oiJqevu71b7i8ayrRPkvBwzHvndjisxSQG9f8t+GDjMmsEmo1DOFE=
