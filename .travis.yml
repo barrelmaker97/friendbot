@@ -6,7 +6,7 @@ services:
   - docker
 before_install:
   - docker build -t barrelmaker97/friendbot .
-  - docker run -d -v $(realpath ./test_data/export):/export barrelmaker97/friendbot
+  - docker run -d -p 127.0.0.1:5000:5000 -v $(realpath ./test_data/export):/export barrelmaker97/friendbot
 git:
   depth: 3
 cache: pip
