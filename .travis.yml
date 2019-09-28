@@ -2,10 +2,12 @@ language: python
 dist: bionic
 python:
   - '3.7'
+env:
+  - BASE_IMAGE=python:3.7-alpine
 services:
   - docker
 before_install:
-  - docker build -t barrelmaker97/friendbot .
+  - docker build -t barrelmaker97/friendbot --build-arg BASE_IMAGE=$BASE_IMAGE .
   - docker run -d -p 127.0.0.1:5000:5000 -v $(realpath ./test_data/export):/export barrelmaker97/friendbot
 git:
   depth: 3
