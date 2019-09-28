@@ -9,6 +9,8 @@ services:
   - docker
 before_install:
   - ./docker-setup.sh
+  - docker build -t barrelmaker97/friendbot:$IMAGE_TAG --build-arg BASE_IMAGE=$BASE_IMAGE .
+  - docker run -d -p 127.0.0.1:5000:5000 -v $(realpath ./test_data/export):/export barrelmaker97/friendbot:$IMAGE_TAG
 git:
   depth: 3
 cache: pip
