@@ -2,3 +2,4 @@ venv/
 .coverage
 *.pyc
 __pycache__/
+qemu*

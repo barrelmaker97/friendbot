@@ -1,5 +1,6 @@
 ARG BASE_IMAGE
 FROM $BASE_IMAGE
+COPY ./Dockerfile ./qemu-arm-static* /usr/bin/
 ENV EXPORT_DIR /export
 WORKDIR /app
 COPY ./requirements.txt /app

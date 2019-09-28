@@ -1,3 +1,5 @@
 *
 !requirements.txt
 !friendbot/
+!qemu-arm-static
+!Dockerfile
