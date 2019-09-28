@@ -7,16 +7,15 @@ env:
   - BASE_IMAGE=arm32v7/python:3.7-alpine IMAGE_TAG=arm32v7
 services:
   - docker
-before_install:
-  - ./docker-setup.sh
-  - docker build -t barrelmaker97/friendbot:$IMAGE_TAG --build-arg BASE_IMAGE=$BASE_IMAGE .
-  - docker run -d -p 127.0.0.1:5000:5000 -v $(realpath ./test_data/export):/export barrelmaker97/friendbot:$IMAGE_TAG
 git:
   depth: 3
 cache: pip
 install:
   - pip install flask markovify requests behave pylama coveralls black
 script:
+  - if [[ $IMAGE_TAG == "arm32v7" ]]; then (docker run --rm --privileged multiarch/qemu-user-static:register); fi
+  - docker build -t barrelmaker97/friendbot:$IMAGE_TAG --build-arg BASE_IMAGE=$BASE_IMAGE .
+  - docker run -d -p 127.0.0.1:5000:5000 -v $(realpath ./test_data/export):/export barrelmaker97/friendbot:$IMAGE_TAG
   - black --check --diff friendbot features
   - pylama features friendbot
   - coverage run --include="./friendbot/*" -m behave
