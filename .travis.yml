@@ -15,10 +15,9 @@ git:
   depth: 3
 cache: pip
 install:
-  - pip install flask markovify requests behave pylama coveralls black
+  - pip install flask markovify requests behave coveralls black
 script:
   - black --check --diff friendbot features
-  - pylama features friendbot
   - coverage run --include="./friendbot/*" -m behave
 after_success:
   - coveralls
