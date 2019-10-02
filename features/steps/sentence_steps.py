@@ -4,14 +4,18 @@ from behave import when, then
 @when("we make a POST request for {arg0} and {arg1} at {endpoint}")
 def post_two_args(context, arg0, arg1, endpoint):
     text = "{} {}".format(arg0, arg1)
-    context.res = context.client.post(endpoint, data=dict(text=text, user_id="UCF55PTPV"))
+    context.res = context.client.post(
+        endpoint, data=dict(text=text, user_id="UCF55PTPV")
+    )
     assert context.res
 
 
 @when("we make a POST request for {arg0} at {endpoint}")
 def post_one_arg(context, arg0, endpoint):
     text = arg0
-    context.res = context.client.post(endpoint, data=dict(text=text, user_id="UCF55PTPV"))
+    context.res = context.client.post(
+        endpoint, data=dict(text=text, user_id="UCF55PTPV")
+    )
     assert context.res
 
 
