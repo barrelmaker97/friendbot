@@ -37,14 +37,16 @@ def take_action():
         payload = errorMessage()
     headers.update({"Friendbot-Error": error})
     requests.post(response_url, data=payload, headers=headers)
-    msg = "/action User: {} ({}) Button: {} Error: {}"
-    format_msg = msg.format(user_id, real_name, button_text, error)
+    msg = "{} ({}) pressed {} Error: {}"
+    format_msg = msg.format(real_name, user_id, button_text, error)
     app.logger.info(format_msg)
     return ("", 200)
 
 
 @app.route("/sentence", methods=["POST"])
 def create_sentence():
+    user_id = flask.request.form["user_id"]
+    real_name = user_dict[user_id]
     params = flask.request.form["text"].split()
     channel = "None"
     user = "None"
@@ -66,8 +68,8 @@ def create_sentence():
     resp.headers["Friendbot-Corpus-Lines"] = num_lines
     resp.headers["Friendbot-User"] = user
     resp.headers["Friendbot-Channel"] = channel
-    msg = "/sentence Channel: {} User: {} Error: {} Lines: {}"
-    format_msg = msg.format(channel, user, error, num_lines)
+    msg = "{} ({}) generated a sentence; Channel: {} User: {} Lines: {} Error: {}"
+    format_msg = msg.format(real_name, user_id, channel, user, num_lines, error)
     app.logger.info(format_msg)
     return resp
 
