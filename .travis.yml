@@ -2,25 +2,35 @@ language: python
 dist: bionic
 python:
   - '3.7'
-env:
-  - BASE_IMAGE=python:3.7-alpine IMAGE_TAG=amd64
-  - BASE_IMAGE=arm32v7/python:3.7-alpine IMAGE_TAG=arm32v7
 services:
   - docker
-before_install:
-  - bash docker-setup.sh
-  - docker build -t barrelmaker97/friendbot:$IMAGE_TAG --build-arg BASE_IMAGE=$BASE_IMAGE .
-  - docker run -d -p 127.0.0.1:5000:5000 -v $(realpath ./test_data/export):/export barrelmaker97/friendbot:$IMAGE_TAG
 git:
   depth: 3
-cache: pip
-install:
-  - pip install flask markovify requests behave coveralls black
-script:
-  - black --check --diff friendbot features
-  - coverage run --include="./friendbot/*" -m behave
-after_success:
-  - coveralls
-deploy:
-  provider: script
-  script: bash deploy.sh
+cache:
+  - pip
+addons:
+  apt:
+    packages:
+      - docker-ce
+jobs:
+  include:
+    - stage: "Build, Test, Deploy"
+      env:
+        - BASE_IMAGE=python:3.7-alpine IMAGE_TAG=amd64
+        - BASE_IMAGE=arm32v7/python:3.7-alpine IMAGE_TAG=arm
+      before_install:
+        - bash docker-setup.sh
+        - docker build -t barrelmaker97/friendbot:$IMAGE_TAG --build-arg BASE_IMAGE=$BASE_IMAGE .
+        - docker run -d -p 127.0.0.1:5000:5000 -v $(realpath ./test_data/export):/export barrelmaker97/friendbot:$IMAGE_TAG
+      install:
+        - pip install flask markovify requests behave coveralls black
+      script:
+        - black --check --diff friendbot features
+        - coverage run --include="./friendbot/*" -m behave
+      after_success:
+        - coveralls
+      deploy:
+        provider: script
+        script: bash deploy.sh
+    - stage: "Deploy Manifest"
+      script: manifest.sh
