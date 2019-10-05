@@ -19,8 +19,6 @@ jobs:
         - BASE_IMAGE=python:3.7-alpine IMAGE_TAG=amd64
       before_install:
         - bash docker-setup.sh
-        - docker build -t barrelmaker97/friendbot:$IMAGE_TAG --build-arg BASE_IMAGE=$BASE_IMAGE .
-        - docker run -d -p 127.0.0.1:5000:5000 -v $(realpath ./test_data/export):/export barrelmaker97/friendbot:$IMAGE_TAG
       install:
         - pip install flask markovify requests behave coveralls black
       script:
@@ -30,16 +28,12 @@ jobs:
         - coveralls
       deploy:
         provider: script
-        script:
-          - echo "$DOCKER_PASSWORD" | docker login -u "barrelmaker97" --password-stdin
-          - docker push barrelmaker97/friendbot:$IMAGE_TAG
+        script: bash deploy.sh
     - stage: "Build, Test, Deploy - arm"
       env:
         - BASE_IMAGE=arm32v7/python:3.7-alpine IMAGE_TAG=arm
       before_install:
         - bash docker-setup.sh
-        - docker build -t barrelmaker97/friendbot:$IMAGE_TAG --build-arg BASE_IMAGE=$BASE_IMAGE .
-        - docker run -d -p 127.0.0.1:5000:5000 -v $(realpath ./test_data/export):/export barrelmaker97/friendbot:$IMAGE_TAG
       install:
         - pip install flask markovify requests behave coveralls black
       script:
@@ -49,9 +43,7 @@ jobs:
         - coveralls
       deploy:
         provider: script
-        script:
-          - echo "$DOCKER_PASSWORD" | docker login -u "barrelmaker97" --password-stdin
-          - docker push barrelmaker97/friendbot:$IMAGE_TAG
+        script: bash deploy.sh
     - stage: "Deploy Manifest"
       script:
         - export DOCKER_CLI_EXPERIMENTAL=enabled
