@@ -17,6 +17,18 @@ jobs:
     - stage: "Build, Test, Deploy"
       env:
         - BASE_IMAGE=python:3.7-alpine IMAGE_TAG=amd64
+      before_install:
+        - bash docker-setup.sh
+      install:
+        - pip install flask markovify requests behave coveralls black
+      script:
+        - black --check --diff friendbot features
+        - coverage run --include="./friendbot/*" -m behave
+      after_success:
+        - coveralls
+      deploy:
+        provider: script
+        script: bash deploy.sh
       env:
         - BASE_IMAGE=arm32v7/python:3.7-alpine IMAGE_TAG=arm
       before_install:
