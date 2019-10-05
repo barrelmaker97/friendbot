@@ -45,4 +45,4 @@ jobs:
         provider: script
         script: bash deploy.sh
     - stage: "Deploy Manifest"
-      script: manifest.sh
+      script: bash manifest.sh
