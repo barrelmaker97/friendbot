@@ -3,11 +3,11 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 # friendbot
-Friendbot is a Markov-chain based chatbot which uses Slack messages as its corpus. It reads in messages from a Slack data export, generates a corpus from them, and feeds this to a markov chain generator to naively simulate a conversation. It is a WSGI application, built with [Flask](https://github.com/pallets/flask), designed to be served with a WSGI HTTP server such as [Gunicorn](https://github.com/benoitc/gunicorn). The sentences which it generates can be accessed via an API.
+Friendbot is a Markov-chain based chatbot which uses Slack messages as its corpus. It reads in messages from a Slack data export, generates a corpus from them, and feeds this to a markov chain generator to naively simulate a conversation. It is built with [Flask](https://github.com/pallets/flask), served by [Gunicorn](https://github.com/benoitc/gunicorn), and run in Docker. The sentences which it generates can be accessed via an API which is designed to connect to the existing Slack API.
 
 ## Installation
 ```
-docker run -v <your slack export>:/export barrelmaker97/friendbot
+docker run -d -p <your chosen port>:5000 -v <your slack export>:/export barrelmaker97/friendbot
 ```
 
 ## API
