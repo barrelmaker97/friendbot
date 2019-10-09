@@ -20,11 +20,9 @@ jobs:
       before_install:
         - bash docker-setup.sh
         - docker build -t barrelmaker97/friendbot:$IMAGE_TAG --build-arg BASE_IMAGE=$BASE_IMAGE .
-        - docker run -d -p 127.0.0.1:5000:5000 -v $(realpath ./test_data/export):/export barrelmaker97/friendbot:$IMAGE_TAG
       install:
-        - pip install flask markovify requests behave coveralls black
+        - pip install flask markovify requests behave coveralls
       script:
-        - black --check --diff friendbot features
         - coverage run --include="./friendbot/*" -m behave
       after_success:
         - coveralls
@@ -37,11 +35,9 @@ jobs:
       before_install:
         - bash docker-setup.sh
         - docker build -t barrelmaker97/friendbot:$IMAGE_TAG --build-arg BASE_IMAGE=$BASE_IMAGE .
-        - docker run -d -p 127.0.0.1:5000:5000 -v $(realpath ./test_data/export):/export barrelmaker97/friendbot:$IMAGE_TAG
       install:
-        - pip install flask markovify requests behave coveralls black
+        - pip install flask markovify requests behave coveralls
       script:
-        - black --check --diff friendbot features
         - coverage run --include="./friendbot/*" -m behave
       after_success:
         - coveralls
