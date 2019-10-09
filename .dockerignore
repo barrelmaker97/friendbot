@@ -3,3 +3,5 @@
 !friendbot/
 !qemu-arm-static
 !Dockerfile
+!features/
+!test_data/
