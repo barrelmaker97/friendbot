@@ -30,10 +30,12 @@ jobs:
         script: bash deploy.sh
     - stage: "Build, Test, Deploy - arm"
       env:
-        - BASE_IMAGE=arm32v7/python:3.7-alpine IMAGE_TAG=arm
+        - IMAGE_TAG=arm
       before_install:
-        - bash docker-setup.sh
-        - docker build -t barrelmaker97/friendbot:$IMAGE_TAG --build-arg BASE_IMAGE=$BASE_IMAGE .
+        - docker run --rm --privileged multiarch/qemu-user-static:register
+        - wget https://github.com/multiarch/qemu-user-static/releases/download/v4.1.0-1/qemu-arm-static.tar.gz -O ./qemu-arm-static.tar.gz
+        - tar zxvf ./qemu-arm-static.tar.gz -C ./
+        - docker build -t barrelmaker97/friendbot:$IMAGE_TAG --build-arg BASE_IMAGE=arm32v7/python:3.7-alpine .
       install:
         - pip install flask markovify requests behave coveralls
       script:
