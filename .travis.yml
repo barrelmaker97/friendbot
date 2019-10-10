@@ -14,18 +14,27 @@ addons:
       - docker-ce
 jobs:
   include:
-    - stage: "Build, Test, Deploy"
+    - stage: "Build, Test, Deploy - amd64"
+      env:
+        - IMAGE_TAG=amd64
       script:
-        - docker build -t barrelmaker97/friendbot:amd64 .
-      script:
-        - docker run --rm --privileged multiarch/qemu-user-static:register
-        - wget https://github.com/multiarch/qemu-user-static/releases/download/v4.1.0-1/qemu-arm-static.tar.gz -O ./qemu-arm-static.tar.gz
-        - tar zxvf ./qemu-arm-static.tar.gz -C ./
-        - docker build -t barrelmaker97/friendbot:arm --build-arg BASE_IMAGE=arm32v7/python:3.7-alpine .
-      script:
+        - docker build -t barrelmaker97/friendbot:$IMAGE_TAG .
+      after_success:
         - pip install flask markovify requests behave coveralls
         - coverage run --include="./friendbot/*" -m behave
         - coveralls
+      deploy:
+        provider: script
+        script: bash deploy.sh
+    - stage: "Build, Test, Deploy - arm"
+      env:
+        - IMAGE_TAG=arm
+      install:
+        - docker run --rm --privileged multiarch/qemu-user-static:register
+        - wget https://github.com/multiarch/qemu-user-static/releases/download/v4.1.0-1/qemu-arm-static.tar.gz -O ./qemu-arm-static.tar.gz
+        - tar zxvf ./qemu-arm-static.tar.gz -C ./
+      script:
+        - docker build -t barrelmaker97/friendbot:$IMAGE_TAG --build-arg BASE_IMAGE=arm32v7/python:3.7-alpine .
       deploy:
         provider: script
         script: bash deploy.sh
