@@ -14,11 +14,10 @@ RUN pip install -r requirements.txt --no-cache-dir
 
 FROM dependencies as test
 COPY ./features /app/features
-COPY ./test_data /app/test_data
-ENV EXPORT_DIR /app/test_data/export
+COPY ./test_data/actions /app/test_data/actions
+COPY ./test_data/export /export
 RUN pip install behave
 RUN behave
 
 FROM dependencies as release
-ENV EXPORT_DIR /export
 CMD ["gunicorn", "-w 4", "-b 0.0.0.0:5000", "friendbot:app"]

@@ -10,8 +10,7 @@ if __name__ != "__main__":
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
 
-app.config["EXPORT"] = path.expanduser(environ["EXPORT_DIR"])
-app.logger.info("Export can be found at {}".format(app.config["EXPORT"]))
+app.config["EXPORT"] = "/export"
 
 try:
     app.config["CHANNEL_DICT"] = corpus.getChannelDict(app.config["EXPORT"])
