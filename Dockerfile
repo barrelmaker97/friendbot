@@ -15,7 +15,7 @@ RUN pip install -r requirements.txt --no-cache-dir
 FROM dependencies as test
 COPY ./features /app/features
 COPY ./test_data/actions /app/test_data/actions
-COPY ./test_data/export /export
+COPY ./test_data/export.zip /export
 RUN pip install behave
 RUN behave
 

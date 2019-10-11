@@ -19,10 +19,6 @@ jobs:
         - IMAGE_TAG=amd64
       script:
         - docker build -t barrelmaker97/friendbot:$IMAGE_TAG .
-      after_success:
-        - pip install flask markovify requests behave coveralls
-        - coverage run --include="./friendbot/*" -m behave
-        - coveralls
       deploy:
         provider: script
         script: bash deploy.sh
