@@ -1,6 +1,5 @@
 ARG BASE_IMAGE=python:3.7-alpine
 FROM $BASE_IMAGE as base
-COPY ./Dockerfile ./qemu-arm-static* /usr/bin/
 COPY ./friendbot/ /app/friendbot
 
 FROM base as lint
