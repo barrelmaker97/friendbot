@@ -11,8 +11,6 @@ if __name__ != "__main__":
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
 
-with ZipFile("/export", "r") as zip_object:
-    zip_object.extractall("/export_unzip")
 app.config["EXPORT"] = "/export_unzip"
 
 try:

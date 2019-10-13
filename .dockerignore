@@ -1,7 +1,6 @@
 *
 !requirements.txt
 !friendbot/
-!qemu-arm-static
-!Dockerfile
 !features/
 !test_data/
+!gunicorn_config.py
