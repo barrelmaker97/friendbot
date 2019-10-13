@@ -4,7 +4,7 @@ COPY ./friendbot/ /app/friendbot
 COPY ./gunicorn_config.py /app
 
 FROM base as lint
-RUN pip install black
+RUN pip install black --no-cache-dir
 RUN black --check --diff /app
 
 FROM base as dependencies
@@ -16,7 +16,7 @@ FROM dependencies as test
 COPY ./features /app/features
 COPY ./test_data/actions /app/test_data/actions
 COPY ./test_data/export /export_unzip
-RUN pip install behave
+RUN pip install behave --no-cache-dir
 RUN behave
 
 FROM dependencies as release
