@@ -3,14 +3,14 @@ services:
   - docker
 git:
   depth: 3
-addons:
-  apt:
-    packages:
-      - docker-ce
 jobs:
   include:
     - stage: "amd64"
       dist: bionic
+      addons:
+        apt:
+          packages:
+            - docker-ce
       env:
         - IMAGE_TAG=amd64
       script:
