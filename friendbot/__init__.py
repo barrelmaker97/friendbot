@@ -11,11 +11,9 @@ if __name__ != "__main__":
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
 
-if not path.exists("/export_unzip"):
-    app.logger.info("Unzipping export")
-    with ZipFile("/export", "r") as zip_object:
-        zip_object.extractall("/export_unzip")
-    app.config["EXPORT"] = "/export_unzip"
+with ZipFile("/export", "r") as zip_object:
+    zip_object.extractall("/export_unzip")
+app.config["EXPORT"] = "/export_unzip"
 
 try:
     app.config["CHANNEL_DICT"] = corpus.getChannelDict(app.config["EXPORT"])
