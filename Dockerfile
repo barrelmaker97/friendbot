@@ -20,4 +20,4 @@ RUN pip install behave --no-cache-dir
 RUN behave
 
 FROM dependencies as release
-CMD ["gunicorn", "-w 4", "-b 0.0.0.0:5000", "-c gunicorn_config.py", "friendbot:app"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "-c", "gunicorn_config.py", "friendbot:app"]
