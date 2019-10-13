@@ -28,3 +28,4 @@ jobs:
       deploy:
         provider: script
         script: bash deploy.sh
+        edge: true
