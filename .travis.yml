@@ -5,8 +5,6 @@ services:
   - docker
 git:
   depth: 3
-cache:
-  - pip
 addons:
   apt:
     packages:
