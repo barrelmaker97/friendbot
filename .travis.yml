@@ -1,3 +1,4 @@
+os: linux
 language: minimal
 services:
   - docker
@@ -15,16 +16,13 @@ jobs:
         - IMAGE_TAG=amd64
       script:
         - docker build -t barrelmaker97/friendbot:$IMAGE_TAG .
-      deploy:
-        provider: script
-        script: bash deploy.sh
+      after_success:
+        - bash deploy.sh
     - stage: "arm"
-      os: linux
       arch: arm64
       env:
         - IMAGE_TAG=arm
       script:
         - docker build -t barrelmaker97/friendbot:$IMAGE_TAG --build-arg BASE_IMAGE=arm32v7/python:3.7-alpine .
-      deploy:
-        provider: script
-        script: bash deploy.sh
+      after_success:
+        - bash deploy.sh
