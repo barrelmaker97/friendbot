@@ -1,6 +1,7 @@
 from pathlib import Path
 import json
 import re
+import sys
 import markovify
 
 regex = re.compile(r'<(?:[^"\\]|\\.)*>', re.IGNORECASE)
@@ -87,3 +88,16 @@ def generateSentence(corpus):
     sentence = text_model.make_sentence(tries=100)
     if type(sentence) == str:
         return sentence
+
+
+if __name__ == "__main__":
+    channel = "None"
+    user = "None"
+    export = sys.argv[1]
+    channel_dict = getChannelDict(export)
+    channels = channel_dict.keys()
+    user_dict = getUserDict(export)
+    users = user_dict.keys()
+    fulltext = generateCorpus(export, channel, user, channel_dict, user_dict)
+    num_lines = len(fulltext.splitlines(True))
+    sentence = generateSentence(fulltext)
