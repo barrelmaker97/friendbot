@@ -1,5 +1,5 @@
 from pathlib import Path
-import json
+import ujson
 import re
 import sys
 import markovify
@@ -49,7 +49,7 @@ def parseArg(arg, options):
 
 def _readJsonFile(path):
     with open(path) as f:
-        return json.load(f)
+        return ujson.load(f)
 
 
 def generateCorpus(export, channel, userID, channel_dict, user_dict):
@@ -90,10 +90,9 @@ def generateSentence(corpus):
         return sentence
 
 
-if __name__ == "__main__":
+def basic_run(export):
     channel = "None"
     user = "None"
-    export = sys.argv[1]
     channel_dict = getChannelDict(export)
     channels = channel_dict.keys()
     user_dict = getUserDict(export)
@@ -101,3 +100,7 @@ if __name__ == "__main__":
     fulltext = generateCorpus(export, channel, user, channel_dict, user_dict)
     num_lines = len(fulltext.splitlines(True))
     sentence = generateSentence(fulltext)
+
+
+if __name__ == "__main__":
+    basic_run(sys.argv[1])
