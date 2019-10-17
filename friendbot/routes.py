@@ -11,7 +11,7 @@ users = app.config["USERS"]
 
 
 @app.route("/action", methods=["POST"])
-def take_action():
+def action_endpoint():
     data = flask.request.form["payload"]
     json_data = json.loads(data)
     button_value = json_data["actions"][0]["value"]
@@ -44,7 +44,7 @@ def take_action():
 
 
 @app.route("/sentence", methods=["POST"])
-def create_sentence():
+def sentence_endpoint():
     user_id = flask.request.form["user_id"]
     real_name = user_dict[user_id]
     params = flask.request.form["text"].split()
@@ -72,6 +72,16 @@ def create_sentence():
     format_msg = msg.format(real_name, user_id, channel, user, num_lines, error)
     app.logger.info(format_msg)
     return resp
+
+
+@app.route("/status", methods=["GET"])
+def status_endpoint():
+    return 200
+
+
+@app.route("/export", methods=["GET,POST"])
+def export_endpoint():
+    return 200
 
 
 def errorResponse(ex):
