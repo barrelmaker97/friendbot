@@ -10,9 +10,9 @@ RUN black --check --diff /app
 FROM base as dependencies
 WORKDIR /app
 COPY ./requirements.txt /app
-RUN apk add --no-cache build-base \
+RUN apk add --no-cache gcc musl-dev \
 	&& pip install -r requirements.txt --no-cache-dir \
-	&& apk del --no-cache build-base
+	&& apk del --no-cache gcc musl-dev
 
 FROM dependencies as test
 COPY ./features /app/features
