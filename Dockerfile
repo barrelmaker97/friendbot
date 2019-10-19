@@ -15,10 +15,10 @@ RUN apk add --no-cache gcc musl-dev \
 	&& apk del --no-cache gcc musl-dev
 
 FROM dependencies as test
+RUN pip install behave --no-cache-dir
 COPY ./features /app/features
 COPY ./test_data/actions /app/test_data/actions
 COPY ./test_data/export /export_unzip
-RUN pip install behave --no-cache-dir
 RUN behave
 
 FROM dependencies as release
