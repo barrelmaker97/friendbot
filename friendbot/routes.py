@@ -28,7 +28,7 @@ def action_endpoint():
         fulltext = corpus.generateCorpus(
             export, params[1], params[0], channel_dict, user_dict
         )
-        sentence = corpus.generateSentence(fulltext)
+        sentence = corpus.generateSentence(fulltext, params[0], params[1])
         payload = createPrompt(sentence, params[0], params[1])
     elif button_text == "Cancel":
         payload = actionCancel()
@@ -60,7 +60,7 @@ def sentence_endpoint():
                 return errorResponse(ex)
     fulltext = corpus.generateCorpus(export, channel, user, channel_dict, user_dict)
     num_lines = len(fulltext.splitlines(True))
-    sentence = corpus.generateSentence(fulltext)
+    sentence = corpus.generateSentence(fulltext, user, channel)
     payload = createPrompt(sentence, user, channel)
     resp = flask.Response(payload, mimetype="application/json")
     error = "False"

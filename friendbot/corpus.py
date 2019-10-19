@@ -6,6 +6,7 @@ import sys
 import markovify
 
 regex = re.compile(r'<(?:[^"\\]|\\.)*>', re.IGNORECASE)
+cache = redis.Redis(host="redis", port=6379)
 
 
 def getUserDict(export):
@@ -84,8 +85,15 @@ def generateCorpus(export, channel, userID, channel_dict, user_dict):
     return fulltext
 
 
-def generateSentence(corpus):
-    text_model = markovify.NewlineText(corpus)
+def generateSentence(fulltext, user, channel):
+    model_name = "{}_{}".format(user, channel)
+    model_exists: bytes = cache.exists(model_name)
+    if model_exists == 0:
+        text_model = markovify.NewlineText(fulltext)
+        cache.set(model_name, ujson.dumps(text_model.to_json()))
+    else:
+        raw_data: bytes = cache.get(model_name)
+        text_model = markovify.Text.from_json(ujson.loads(raw_data))
     sentence = text_model.make_sentence(tries=100)
     if type(sentence) == str:
         return sentence
