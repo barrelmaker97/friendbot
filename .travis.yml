@@ -14,15 +14,21 @@ jobs:
             - docker-ce
       env:
         - IMAGE_TAG=amd64
+      install:
+        - docker network create build_net
+        - docker run -d --name redis --network build_net redis:alpine
       script:
-        - docker build -t barrelmaker97/friendbot:$IMAGE_TAG .
+        - docker build --network build_net -t barrelmaker97/friendbot:$IMAGE_TAG .
       after_success:
         - bash deploy.sh
     - stage: "arm"
       arch: arm64
       env:
         - IMAGE_TAG=arm
+      install:
+        - docker network create build_net
+        - docker run -d --name redis --network build_net redis:alpine
       script:
-        - docker build -t barrelmaker97/friendbot:$IMAGE_TAG --build-arg BASE_IMAGE=arm32v7/python:3.7-alpine .
+        - docker build --network build_net -t barrelmaker97/friendbot:$IMAGE_TAG --build-arg BASE_IMAGE=arm32v7/python:3.7-alpine .
       after_success:
         - bash deploy.sh
