@@ -28,7 +28,9 @@ def action_endpoint():
         fulltext = corpus.generateCorpus(
             export, params[1], params[0], channel_dict, user_dict
         )
-        sentence = corpus.generateSentence(fulltext, params[0], params[1])
+        sentence = corpus.generateSentence(
+            fulltext, params[0], params[1], user_dict, channel_dict
+        )
         payload = createPrompt(sentence, params[0], params[1])
     elif button_text == "Cancel":
         payload = actionCancel()
@@ -59,17 +61,15 @@ def sentence_endpoint():
             except Exception as ex:
                 return errorResponse(ex)
     fulltext = corpus.generateCorpus(export, channel, user, channel_dict, user_dict)
-    num_lines = len(fulltext.splitlines(True))
-    sentence = corpus.generateSentence(fulltext, user, channel)
+    sentence = corpus.generateSentence(fulltext, user, channel, user_dict, channel_dict)
     payload = createPrompt(sentence, user, channel)
     resp = flask.Response(payload, mimetype="application/json")
     error = "False"
     resp.headers["Friendbot-Error"] = error
-    resp.headers["Friendbot-Corpus-Lines"] = num_lines
     resp.headers["Friendbot-User"] = user
     resp.headers["Friendbot-Channel"] = channel
-    msg = "{} ({}) generated a sentence; Channel: {} User: {} Lines: {} Error: {}"
-    format_msg = msg.format(real_name, user_id, channel, user, num_lines, error)
+    msg = "{} ({}) generated a sentence; Channel: {} User: {} Error: {}"
+    format_msg = msg.format(real_name, user_id, channel, user, error)
     app.logger.info(format_msg)
     return resp
 

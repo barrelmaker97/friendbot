@@ -85,7 +85,7 @@ def generateCorpus(export, channel, userID, channel_dict, user_dict):
     return fulltext
 
 
-def generateSentence(fulltext, user, channel):
+def generateSentence(fulltext, user, channel, user_dict, channel_dict):
     model_name = "{}_{}".format(user, channel)
     model_exists: bytes = cache.exists(model_name)
     if model_exists == 0:

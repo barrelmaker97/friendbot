@@ -6,7 +6,6 @@ Feature: Generating Sentences
 		When we make a blank POST request at /sentence
 		Then we will get a 200 status code
 		And we will get a Friendbot-Error: False header
-		And we will get a Friendbot-Corpus-Lines: 18 header
 		And we will get a Friendbot-Channel: None header
 		And we will get a Friendbot-User: None header
 
