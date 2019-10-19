@@ -1,5 +1,6 @@
 Flask==1.1.1
 gunicorn==19.9.0
 markovify==0.7.2
+redis==3.3.11
 requests==2.22.0
 ujson==1.35
