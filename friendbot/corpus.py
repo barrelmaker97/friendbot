@@ -54,7 +54,7 @@ def _readJsonFile(path):
         return ujson.load(f)
 
 
-def generateCorpus(export, channel, userID, channel_dict, user_dict):
+def _generateCorpus(export, userID, channel, user_dict, channel_dict):
     if channel == "None":
         channel_directory = export
     else:
@@ -85,10 +85,11 @@ def generateCorpus(export, channel, userID, channel_dict, user_dict):
     return fulltext
 
 
-def generateSentence(fulltext, user, channel, user_dict, channel_dict):
+def generateSentence(export, user, channel, user_dict, channel_dict):
     model_name = "{}_{}".format(user, channel)
     model_exists: bytes = cache.exists(model_name)
     if model_exists == 0:
+        fulltext = _generateCorpus(export, user, channel, user_dict, channel_dict)
         text_model = markovify.NewlineText(fulltext)
         cache.set(model_name, ujson.dumps(text_model.to_json()))
     else:

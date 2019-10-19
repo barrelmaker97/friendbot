@@ -25,11 +25,8 @@ def action_endpoint():
         payload = actionSend(button_value, real_name)
     elif button_text == "Shuffle":
         params = button_value.split()
-        fulltext = corpus.generateCorpus(
-            export, params[1], params[0], channel_dict, user_dict
-        )
         sentence = corpus.generateSentence(
-            fulltext, params[0], params[1], user_dict, channel_dict
+            export, params[0], params[1], user_dict, channel_dict
         )
         payload = createPrompt(sentence, params[0], params[1])
     elif button_text == "Cancel":
@@ -60,8 +57,7 @@ def sentence_endpoint():
                 user = corpus.parseArg(param, users)
             except Exception as ex:
                 return errorResponse(ex)
-    fulltext = corpus.generateCorpus(export, channel, user, channel_dict, user_dict)
-    sentence = corpus.generateSentence(fulltext, user, channel, user_dict, channel_dict)
+    sentence = corpus.generateSentence(export, user, channel, user_dict, channel_dict)
     payload = createPrompt(sentence, user, channel)
     resp = flask.Response(payload, mimetype="application/json")
     error = "False"
