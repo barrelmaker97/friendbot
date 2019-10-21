@@ -1,0 +1,10 @@
+version: "3.7"
+services:
+  app:
+    image: "test:latest"
+    ports:
+      - "5000:5000"
+    volumes:
+      - ~/export.zip:/export:ro
+  redis:
+    image: "redis:alpine"
