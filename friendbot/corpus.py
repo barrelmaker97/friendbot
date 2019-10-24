@@ -107,9 +107,8 @@ def basic_run(export):
     channels = channel_dict.keys()
     user_dict = getUserDict(export)
     users = user_dict.keys()
-    fulltext = generateCorpus(export, channel, user, channel_dict, user_dict)
-    num_lines = len(fulltext.splitlines(True))
-    sentence = generateSentence(fulltext)
+    sentence = generateSentence(export, channel, user, channel_dict, user_dict)
+    print(sentence)
 
 
 if __name__ == "__main__":
