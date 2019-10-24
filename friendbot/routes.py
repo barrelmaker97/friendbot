@@ -20,7 +20,7 @@ def action_endpoint():
     user_id = json_data["user"]["id"]
     real_name = user_dict[user_id]
     headers = {"Content-type": "application/json", "Accept": "text/plain"}
-    error = "False"
+    error = False
     if button_text == "Send":
         payload = actionSend(button_value, real_name)
     elif button_text == "Shuffle":
@@ -32,13 +32,16 @@ def action_endpoint():
     elif button_text == "Cancel":
         payload = actionCancel()
     else:
-        error = "True"
+        error = True
         payload = errorMessage()
-    headers.update({"Friendbot-Error": error})
+    headers.update({"Friendbot-Error": str(error)})
     requests.post(response_url, data=payload, headers=headers)
-    msg = "{} ({}) pressed {} Error: {}"
-    format_msg = msg.format(real_name, user_id, button_text, error)
-    app.logger.info(format_msg)
+    msg = "{} ({}) pressed {}"
+    format_msg = msg.format(real_name, user_id, button_text)
+    if error:
+        app.logger.error(format_msg)
+    else:
+        app.logger.info(format_msg)
     return ("", 200)
 
 
@@ -60,13 +63,16 @@ def sentence_endpoint():
     sentence = corpus.generateSentence(export, user, channel, user_dict, channel_dict)
     payload = createPrompt(sentence, user, channel)
     resp = flask.Response(payload, mimetype="application/json")
-    error = "False"
-    resp.headers["Friendbot-Error"] = error
+    error = False
+    resp.headers["Friendbot-Error"] = str(error)
     resp.headers["Friendbot-User"] = user
     resp.headers["Friendbot-Channel"] = channel
-    msg = "{} ({}) generated a sentence; Channel: {} User: {} Error: {}"
-    format_msg = msg.format(real_name, user_id, channel, user, error)
-    app.logger.info(format_msg)
+    msg = "{} ({}) generated a sentence; Channel: {} User: {}"
+    format_msg = msg.format(real_name, user_id, channel, user)
+    if error:
+        app.logger.error(format_msg)
+    else:
+        app.logger.info(format_msg)
     return resp
 
 
