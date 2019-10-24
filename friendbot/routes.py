@@ -1,7 +1,7 @@
 from friendbot import app, corpus
 import requests
 import flask
-import json
+import ujson
 
 export = app.config["EXPORT"]
 channel_dict = app.config["CHANNEL_DICT"]
@@ -13,7 +13,7 @@ users = app.config["USERS"]
 @app.route("/action", methods=["POST"])
 def action_endpoint():
     data = flask.request.form["payload"]
-    json_data = json.loads(data)
+    json_data = ujson.loads(data)
     button_value = json_data["actions"][0]["value"]
     button_text = json_data["actions"][0]["text"]["text"]
     response_url = json_data["response_url"]
@@ -100,12 +100,12 @@ def errorMessage():
         "replace_original": False,
         "text": "Sorry, that didn't work. Please try again.",
     }
-    return json.dumps(payload)
+    return ujson.dumps(payload)
 
 
 def actionCancel():
     payload = {"delete_original": True}
-    return json.dumps(payload)
+    return ujson.dumps(payload)
 
 
 def actionSend(sentence, real_name):
@@ -121,7 +121,7 @@ def actionSend(sentence, real_name):
             },
         ],
     }
-    return json.dumps(payload)
+    return ujson.dumps(payload)
 
 
 def createPrompt(sentence, user, channel):
@@ -158,4 +158,4 @@ def createPrompt(sentence, user, channel):
             },
         ],
     }
-    return json.dumps(payload)
+    return ujson.dumps(payload)
