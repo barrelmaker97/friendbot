@@ -72,12 +72,12 @@ def sentence_endpoint():
 
 @app.route("/status", methods=["GET"])
 def status_endpoint():
-    return 200
+    return ("", 200)
 
 
-@app.route("/export", methods=["GET,POST"])
+@app.route("/export", methods=["GET", "POST"])
 def export_endpoint():
-    return 200
+    return ("", 200)
 
 
 def errorResponse(ex):
