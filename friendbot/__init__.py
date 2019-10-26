@@ -1,4 +1,5 @@
 import logging
+from zipfile import ZipFile
 from flask import Flask
 from friendbot import corpus
 
@@ -10,6 +11,8 @@ if __name__ != "__main__":
     app.logger.setLevel(gunicorn_logger.level)
 
 export = "/export_unzip"
+with ZipFile("/export", "r") as zip_object:
+    zip_object.extractall("/export_unzip")
 
 try:
     user_dict = corpus.getUserDict(export)
