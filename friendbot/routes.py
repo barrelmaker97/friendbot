@@ -47,8 +47,15 @@ def action_endpoint():
 
 @app.route("/sentence", methods=["POST"])
 def sentence_endpoint():
-    user_id = flask.request.form["user_id"]
-    real_name = user_dict[user_id]
+    try:
+        user_id = flask.request.form["user_id"]
+        real_name = user_dict[user_id]
+    except Exception as ex:
+        msg = "Cannot find user_id of request sender"
+        app.logger.error(msg)
+        resp = flask.Response(errorMessage(), mimetype="application/json")
+        resp.headers["Friendbot-Error"] = "True"
+        return resp
     params = flask.request.form["text"].split()
     channel = "None"
     user = "None"
@@ -59,20 +66,21 @@ def sentence_endpoint():
             try:
                 user = corpus.parseArg(param, users)
             except Exception as ex:
-                return errorResponse(ex)
+                msg = "Failed to parse argument {}"
+                format_msg = msg.format(param)
+                app.logger.error(format_msg)
+                resp = flask.Response(errorMessage(), mimetype="application/json")
+                resp.headers["Friendbot-Error"] = "True"
+                return resp
     sentence = corpus.generateSentence(export, user, channel, user_dict, channel_dict)
     payload = createPrompt(sentence, user, channel)
     resp = flask.Response(payload, mimetype="application/json")
-    error = False
-    resp.headers["Friendbot-Error"] = str(error)
+    resp.headers["Friendbot-Error"] = "False"
     resp.headers["Friendbot-User"] = user
     resp.headers["Friendbot-Channel"] = channel
     msg = "{} ({}) generated a sentence; Channel: {} User: {}"
     format_msg = msg.format(real_name, user_id, channel, user)
-    if error:
-        app.logger.error(format_msg)
-    else:
-        app.logger.info(format_msg)
+    app.logger.info(format_msg)
     return resp
 
 
@@ -84,14 +92,6 @@ def status_endpoint():
 @app.route("/export", methods=["GET", "POST"])
 def export_endpoint():
     return ("", 200)
-
-
-def errorResponse(ex):
-    message = str(ex)
-    app.logger.error(message)
-    resp = flask.jsonify(text=message)
-    resp.headers["Friendbot-Error"] = "True"
-    return resp
 
 
 def errorMessage():
