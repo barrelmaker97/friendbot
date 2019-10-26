@@ -1,5 +1,4 @@
 import logging
-from zipfile import ZipFile
 from flask import Flask
 from os import environ, path
 from friendbot import corpus
