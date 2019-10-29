@@ -3,7 +3,9 @@ FROM $BASE_IMAGE as base
 COPY ./friendbot/ /app/friendbot
 
 FROM base as lint
-RUN pip install black --no-cache-dir
+RUN apk add --no-cache gcc musl-dev \
+	&& pip install black --no-cache-dir \
+	&& apk del --no-cache gcc musl-dev
 RUN black --check --diff /app
 
 FROM base as dependencies
