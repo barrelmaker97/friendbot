@@ -4,6 +4,7 @@ COPY ./friendbot/ /app/friendbot
 
 FROM base as lint
 RUN apk add --no-cache gcc musl-dev \
+	&& pip install --upgrade pip --no-cache-dir \
 	&& pip install black --no-cache-dir \
 	&& apk del --no-cache gcc musl-dev
 RUN black --check --diff /app
@@ -12,6 +13,7 @@ FROM base as dependencies
 WORKDIR /app
 COPY ./requirements.txt /app
 RUN apk add --no-cache gcc musl-dev \
+	&& pip install --upgrade pip --no-cache-dir \
 	&& pip install -r requirements.txt --no-cache-dir \
 	&& apk del --no-cache gcc musl-dev
 

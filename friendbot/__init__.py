@@ -32,16 +32,18 @@ except Exception as ex:
     format_msg = msg.format(type(ex).__name__)
     app.logger.error(format_msg)
 
+app.logger.info("Warming up cache...")
+corpus.generateTextModel(export, "None", "None", user_dict, channel_dict)
 count = 1
 for user in users:
     for channel in channels:
-        app.logger.info("Generating model for {} {}".format(user, channel))
         try:
             corpus.generateTextModel(export, user, channel, user_dict, channel_dict)
             count += 1
         except KeyError as ex:
             pass
-app.logger.info("Generated {} models".format(count))
+msg = "Generated {} models for {} users in {} channels"
+app.logger.info(msg.format(count, len(users), len(channels)))
 
 app.config["EXPORT"] = export
 app.config["USER_DICT"] = user_dict
