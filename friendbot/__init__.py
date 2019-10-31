@@ -36,7 +36,7 @@ count = 1
 for user in users:
     for channel in channels:
         app.logger.info("Generating model for {} {}".format(user, channel))
-        corpus._generateCorpus(export, user, channel, user_dict, channel_dict)
+        corpus.generateTextModel(export, user, channel, user_dict, channel_dict)
         count += 1
 app.logger.info("Generated {} models".format(count))
 
