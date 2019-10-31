@@ -36,8 +36,11 @@ count = 1
 for user in users:
     for channel in channels:
         app.logger.info("Generating model for {} {}".format(user, channel))
-        corpus.generateTextModel(export, user, channel, user_dict, channel_dict)
-        count += 1
+        try:
+            corpus.generateTextModel(export, user, channel, user_dict, channel_dict)
+            count += 1
+        except KeyError as ex:
+            pass
 app.logger.info("Generated {} models".format(count))
 
 app.config["EXPORT"] = export
