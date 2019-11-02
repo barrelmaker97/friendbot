@@ -91,6 +91,8 @@ def status_endpoint():
     return ("", 200)
 
 
-@app.route("/export", methods=["GET", "POST"])
+@app.route("/export", methods=["POST"])
 def export_endpoint():
+    app.logger.info("Recieved export")
+    f = flask.request.files["export"]
     return ("", 200)
