@@ -1,4 +1,4 @@
-from friendbot import app, corpus
+from friendbot import app, corpus, messages
 import requests
 import flask
 import ujson
@@ -22,18 +22,18 @@ def action_endpoint():
     headers = {"Content-type": "application/json", "Accept": "text/plain"}
     error = False
     if button_text == "Send":
-        payload = actionSend(button_value, real_name)
+        payload = messages.sendMessage(button_value, real_name)
     elif button_text == "Shuffle":
         params = button_value.split()
         sentence = corpus.generateSentence(
             export, params[0], params[1], user_dict, channel_dict
         )
-        payload = createPrompt(sentence, params[0], params[1])
+        payload = messages.promptMessage(sentence, params[0], params[1])
     elif button_text == "Cancel":
-        payload = actionCancel()
+        payload = messages.cancelMessage()
     else:
         error = True
-        payload = errorMessage()
+        payload = messages.errorMessage()
     headers.update({"Friendbot-Error": str(error)})
     requests.post(response_url, data=payload, headers=headers)
     msg = "{} ({}) pressed {}"
@@ -53,7 +53,7 @@ def sentence_endpoint():
     except Exception as ex:
         msg = "Cannot find user_id of request sender"
         app.logger.error(msg)
-        resp = flask.Response(errorMessage(), mimetype="application/json")
+        resp = flask.Response(messages.errorMessage(), mimetype="application/json")
         resp.headers["Friendbot-Error"] = "True"
         return resp
     params = flask.request.form["text"].split()
@@ -69,11 +69,13 @@ def sentence_endpoint():
                 msg = "Failed to parse argument {}"
                 format_msg = msg.format(param)
                 app.logger.error(format_msg)
-                resp = flask.Response(errorMessage(), mimetype="application/json")
+                resp = flask.Response(
+                    messages.errorMessage(), mimetype="application/json"
+                )
                 resp.headers["Friendbot-Error"] = "True"
                 return resp
     sentence = corpus.generateSentence(export, user, channel, user_dict, channel_dict)
-    payload = createPrompt(sentence, user, channel)
+    payload = messages.promptMessage(sentence, user, channel)
     resp = flask.Response(payload, mimetype="application/json")
     resp.headers["Friendbot-Error"] = "False"
     resp.headers["Friendbot-User"] = user
@@ -92,70 +94,3 @@ def status_endpoint():
 @app.route("/export", methods=["GET", "POST"])
 def export_endpoint():
     return ("", 200)
-
-
-def errorMessage():
-    payload = {
-        "response_type": "ephemeral",
-        "replace_original": False,
-        "text": "Sorry, that didn't work. Please try again.",
-    }
-    return ujson.dumps(payload)
-
-
-def actionCancel():
-    payload = {"delete_original": True}
-    return ujson.dumps(payload)
-
-
-def actionSend(sentence, real_name):
-    context_msg = "Sent by {}".format(real_name)
-    payload = {
-        "delete_original": True,
-        "response_type": "in_channel",
-        "blocks": [
-            {"type": "section", "text": {"type": "plain_text", "text": sentence}},
-            {
-                "type": "context",
-                "elements": [{"type": "plain_text", "text": context_msg}],
-            },
-        ],
-    }
-    return ujson.dumps(payload)
-
-
-def createPrompt(sentence, user, channel):
-    payload = {
-        "replace_original": True,
-        "response_type": "ephemeral",
-        "blocks": [
-            {"type": "section", "text": {"type": "plain_text", "text": sentence}},
-            {
-                "type": "actions",
-                "elements": [
-                    {
-                        "type": "button",
-                        "text": {"type": "plain_text", "emoji": True, "text": "Send"},
-                        "style": "primary",
-                        "value": sentence,
-                    },
-                    {
-                        "type": "button",
-                        "text": {
-                            "type": "plain_text",
-                            "emoji": True,
-                            "text": "Shuffle",
-                        },
-                        "value": "{} {}".format(user, channel),
-                    },
-                    {
-                        "type": "button",
-                        "text": {"type": "plain_text", "emoji": True, "text": "Cancel"},
-                        "style": "danger",
-                        "value": "cancel",
-                    },
-                ],
-            },
-        ],
-    }
-    return ujson.dumps(payload)
