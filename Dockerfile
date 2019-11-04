@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=python:3.7-alpine
+ARG BASE_IMAGE=python:3.8-alpine
 FROM $BASE_IMAGE as base
 COPY ./friendbot/ /app/friendbot
 
