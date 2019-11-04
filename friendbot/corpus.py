@@ -35,12 +35,9 @@ def getChannelDict(export):
 
 def parseArg(arg, options):
     try:
-        fix = arg.replace("&lt;", "<")
-        fix = fix.replace("&gt;", ">")
-        result = re.search("<.(.*)>", fix)
-        clean = result.group(1)
-        params = clean.split("|")
-        final = params[0]
+        fix = arg.replace("&lt;", "<").replace("&gt;", ">")
+        clean = re.search("<.(.*)>", fix).group(1)
+        final = clean.split("|")[0]
     except Exception:
         raise Exception("Could not parse argument {}".format(arg))
     if final in options:
