@@ -80,7 +80,7 @@ def sentence_endpoint():
     resp.headers["Friendbot-Error"] = "False"
     resp.headers["Friendbot-User"] = user
     resp.headers["Friendbot-Channel"] = channel
-    msg = "{} ({}) generated a sentence; Channel: {} User: {}"
+    msg = "{} ({}) generated a sentence; C: {} U: {}"
     format_msg = msg.format(real_name, user_id, channel, user)
     app.logger.info(format_msg)
     return resp
