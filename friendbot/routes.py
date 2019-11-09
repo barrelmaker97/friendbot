@@ -19,7 +19,6 @@ def action_endpoint():
     response_url = json_data["response_url"]
     user_id = json_data["user"]["id"]
     real_name = user_dict[user_id]
-    headers = {"Content-type": "application/json", "Accept": "text/plain"}
     error = False
     if button_text == "Send":
         payload = messages.sendMessage(button_value, real_name)
@@ -34,7 +33,7 @@ def action_endpoint():
     else:
         error = True
         payload = messages.errorMessage()
-    headers.update({"Friendbot-Error": str(error)})
+    headers = {"Content-type": "application/json", "Accept": "text/plain", "Friendbot-Error": str(error)}
     requests.post(response_url, data=payload, headers=headers)
     msg = "{} ({}) pressed {}"
     format_msg = msg.format(real_name, user_id, button_text)
