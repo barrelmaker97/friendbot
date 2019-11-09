@@ -14,8 +14,7 @@ def getUserDict(export):
     users_file = "{}/users.json".format(export)
     data = _readJsonFile(users_file)
     for user in data:
-        real_name = user.get("real_name")
-        if real_name:
+        if real_name := user.get("real_name"):
             user_id = user.get("id")
             user_dict.update({user_id: real_name})
     return user_dict
@@ -26,8 +25,7 @@ def getChannelDict(export):
     channels_file = "{}/channels.json".format(export)
     data = _readJsonFile(channels_file)
     for channel in data:
-        name = channel.get("name")
-        if name:
+        if name := channel.get("name"):
             channel_id = channel.get("id")
             channel_dict.update({channel_id: name})
     return channel_dict
@@ -91,14 +89,13 @@ def generateSentence(export, user, channel, user_dict, channel_dict):
 
 def generateTextModel(export, user, channel, user_dict, channel_dict):
     model_name = "{}_{}".format(user, channel)
-    model_exists: bytes = cache.exists(model_name)
-    if model_exists == 0:
+    if model_exists := cache.exists(model_name):
+        raw_data = cache.get(model_name)
+        text_model = markovify.Text.from_json(ujson.loads(raw_data))
+    else:
         fulltext = _generateCorpus(export, user, channel, user_dict, channel_dict)
         text_model = markovify.NewlineText(fulltext)
         cache.set(model_name, ujson.dumps(text_model.to_json()))
-    else:
-        raw_data: bytes = cache.get(model_name)
-        text_model = markovify.Text.from_json(ujson.loads(raw_data))
     return text_model
 
 
