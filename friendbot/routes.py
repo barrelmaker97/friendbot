@@ -33,7 +33,11 @@ def action_endpoint():
     else:
         error = True
         payload = messages.errorMessage()
-    headers = {"Content-type": "application/json", "Accept": "text/plain", "Friendbot-Error": str(error)}
+    headers = {
+        "Content-type": "application/json",
+        "Accept": "text/plain",
+        "Friendbot-Error": str(error),
+    }
     requests.post(response_url, data=payload, headers=headers)
     msg = "{} ({}) pressed {}"
     format_msg = msg.format(real_name, user_id, button_text)
