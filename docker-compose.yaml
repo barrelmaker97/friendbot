@@ -9,5 +9,6 @@ services:
         source: ./export.zip
         target: /export
         read_only: true
+    restart: always
   redis:
     image: "redis:alpine"
