@@ -6,7 +6,7 @@ services:
       - "5000:5000"
     volumes:
       - type: bind
-        source: ./export.zip
+        source: ${FB_EXPORT}
         target: /export
         read_only: true
     restart: always
