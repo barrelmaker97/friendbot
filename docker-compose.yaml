@@ -12,3 +12,4 @@ services:
     restart: always
   redis:
     image: "redis:alpine"
+    restart: always
