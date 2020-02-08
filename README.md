@@ -5,9 +5,13 @@
 Friendbot is a Markov-chain based chatbot which uses Slack messages as its corpus. It reads in messages from a Slack data export, generates a corpus from them, and feeds this to a markov chain generator to naively simulate a conversation. It is built with [Flask](https://palletsprojects.com/p/flask/), served by [Gunicorn](https://gunicorn.org/), cached by [Redis](https://redis.io/), and run in Docker. The sentences which it generates can be accessed via an API which is designed to connect to the existing Slack API.
 
 ## Installation
-Download the `docker-compose.yaml` file (or clone this repo), rename your Slack export file to `export.zip` and place it in the same directory as `docker-compose.yaml`. Then run:
+Download the `docker-compose.yaml` file (or clone this repo), let Friendbot know the location of your Slack export zip file by running
 ```
-docker compose-up
+export FB_EXPORT=<path to your Slack export>
+```
+and then run:
+```
+docker compose-up -d
 ```
 
 ## API
