@@ -1,5 +1,5 @@
 os: linux
-language: minimal
+language: shell
 services:
   - docker
 git:
