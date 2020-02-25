@@ -81,15 +81,15 @@ def _generateCorpus(export, userID, channel, user_dict, channel_dict):
 
 
 def generateSentence(export, user, channel, user_dict, channel_dict):
-    text_model = generateTextModel(export, user, channel, user_dict, channel_dict)
+    text_model = getTextModel(export, user, channel, user_dict, channel_dict)
     sentence = text_model.make_sentence(tries=100)
     if type(sentence) == str:
         return sentence
 
 
-def generateTextModel(export, user, channel, user_dict, channel_dict):
+def getTextModel(export, user, channel, user_dict, channel_dict):
     model_name = "{}_{}".format(user, channel)
-    if model_exists := cache.exists(model_name):
+    if cache.exists(model_name):
         raw_data = cache.get(model_name)
         text_model = markovify.Text.from_json(ujson.loads(raw_data))
     else:

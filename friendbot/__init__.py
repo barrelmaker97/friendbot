@@ -33,12 +33,12 @@ except Exception as ex:
     app.logger.error(format_msg)
 
 app.logger.info("Warming up cache...")
-corpus.generateTextModel(export, "None", "None", user_dict, channel_dict)
+corpus.getTextModel(export, "None", "None", user_dict, channel_dict)
 count = 1
 for user in users:
     for channel in channels:
         try:
-            corpus.generateTextModel(export, user, channel, user_dict, channel_dict)
+            corpus.getTextModel(export, user, channel, user_dict, channel_dict)
             count += 1
         except KeyError as ex:
             pass
