@@ -2,6 +2,7 @@ version: "3.7"
 services:
   app:
     image: "barrelmaker97/friendbot:latest"
+    container_name: friendbot
     ports:
       - "5000:5000"
     volumes:
@@ -12,4 +13,5 @@ services:
     restart: always
   redis:
     image: "redis:alpine"
+    container_name: redis
     restart: always
