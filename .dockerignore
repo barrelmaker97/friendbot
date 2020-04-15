@@ -3,4 +3,4 @@
 !friendbot/
 !features/
 !test_data/
-!gunicorn_config.py
+!healthcheck.py
