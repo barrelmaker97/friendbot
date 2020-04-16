@@ -1,5 +1,6 @@
 os: linux
 language: shell
+dist: bionic
 services:
   - docker
 git:
@@ -7,7 +8,6 @@ git:
 jobs:
   include:
     - stage: "amd64"
-      dist: bionic
       addons:
         apt:
           packages:
