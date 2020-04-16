@@ -52,7 +52,10 @@ def action_endpoint():
 def sentence_endpoint():
     try:
         user_id = flask.request.form["user_id"]
-        real_name = user_dict[user_id]
+        if user_id == "healthcheck":
+            real_name = "Health Check"
+        else:
+            real_name = user_dict[user_id]
     except Exception as ex:
         msg = "Cannot find user_id of request sender"
         app.logger.error(msg)
@@ -87,11 +90,6 @@ def sentence_endpoint():
     format_msg = msg.format(real_name, user_id, channel, user)
     app.logger.info(format_msg)
     return resp
-
-
-@app.route("/status", methods=["GET"])
-def status_endpoint():
-    return ("", 200)
 
 
 @app.route("/export", methods=["POST"])
