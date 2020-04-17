@@ -29,6 +29,6 @@ jobs:
         - docker network create build_net
         - docker run -d --name redis --network build_net redis:alpine
       script:
-        - docker build --network build_net -t barrelmaker97/friendbot:$IMAGE_TAG --build-arg BASE_IMAGE=arm32v7/python:3.8-slim-buster .
+        - docker build --network build_net -t barrelmaker97/friendbot:$IMAGE_TAG --build-arg BASE_IMAGE=arm32v7/python:3.8-alpine .
       after_success:
         - bash deploy.sh
