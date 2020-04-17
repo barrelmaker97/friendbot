@@ -1,22 +1,18 @@
-ARG BASE_IMAGE=python:3.8-alpine
+ARG BASE_IMAGE=python:3.8-slim-buster
 FROM $BASE_IMAGE as base
 COPY ./friendbot/ /app/friendbot
 COPY ./healthcheck.py /app
 
 FROM base as lint
-RUN apk add --no-cache --virtual .deps gcc musl-dev \
-	&& pip install --upgrade pip --no-cache-dir \
-	&& pip install black --no-cache-dir \
-	&& apk del --no-cache .deps
+RUN pip install --upgrade pip --no-cache-dir \
+	&& pip install black --no-cache-dir
 RUN black --check --diff /app
 
 FROM base as dependencies
 WORKDIR /app
 COPY ./requirements.txt /app
-RUN apk add --no-cache --virtual .deps gcc musl-dev \
-	&& pip install --upgrade pip --no-cache-dir \
-	&& pip install -r requirements.txt --no-cache-dir \
-	&& apk del --no-cache .deps
+RUN pip install --upgrade pip --no-cache-dir \
+	&& pip install -r requirements.txt --no-cache-dir
 
 FROM dependencies as test
 RUN pip install behave --no-cache-dir
