@@ -11,8 +11,7 @@ cache = redis.Redis(host="redis", port=6379)
 
 def getUserDict(export):
     user_dict = {}
-    users_file = "{}/users.json".format(export)
-    data = _readJsonFile(users_file)
+    data = _readJsonFile(f"{export}/users.json")
     for user in data:
         if real_name := user.get("real_name"):
             user_id = user.get("id")
@@ -22,8 +21,7 @@ def getUserDict(export):
 
 def getChannelDict(export):
     channel_dict = {}
-    channels_file = "{}/channels.json".format(export)
-    data = _readJsonFile(channels_file)
+    data = _readJsonFile(f"{export}/channels.json")
     for channel in data:
         if name := channel.get("name"):
             channel_id = channel.get("id")
@@ -37,11 +35,11 @@ def parseArg(arg, options):
         clean = re.search("<.(.*)>", fix).group(1)
         final = clean.split("|")[0]
     except Exception:
-        raise Exception("Could not parse argument {}".format(arg))
+        raise Exception(f"Could not parse argument {arg}")
     if final in options:
         return final
     else:
-        raise Exception("Argument {} not found".format(final))
+        raise Exception(f"Argument {final} not found")
 
 
 def _readJsonFile(path):
@@ -53,7 +51,7 @@ def _generateCorpus(export, userID, channel, user_dict, channel_dict):
     if channel == "None":
         channel_directory = export
     else:
-        channel_directory = "{}/{}".format(export, channel_dict[channel])
+        channel_directory = f"{export}/{channel_dict[channel]}"
     pathlist = Path(channel_directory).glob("**/*.json")
     fulltext = ""
     for path in pathlist:
@@ -65,8 +63,7 @@ def _generateCorpus(export, userID, channel, user_dict, channel_dict):
                 text = str(message.get("text"))
                 if "<@U" in text:
                     for user in user_dict:
-                        format_user = "<@{}>".format(user)
-                        text = text.replace(format_user, user_dict[user])
+                        text = text.replace(f"<@{user}>", user_dict[user])
                 text = regex.sub("", text)
                 if text:
                     if userID == "None":
@@ -81,7 +78,7 @@ def _generateCorpus(export, userID, channel, user_dict, channel_dict):
 
 
 def generateSentence(export, user, channel, user_dict, channel_dict):
-    model_name = "{}_{}".format(user, channel)
+    model_name = f"{user}_{channel}"
     if cache.exists(model_name):
         raw_data = cache.get(model_name)
         text_model = markovify.Text.from_json(ujson.loads(raw_data))

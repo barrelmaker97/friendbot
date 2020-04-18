@@ -39,12 +39,11 @@ def action_endpoint():
         "Friendbot-Error": str(error),
     }
     requests.post(response_url, data=payload, headers=headers)
-    msg = "{} ({}) pressed {}"
-    format_msg = msg.format(real_name, user_id, button_text)
+    msg = f"{real_name} ({user_id}) pressed {button_text}"
     if error:
-        app.logger.error(format_msg)
+        app.logger.error(msg)
     else:
-        app.logger.info(format_msg)
+        app.logger.info(msg)
     return ("", 200)
 
 
@@ -72,9 +71,8 @@ def sentence_endpoint():
             try:
                 user = corpus.parseArg(param, users)
             except Exception as ex:
-                msg = "Failed to parse argument {}"
-                format_msg = msg.format(param)
-                app.logger.error(format_msg)
+                msg = f"Failed to parse argument {param}"
+                app.logger.error(msg)
                 resp = flask.Response(
                     messages.errorMessage(), mimetype="application/json"
                 )
@@ -86,9 +84,8 @@ def sentence_endpoint():
     resp.headers["Friendbot-Error"] = "False"
     resp.headers["Friendbot-User"] = user
     resp.headers["Friendbot-Channel"] = channel
-    msg = "{} ({}) generated a sentence; C: {} U: {}"
-    format_msg = msg.format(real_name, user_id, channel, user)
-    app.logger.info(format_msg)
+    msg = f"{real_name} ({user_id}) generated a sentence; C: {channel} U: {user}"
+    app.logger.info(msg)
     return resp
 
 

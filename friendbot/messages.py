@@ -16,7 +16,7 @@ def cancelMessage():
 
 
 def sendMessage(sentence, real_name):
-    context_msg = "Sent by {}".format(real_name)
+    context_msg = f"Sent by {real_name}"
     payload = {
         "delete_original": True,
         "response_type": "in_channel",
@@ -53,7 +53,7 @@ def promptMessage(sentence, user, channel):
                             "emoji": True,
                             "text": "Shuffle",
                         },
-                        "value": "{} {}".format(user, channel),
+                        "value": f"{user} {channel}",
                     },
                     {
                         "type": "button",

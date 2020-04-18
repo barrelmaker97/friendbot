@@ -15,6 +15,6 @@ def get_endpoint(context, endpoint):
 @then("we will get a {status} status code")
 def get_code(context, status):
     status = int(status)
-    print("Expected Status Code: {}".format(status))
-    print("Received Status Code: {}".format(context.res.status_code))
+    print(f"Expected Status Code: {status}")
+    print(f"Received Status Code: {context.res.status_code}")
     assert context.res.status_code == status
