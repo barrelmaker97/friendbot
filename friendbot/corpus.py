@@ -93,18 +93,3 @@ def generateSentence(export, user, channel, user_dict, channel_dict):
     sentence = text_model.make_sentence(tries=100)
     if type(sentence) == str:
         return sentence
-
-
-def basic_run(export):
-    channel = "None"
-    user = "None"
-    channel_dict = getChannelDict(export)
-    channels = channel_dict.keys()
-    user_dict = getUserDict(export)
-    users = user_dict.keys()
-    sentence = generateSentence(export, channel, user, channel_dict, user_dict)
-    print(sentence)
-
-
-if __name__ == "__main__":
-    basic_run(sys.argv[1])
