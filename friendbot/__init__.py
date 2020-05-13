@@ -1,17 +1,18 @@
-import logging
+import logging, os, pathlib
 from zipfile import ZipFile
 from flask import Flask
 from friendbot import corpus
 
 app = Flask(__name__)
-export = "/export_unzip"
+zip_location = pathlib.Path(os.environ.get("EXPORT_ZIP"))
+export = zip_location.parent / "export_unzip"
 
 if __name__ != "__main__":
     gunicorn_logger = logging.getLogger("gunicorn.error")
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
 
-with ZipFile("/export.zip", "r") as zip_object:
+with ZipFile(zip_location, "r") as zip_object:
     zip_object.extractall(export)
 
 try:

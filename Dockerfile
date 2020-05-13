@@ -2,6 +2,7 @@ ARG BASE_IMAGE=python:3.8-alpine
 FROM $BASE_IMAGE as base
 COPY ./friendbot/ /app/friendbot
 COPY ./healthcheck.py /app
+ENV EXPORT_ZIP=/export.zip
 
 FROM base as lint
 RUN apk add --no-cache --virtual .deps gcc musl-dev \
