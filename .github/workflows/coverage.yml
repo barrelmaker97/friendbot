@@ -20,12 +20,13 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install coverage behave
+        pip install coveralls behave
         pip install -r requirements.txt
     - name: Run Tests
       run: |
         EXPORT_ZIP=./test_data/export.zip coverage run --source="./friendbot" -m behave
     - name: Coveralls
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+        run: |
+          coveralls
