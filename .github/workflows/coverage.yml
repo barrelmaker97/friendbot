@@ -23,10 +23,10 @@ jobs:
         pip install coveralls behave
         pip install -r requirements.txt
     - name: Run Tests
-      run: |
-        EXPORT_ZIP=./test_data/export.zip coverage run --source="./friendbot" -m behave
+      env:
+        EXPORT_ZIP: ./test_data/export.zip
+      run: coverage run --source="./friendbot" -m behave
     - name: Coveralls
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-        run: |
-          coveralls
+      env:
+        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      run: coveralls
