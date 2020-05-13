@@ -24,7 +24,7 @@ jobs:
         pip install -r requirements.txt
     - name: Run Tests
       run: |
-        EXPORT_ZIP=./friendbot/test_data/export.zip coverage run --source="./friendbot" -m behave
+        EXPORT_ZIP=./test_data/export.zip coverage run --source="./friendbot" -m behave
     - name: Coveralls
       uses: coverallsapp/github-action@master
       with:

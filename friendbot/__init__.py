@@ -4,7 +4,7 @@ from flask import Flask
 from friendbot import corpus
 
 app = Flask(__name__)
-zip_location = pathlib.Path(os.environ.get("EXPORT_ZIP"))
+zip_location = pathlib.Path(os.environ.get("EXPORT_ZIP")).resolve()
 export = zip_location.parent / "export_unzip"
 
 if __name__ != "__main__":
