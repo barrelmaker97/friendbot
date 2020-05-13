@@ -22,7 +22,7 @@ FROM dependencies as test
 RUN pip install behave --no-cache-dir
 COPY ./features /app/features
 COPY ./test_data/actions /app/test_data/actions
-COPY ./test_data/export.zip /export
+COPY ./test_data/export.zip /
 RUN behave
 
 FROM dependencies as release

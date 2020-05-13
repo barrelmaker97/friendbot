@@ -11,7 +11,7 @@ if __name__ != "__main__":
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
 
-with ZipFile("/export", "r") as zip_object:
+with ZipFile("/export.zip", "r") as zip_object:
     zip_object.extractall(export)
 
 try:
