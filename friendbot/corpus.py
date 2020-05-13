@@ -79,13 +79,17 @@ def _generateCorpus(export, userID, channel, user_dict, channel_dict):
 
 def generateSentence(export, user, channel, user_dict, channel_dict):
     model_name = f"{user}_{channel}"
-    if cache.exists(model_name):
-        raw_data = cache.get(model_name)
-        text_model = markovify.Text.from_json(ujson.loads(raw_data))
-    else:
+    try:
+        if cache.exists(model_name):
+            raw_data = cache.get(model_name)
+            text_model = markovify.Text.from_json(ujson.loads(raw_data))
+        else:
+            fulltext = _generateCorpus(export, user, channel, user_dict, channel_dict)
+            text_model = markovify.NewlineText(fulltext)
+            cache.set(model_name, ujson.dumps(text_model.to_json()))
+    except redis.exceptions.ConnectionError as e:
         fulltext = _generateCorpus(export, user, channel, user_dict, channel_dict)
         text_model = markovify.NewlineText(fulltext)
-        cache.set(model_name, ujson.dumps(text_model.to_json()))
     sentence = text_model.make_sentence(tries=100)
     if type(sentence) == str:
         return sentence
