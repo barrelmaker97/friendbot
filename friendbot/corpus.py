@@ -48,25 +48,23 @@ def _readJsonFile(path):
 
 
 def _generateCorpus(export, userID, channel, user_dict, channel_dict):
-    if channel == "None":
+    if channel is None:
         channel_directory = export
     else:
         channel_directory = f"{export}/{channel_dict[channel]}"
     pathlist = Path(channel_directory).glob("**/*.json")
     fulltext = ""
     for path in pathlist:
-        path_in_str = str(path)
-        data = _readJsonFile(path_in_str)
+        data = _readJsonFile(str(path))
         for message in data:
-            subtype = message.get("subtype")
-            if subtype != "bot_message":
+            if message.get("subtype") != "bot_message":
                 text = str(message.get("text"))
                 if "<@U" in text:
                     for user in user_dict:
                         text = text.replace(f"<@{user}>", user_dict[user])
                 text = regex.sub("", text)
                 if text:
-                    if userID == "None":
+                    if userID is None:
                         text += "\n"
                         fulltext += text
                     else:

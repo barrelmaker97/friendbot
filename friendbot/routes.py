@@ -62,8 +62,8 @@ def sentence_endpoint():
         resp.headers["Friendbot-Error"] = "True"
         return resp
     params = flask.request.form["text"].split()
-    channel = "None"
-    user = "None"
+    channel = None
+    user = None
     for param in params:
         try:
             channel = corpus.parseArg(param, channels)

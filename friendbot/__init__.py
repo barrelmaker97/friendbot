@@ -32,7 +32,7 @@ except Exception as ex:
     app.logger.error(msg)
 
 app.logger.info("Warming up cache...")
-corpus.generateSentence(export, "None", "None", user_dict, channel_dict)
+corpus.generateSentence(export, None, None, user_dict, channel_dict)
 count = 1
 for user in users:
     for channel in channels:
