@@ -55,11 +55,9 @@ def _generateCorpus(export, userID, channel, user_dict, channel_dict):
     pathlist = Path(channel_directory).glob("**/*.json")
     fulltext = ""
     for path in pathlist:
-        path_in_str = str(path)
-        data = _readJsonFile(path_in_str)
+        data = _readJsonFile(str(path))
         for message in data:
-            subtype = message.get("subtype")
-            if subtype != "bot_message":
+            if message.get("subtype") != "bot_message":
                 text = str(message.get("text"))
                 if "<@U" in text:
                     for user in user_dict:
