@@ -14,10 +14,11 @@ RUN black --check --diff /app
 FROM base as dependencies
 WORKDIR /app
 COPY ./requirements.txt /app
-RUN apk add --no-cache --virtual .deps gcc musl-dev \
+RUN apk add --no-cache --virtual .deps g++ \
 	&& pip install --upgrade pip --no-cache-dir \
 	&& pip install -r requirements.txt --no-cache-dir \
-	&& apk del --no-cache .deps
+	&& apk del --no-cache .deps \
+	&& apk add --no-cache libstdc++
 
 FROM dependencies as test
 RUN pip install behave --no-cache-dir
