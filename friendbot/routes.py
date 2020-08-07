@@ -8,6 +8,7 @@ channel_dict = app.config["CHANNEL_DICT"]
 channels = app.config["CHANNELS"]
 user_dict = app.config["USER_DICT"]
 users = app.config["USERS"]
+signing_secret = app.config["SLACK_SIGNING_SECRET"]
 
 
 @app.route("/action", methods=["POST"])
@@ -49,6 +50,22 @@ def action_endpoint():
 
 @app.route("/sentence", methods=["POST"])
 def sentence_endpoint():
+    if signing_secret is not None:
+        try:
+            request_body = flask.request.get_data()
+            slack_request_timestamp = flask.request.headers["X-Slack-Request-Timestamp"]
+            slack_signature = flask.request.headers["X-Slack-Signature"]
+            slack_basestring = f"v0:{slack_request_timestamp}:{request_body}".encode(
+                "utf-8"
+            )
+            slack_signing_secret = bytes(signing_secret, "utf-8")
+            my_signature = (
+                "v0="
+                + hmac.new(slack_signing_secret, basestring, hashlib.sha256).hexdigest()
+            )
+            assert hmac.compare_digest(my_signature, slack_signature)
+        except Exception as ex:
+            app.logger.error("Request verification failed!")
     try:
         user_id = flask.request.form["user_id"]
         if user_id == "healthcheck":
