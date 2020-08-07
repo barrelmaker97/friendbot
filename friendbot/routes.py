@@ -15,6 +15,8 @@ signing_secret = app.config["SLACK_SIGNING_SECRET"]
 
 @app.route("/action", methods=["POST"])
 def action_endpoint():
+    if signing_secret is not None:
+        validate_request(flask.request)
     data = flask.request.form["payload"]
     json_data = ujson.loads(data)
     button_value = json_data["actions"][0]["value"]
@@ -53,25 +55,7 @@ def action_endpoint():
 @app.route("/sentence", methods=["POST"])
 def sentence_endpoint():
     if signing_secret is not None:
-        try:
-            request_body = flask.request.get_data()
-            slack_request_timestamp = flask.request.headers["X-Slack-Request-Timestamp"]
-            slack_signature = flask.request.headers["X-Slack-Signature"]
-            slack_basestring = f"v0:{slack_request_timestamp}:{request_body}".encode(
-                "utf-8"
-            )
-            slack_signing_secret = bytes(signing_secret, "utf-8")
-            my_signature = (
-                "v0="
-                + hmac.new(
-                    slack_signing_secret, slack_basestring, hashlib.sha256
-                ).hexdigest()
-            )
-            app.logger.info(my_signature)
-            app.logger.info(slack_signature)
-            assert hmac.compare_digest(my_signature, slack_signature)
-        except Exception as ex:
-            app.logger.error("Request verification failed!")
+        validate_request(flask.request)
     try:
         user_id = flask.request.form["user_id"]
         if user_id == "healthcheck":
@@ -117,3 +101,23 @@ def export_endpoint():
     app.logger.info("Recieved export")
     f = flask.request.files["export"]
     return ("", 200)
+
+
+def validate_request(request):
+    try:
+        request_body = request.get_data().decode("utf-8")
+        timestamp = request.headers["X-Slack-Request-Timestamp"]
+        slack_signature = request.headers["X-Slack-Signature"]
+        slack_basestring = f"v0:{timestamp}:{request_body}".encode("utf-8")
+        slack_signing_secret = bytes(signing_secret, "utf-8")
+        my_signature = (
+            "v0="
+            + hmac.new(
+                slack_signing_secret, slack_basestring, hashlib.sha256
+            ).hexdigest()
+        )
+        assert hmac.compare_digest(my_signature, slack_signature)
+        return True
+    except Exception as ex:
+        app.logger.error("Request verification failed!")
+        return False

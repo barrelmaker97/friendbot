@@ -7,8 +7,7 @@ ENV EXPORT_ZIP=/export.zip
 FROM base as lint
 RUN apk add --no-cache --virtual .deps gcc musl-dev \
 	&& pip install --upgrade pip --no-cache-dir \
-	&& pip install black --no-cache-dir \
-	&& apk del --no-cache .deps
+	&& pip install black --no-cache-dir
 RUN black --check --diff /app
 
 FROM base as dependencies
