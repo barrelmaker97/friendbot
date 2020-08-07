@@ -2,6 +2,8 @@ from friendbot import app, corpus, messages
 import requests
 import flask
 import ujson
+import hmac
+import hashlib
 
 export = app.config["EXPORT"]
 channel_dict = app.config["CHANNEL_DICT"]
@@ -61,8 +63,12 @@ def sentence_endpoint():
             slack_signing_secret = bytes(signing_secret, "utf-8")
             my_signature = (
                 "v0="
-                + hmac.new(slack_signing_secret, basestring, hashlib.sha256).hexdigest()
+                + hmac.new(
+                    slack_signing_secret, slack_basestring, hashlib.sha256
+                ).hexdigest()
             )
+            app.logger.info(my_signature)
+            app.logger.info(slack_signature)
             assert hmac.compare_digest(my_signature, slack_signature)
         except Exception as ex:
             app.logger.error("Request verification failed!")
