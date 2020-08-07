@@ -8,7 +8,7 @@ import os
 payload = {"text": "", "user_id": "healthcheck"}
 signing_secret = os.environ.get("SLACK_SIGNING_SECRET")
 if signing_secret is not None:
-    request_body = ujson.dumps(payload)
+    request_body = "text=&user_id=healthcheck"
     timestamp = str(int(time.time()))
     slack_basestring = f"v0:{timestamp}:{request_body}".encode("utf-8")
     slack_signing_secret = bytes(signing_secret, "utf-8")
