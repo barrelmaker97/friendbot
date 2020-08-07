@@ -2,9 +2,9 @@ import requests as r
 import time
 import hmac
 import hashlib
-import ujson
 import os
 
+endpoint = "http://localhost:6000/sentence"
 payload = {"text": "", "user_id": "healthcheck"}
 signing_secret = os.environ.get("SLACK_SIGNING_SECRET")
 if signing_secret is not None:
@@ -17,9 +17,8 @@ if signing_secret is not None:
         + hmac.new(slack_signing_secret, slack_basestring, hashlib.sha256).hexdigest()
     )
     headers = {"X-Slack-Request-Timestamp": timestamp, "X-Slack-Signature": signature}
+    resp = r.post(endpoint, payload, headers=headers)
 else:
-    headers = {"X-Friendbot-Healthcheck": "true"}
-endpoint = "http://localhost:6000/sentence"
-resp = r.post(endpoint, payload, headers=headers)
+    resp = r.post(endpoint, payload)
 resp.raise_for_status()
 assert resp.headers["Friendbot-Error"] == "False"
