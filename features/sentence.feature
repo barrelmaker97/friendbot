@@ -29,6 +29,11 @@ Feature: Generating Sentences
 		Then we will get a 200 status code
 		And we will get a Friendbot-Error: True header
 
+	Scenario: Request a sentence with an unsigned request
+		Given friendbot is running
+		When we make a blank POST request at /sentence that isn't signed
+		Then we will get a 400 status code
+
 	Scenario: Request a sentence using a specific channel
 		Given friendbot is running
 		When we make a POST request for <#CCF28A75J|channel> at /sentence as UCF55PTPV

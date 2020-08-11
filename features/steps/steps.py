@@ -63,6 +63,13 @@ def post_endpoint_blank(context, endpoint, user):
     assert context.res
 
 
+@when("we make a blank POST request at {endpoint} that isn't signed")
+def post_endpoint_blank(context, endpoint):
+    data_dict = dict(text="", user_id="healthcheck")
+    context.res = context.client.post(endpoint, data=data_dict)
+    assert context.res
+
+
 @then("we will get a {key}: {value} header")
 def read_header(context, key, value):
     headers = context.res.headers
