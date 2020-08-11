@@ -30,9 +30,7 @@ def get_code(context, status):
 def post_two_args(context, arg0, arg1, endpoint, user):
     text = f"{arg0} {arg1}"
     data_dict = dict(text=text, user_id=user)
-    context.res = context.client.post(
-        endpoint, data=data_dict, headers=generate_signed_headers(data_dict)
-    )
+    context.res = context.client.post(endpoint, data=data_dict, headers=generate_signed_headers(data_dict))
     assert context.res
 
 
@@ -40,26 +38,21 @@ def post_two_args(context, arg0, arg1, endpoint, user):
 def post_one_arg(context, arg0, endpoint, user):
     text = arg0
     data_dict = dict(text=text, user_id=user)
-    context.res = context.client.post(
-        endpoint, data=data_dict, headers=generate_signed_headers(data_dict)
-
-    )
+    context.res = context.client.post(endpoint, data=data_dict, headers=generate_signed_headers(data_dict))
     assert context.res
 
 
 @when("we make a blank POST request at {endpoint} with no user_id")
 def post_endpoint_blank(context, endpoint):
     data_dict = dict(text="")
-    context.res = context.client.post(endpoint, data=data_dict, headers=generate_signed_headers(data_dict)
-)
+    context.res = context.client.post(endpoint, data=data_dict, headers=generate_signed_headers(data_dict))
     assert context.res
 
 
 @when("we make a blank POST request at {endpoint} as {user}")
 def post_endpoint_blank(context, endpoint, user):
     data_dict = dict(text="", user_id=user)
-    context.res = context.client.post(endpoint, data=data_dict, headers=generate_signed_headers(data_dict)
-)
+    context.res = context.client.post(endpoint, data=data_dict, headers=generate_signed_headers(data_dict))
     assert context.res
 
 
@@ -67,6 +60,14 @@ def post_endpoint_blank(context, endpoint, user):
 def post_endpoint_blank(context, endpoint):
     data_dict = dict(text="", user_id="healthcheck")
     context.res = context.client.post(endpoint, data=data_dict)
+    assert context.res
+
+
+@when("we make a blank POST request at {endpoint} that is too old")
+def post_endpoint_blank(context, endpoint):
+    data_dict = dict(text="", user_id="healthcheck")
+    headers = generate_signed_headers(data_dict)
+    context.res = context.client.post(endpoint, data=data_dict, headers=generate_signed_headers(data_dict, timestamp=(time.time() - 600)))
     assert context.res
 
 
@@ -83,20 +84,19 @@ def post_two_args(context, endpoint, path):
     with open(path) as f:
         data = json.load(f)
     data_dict = dict(payload=json.dumps(data))
-    context.res = context.client.post(endpoint, data=data_dict, headers=generate_signed_headers(data_dict)
-)
+    context.res = context.client.post(endpoint, data=data_dict, headers=generate_signed_headers(data_dict))
     assert context.res
 
 
-def generate_signed_headers(data_dict):
+def generate_signed_headers(data_dict, timestamp=time.time()):
     signing_secret = os.environ.get("SLACK_SIGNING_SECRET")
     if signing_secret is not None:
         request_body = urllib.parse.urlencode(data_dict)
-        timestamp = str(int(time.time()))
-        slack_basestring = f"v0:{timestamp}:{request_body}".encode("utf-8")
+        str_timestamp = str(int(timestamp))
+        slack_basestring = f"v0:{str_timestamp}:{request_body}".encode("utf-8")
         slack_signing_secret = bytes(signing_secret, "utf-8")
         signature = (
             "v0="
             + hmac.new(slack_signing_secret, slack_basestring, hashlib.sha256).hexdigest()
         )
-        return {"X-Slack-Request-Timestamp": timestamp, "X-Slack-Signature": signature}
+        return {"X-Slack-Request-Timestamp": str_timestamp, "X-Slack-Signature": signature}
