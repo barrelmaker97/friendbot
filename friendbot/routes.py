@@ -16,6 +16,7 @@ signing_secret = app.config["SLACK_SIGNING_SECRET"]
 
 @app.route("/action", methods=["POST"])
 def action_endpoint():
+    start_time = time.time()
     if signing_secret is not None:
         if validate_request(flask.request) is not True:
             return ("", 400)
@@ -46,7 +47,8 @@ def action_endpoint():
         "Friendbot-Error": str(error),
     }
     requests.post(response_url, data=payload, headers=headers)
-    msg = f"{real_name} ({user_id}) pressed {button_text}"
+    req_time = round(time.time() - start_time, 6)
+    msg = f"{real_name} ({user_id}) pressed {button_text} {req_time}s"
     if error:
         app.logger.error(msg)
     else:
@@ -56,6 +58,7 @@ def action_endpoint():
 
 @app.route("/sentence", methods=["POST"])
 def sentence_endpoint():
+    start_time = time.time()
     if signing_secret is not None:
         if validate_request(flask.request) is not True:
             return ("", 400)
@@ -94,7 +97,8 @@ def sentence_endpoint():
     resp.headers["Friendbot-Error"] = "False"
     resp.headers["Friendbot-User"] = user
     resp.headers["Friendbot-Channel"] = channel
-    msg = f"{real_name} ({user_id}) generated a sentence; C: {channel} U: {user}"
+    req_time = round(time.time() - start_time, 6)
+    msg = f"{real_name} ({user_id}) generated a sentence; C: {channel} U: {user} {req_time}s"
     app.logger.info(msg)
     return resp
 
