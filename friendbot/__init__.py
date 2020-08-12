@@ -1,7 +1,9 @@
-import logging, os, pathlib
 from zipfile import ZipFile
 from flask import Flask
 from friendbot import corpus
+import logging
+import os
+import pathlib
 
 app = Flask(__name__)
 zip_location = pathlib.Path(os.environ.get("EXPORT_ZIP")).resolve()
