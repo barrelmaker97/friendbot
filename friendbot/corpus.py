@@ -38,8 +38,7 @@ def parseArg(arg, options):
         raise Exception(f"Could not parse argument {arg}")
     if final in options:
         return final
-    else:
-        raise Exception(f"Argument {final} not found")
+    raise Exception(f"Argument {final} not found")
 
 
 def _readJsonFile(path):
@@ -89,5 +88,5 @@ def generateSentence(export, user, channel, user_dict, channel_dict):
         fulltext = _generateCorpus(export, user, channel, user_dict, channel_dict)
         text_model = markovify.NewlineText(fulltext)
     sentence = text_model.make_sentence(tries=100)
-    if type(sentence) == str:
+    if isinstance(sentence, str):
         return sentence
