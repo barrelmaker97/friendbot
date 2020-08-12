@@ -7,7 +7,7 @@ git:
   depth: 3
 jobs:
   include:
-    - stage: "Amd64 Build"
+    - name: "Amd64 Build"
       addons:
         apt:
           packages:
@@ -18,7 +18,7 @@ jobs:
         - docker build --network build_net -t barrelmaker97/friendbot:amd64 .
       after_success:
         - bash deploy.sh
-    - stage: "Arm Builds"
+    - name: "Arm Builds"
       arch: arm64
       install:
         - bash setup.sh
