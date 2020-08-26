@@ -7,7 +7,7 @@ RUN apk add --no-cache --virtual .deps gcc musl-dev \
 	&& pip install --upgrade pip --no-cache-dir \
 	&& pip install black --no-cache-dir
 COPY ./friendbot/ /app/friendbot
-RUN black --check --diff /app
+RUN black --check --diff /app && touch /lint-success
 
 FROM base as dependencies
 WORKDIR /app
@@ -25,9 +25,11 @@ COPY ./features /app/features
 COPY ./test_data/actions /app/test_data/actions
 COPY ./test_data/export.zip /
 COPY ./friendbot/ /app/friendbot
-RUN behave
+RUN behave && touch /test-success
 
 FROM dependencies as production
+COPY --from=lint /lint-success /
+COPY --from=test /test-success /
 HEALTHCHECK --interval=60s --timeout=3s --retries=1 CMD python healthcheck.py
 CMD ["gunicorn", "--preload", "-w", "2", "-k", "gthread", "--threads", "4", "-b", "0.0.0.0:6000", "--worker-tmp-dir", "/dev/shm", "friendbot:app"]
 COPY ./healthcheck.py /app
