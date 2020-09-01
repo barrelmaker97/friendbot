@@ -12,14 +12,18 @@ jobs:
         apt:
           packages:
             - docker-ce
+      install:
+        - bash setup.sh
       script:
-        - docker build --progress=plain -t barrelmaker97/friendbot:amd64 .
+        - docker build --network build_net -t barrelmaker97/friendbot:amd64 .
       after_success:
         - bash deploy.sh
     - name: "Arm Builds"
       arch: arm64
+      install:
+        - bash setup.sh
       script:
-        - docker build --progress=plain -t barrelmaker97/friendbot:arm64v8 --build-arg BASE_IMAGE=arm64v8/python:3.8-alpine .
-        - docker build --progress=plain -t barrelmaker97/friendbot:arm32v7 --build-arg BASE_IMAGE=arm32v7/python:3.8-alpine .
+        - docker build --network build_net -t barrelmaker97/friendbot:arm64v8 --build-arg BASE_IMAGE=arm64v8/python:3.8-alpine .
+        - docker build --network build_net -t barrelmaker97/friendbot:arm32v7 --build-arg BASE_IMAGE=arm32v7/python:3.8-alpine .
       after_success:
         - bash deploy.sh
