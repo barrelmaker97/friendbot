@@ -1,6 +1,6 @@
 from pathlib import Path
 import redis
-import ujson
+import json
 import re
 import sys
 import markovify
@@ -43,7 +43,7 @@ def parseArg(arg, options):
 
 def _readJsonFile(path):
     with open(path) as f:
-        return ujson.load(f)
+        return json.load(f)
 
 
 def _generateCorpus(export, userID, channel, user_dict, channel_dict):
@@ -79,11 +79,11 @@ def generateSentence(export, user, channel, user_dict, channel_dict):
     try:
         if cache.exists(model_name):
             raw_data = cache.get(model_name)
-            text_model = markovify.Text.from_json(ujson.loads(raw_data))
+            text_model = markovify.Text.from_json(json.loads(raw_data))
         else:
             fulltext = _generateCorpus(export, user, channel, user_dict, channel_dict)
             text_model = markovify.NewlineText(fulltext)
-            cache.set(model_name, ujson.dumps(text_model.to_json()))
+            cache.set(model_name, json.dumps(text_model.to_json()))
     except redis.exceptions.ConnectionError as e:
         fulltext = _generateCorpus(export, user, channel, user_dict, channel_dict)
         text_model = markovify.NewlineText(fulltext)

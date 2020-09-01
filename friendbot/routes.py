@@ -1,7 +1,7 @@
 from friendbot import app, corpus, messages
 import requests
 import flask
-import ujson
+import json
 import hmac
 import hashlib
 import time
@@ -21,7 +21,7 @@ def action_endpoint():
         if validate_request(flask.request) is not True:
             return ("", 400)
     data = flask.request.form["payload"]
-    json_data = ujson.loads(data)
+    json_data = json.loads(data)
     button_value = json_data["actions"][0]["value"]
     button_text = json_data["actions"][0]["text"]["text"]
     response_url = json_data["response_url"]
