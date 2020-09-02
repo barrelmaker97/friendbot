@@ -28,6 +28,7 @@ COPY ./friendbot/ /app/friendbot
 RUN behave && touch /test-success
 
 FROM dependencies as production
+EXPOSE 6000
 COPY --from=lint /lint-success /
 COPY --from=test /test-success /
 HEALTHCHECK --interval=60s --timeout=3s --retries=1 CMD python healthcheck.py
