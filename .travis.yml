@@ -18,12 +18,19 @@ jobs:
         - docker build --network build_net -t barrelmaker97/friendbot:amd64 .
       after_success:
         - bash deploy.sh
-    - name: "Arm Builds"
+    - name: "Arm64 Build"
       arch: arm64
       install:
         - bash setup.sh
       script:
         - docker build --network build_net -t barrelmaker97/friendbot:arm64v8 --build-arg BASE_IMAGE=arm64v8/python:3.8-alpine .
+      after_success:
+        - bash deploy.sh
+    - name: "Arm32 Build"
+      arch: arm64
+      install:
+        - bash setup.sh
+      script:
         - docker build --network build_net -t barrelmaker97/friendbot:arm32v7 --build-arg BASE_IMAGE=arm32v7/python:3.8-alpine .
       after_success:
         - bash deploy.sh
