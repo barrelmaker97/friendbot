@@ -79,11 +79,11 @@ def generateSentence(export, user, channel, user_dict, channel_dict):
     try:
         if cache.exists(model_name):
             raw_data = cache.get(model_name)
-            text_model = markovify.Text.from_json(json.loads(raw_data))
+            text_model = markovify.Text.from_json(raw_data)
         else:
             fulltext = _generateCorpus(export, user, channel, user_dict, channel_dict)
             text_model = markovify.NewlineText(fulltext)
-            cache.set(model_name, json.dumps(text_model.to_json()))
+            cache.set(model_name, text_model.to_json())
     except redis.exceptions.ConnectionError as e:
         fulltext = _generateCorpus(export, user, channel, user_dict, channel_dict)
         text_model = markovify.NewlineText(fulltext)
