@@ -1,6 +1,5 @@
 ARG BASE_IMAGE=python:3.8-alpine
 FROM $BASE_IMAGE as base
-ENV EXPORT_ZIP=/export.zip
 
 FROM base as lint
 RUN apk add --no-cache --virtual .deps gcc musl-dev \

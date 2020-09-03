@@ -12,6 +12,7 @@ channels = app.config["CHANNELS"]
 user_dict = app.config["USER_DICT"]
 users = app.config["USERS"]
 signing_secret = app.config["SLACK_SIGNING_SECRET"]
+cache = app.config["REDIS_CACHE"]
 
 
 @app.route("/action", methods=["POST"])
@@ -33,7 +34,7 @@ def action_endpoint():
     elif button_text == "Shuffle":
         params = button_value.split()
         sentence = corpus.generateSentence(
-            export, params[0], params[1], user_dict, channel_dict
+            export, params[0], params[1], user_dict, channel_dict, cache
         )
         payload = messages.promptMessage(sentence, params[0], params[1])
     elif button_text == "Cancel":
@@ -91,7 +92,9 @@ def sentence_endpoint():
                 )
                 resp.headers["Friendbot-Error"] = "True"
                 return resp
-    sentence = corpus.generateSentence(export, user, channel, user_dict, channel_dict)
+    sentence = corpus.generateSentence(
+        export, user, channel, user_dict, channel_dict, cache
+    )
     payload = messages.promptMessage(sentence, user, channel)
     resp = flask.Response(payload, mimetype="application/json")
     resp.headers["Friendbot-Error"] = "False"

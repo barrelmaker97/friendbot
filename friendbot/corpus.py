@@ -6,7 +6,6 @@ import sys
 import markovify
 
 regex = re.compile(r'<(?:[^"\\]|\\.)*>', re.IGNORECASE)
-cache = redis.Redis(host="redis", port=6379)
 
 
 def getUserDict(export):
@@ -74,7 +73,7 @@ def _generateCorpus(export, userID, channel, user_dict, channel_dict):
     return fulltext
 
 
-def generateSentence(export, user, channel, user_dict, channel_dict):
+def generateSentence(export, user, channel, user_dict, channel_dict, cache):
     model_name = f"{user}_{channel}"
     try:
         if cache.exists(model_name):
