@@ -5,6 +5,8 @@ import json
 import hmac
 import hashlib
 import time
+import threading
+import redis
 
 export = app.config["EXPORT"]
 channel_dict = app.config["CHANNEL_DICT"]
@@ -92,9 +94,23 @@ def sentence_endpoint():
                 )
                 resp.headers["Friendbot-Error"] = "True"
                 return resp
-    sentence = corpus.generateSentence(
-        export, user, channel, user_dict, channel_dict, cache
+    pregen_name = f"{user}_{channel}_pregen"
+    try:
+        if cache.exists(pregen_name):
+            sentence = str(cache.get(pregen_name))
+        else:
+            sentence = corpus.generateSentence(
+                export, user, channel, user_dict, channel_dict, cache
+            )
+    except redis.exceptions.ConnectionError as e:
+        sentence = corpus.generateSentence(
+            export, user, channel, user_dict, channel_dict, cache
+        )
+    pregen_thread = threading.Thread(
+        target=corpus.pregenSentence,
+        args=(export, user, channel, user_dict, channel_dict, cache),
     )
+    pregen_thread.start()
     payload = messages.promptMessage(sentence, user, channel)
     resp = flask.Response(payload, mimetype="application/json")
     resp.headers["Friendbot-Error"] = "False"

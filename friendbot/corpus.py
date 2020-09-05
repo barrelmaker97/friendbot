@@ -89,3 +89,14 @@ def generateSentence(export, user, channel, user_dict, channel_dict, cache):
     sentence = text_model.make_sentence(tries=100)
     if isinstance(sentence, str):
         return sentence
+
+
+def pregenSentence(export, user, channel, user_dict, channel_dict, cache):
+    pregen_name = f"{user}_{channel}_pregen"
+    pregen_sentence = generateSentence(
+        export, user, channel, user_dict, channel_dict, cache
+    )
+    try:
+        cache.set(pregen_name, pregen_sentence)
+    except redis.exceptions.ConnectionError as e:
+        pass
