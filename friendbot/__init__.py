@@ -31,6 +31,7 @@ with ZipFile(zip_location, "r") as zip_object:
     zip_object.extractall(export)
 
 # Try to load users from export
+app.logger.info("Loading Users...")
 try:
     user_dict = corpus.getUserDict(export)
     users = user_dict.keys()
@@ -40,6 +41,7 @@ except Exception as ex:
     app.logger.error(msg)
 
 # Try to load channels from export
+app.logger.info("Loading Channels...")
 try:
     channel_dict = corpus.getChannelDict(export)
     channels = channel_dict.keys()
@@ -49,14 +51,16 @@ except Exception as ex:
     app.logger.error(msg)
 
 # Check if Redis is available
+app.logger.info("Checking Redis connection...")
 cache = redis.Redis(host="redis", port=6379)
+redis_error_msg = "Could not connect to Redis cache. This will impact performance"
 try:
     if not cache.ping():
-        msg = "Could not connect to Redis cache. This will impact performance"
-        app.logger.warning(msg)
+        app.logger.warning(redis_error_msg)
+    else:
+        app.logger.info("Redis connected")
 except redis.exceptions.ConnectionError as e:
-    msg = "Could not connect to Redis cache. This will impact performance"
-    app.logger.warning(msg)
+    app.logger.warning(redis_error_msg)
 
 app.logger.info("Warming up cache...")
 corpus.generateSentence(export, "None", "None", user_dict, channel_dict, cache)
