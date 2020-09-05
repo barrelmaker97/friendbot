@@ -106,13 +106,6 @@ def sentence_endpoint():
     return resp
 
 
-@app.route("/export", methods=["POST"])
-def export_endpoint():
-    app.logger.info("Recieved export")
-    f = flask.request.files["export"]
-    return ("", 200)
-
-
 def validate_request(request):
     try:
         request_body = request.get_data().decode("utf-8")

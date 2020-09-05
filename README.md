@@ -28,9 +28,6 @@ This endpoint accepts HTTP `POST` requests sentence generated using the export d
 ### /action
 This endpoint accepts HTTP `POST` requests in the form of `application/x-www-form-urlencoded`, extracts a JSON payload, sends a `POST` request to the Slack API based on the interaction that initiated the request, and returns a 200 status code. This provides the interactive component of Friendbot messages. These interactions consist of sending a generated sentence to the channel, shuffling to generate a new sentence, and cancelling sentence generation.
 
-### /export
-This endpoint is currently under contstruction and will just return a 200 status code.
-
 ## Requirements
 * Docker
 * Docker Compose
