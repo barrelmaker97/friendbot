@@ -24,7 +24,7 @@ COPY ./features /app/features
 COPY ./test_data/actions /app/test_data/actions
 COPY ./test_data/export.zip /
 COPY ./friendbot/ /app/friendbot
-RUN behave && touch /test-success
+RUN behave --no-logcapture && touch /test-success
 
 FROM dependencies as production
 EXPOSE 6000

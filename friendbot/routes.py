@@ -102,10 +102,14 @@ def sentence_endpoint():
 
 
 def validate_request(request):
+    max_time = 5  # This is in minutes
     try:
         request_body = request.get_data().decode("utf-8")
         timestamp = request.headers["X-Slack-Request-Timestamp"]
-        if abs(time.time() - int(timestamp)) > 60 * 5:
+        if abs(time.time() - int(timestamp)) > 60 * max_time:
+            app.logger.error(
+                f"Request verification failed! Request older than {max_time} minutes"
+            )
             return False
         slack_signature = request.headers["X-Slack-Signature"]
         slack_basestring = f"v0:{timestamp}:{request_body}".encode("utf-8")
@@ -119,7 +123,7 @@ def validate_request(request):
         assert hmac.compare_digest(my_signature, slack_signature)
         return True
     except Exception as ex:
-        app.logger.error("Request verification failed!")
+        app.logger.error("Request verification failed! Signature did not match")
         return False
 
 
