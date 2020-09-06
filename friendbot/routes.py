@@ -133,6 +133,7 @@ def getPregenSentence(export, user, channel, user_dict, channel_dict, cache):
     try:
         if cache.exists(pregen_name):
             sentence = cache.get(pregen_name).decode("utf-8")
+            cache.delete(pregen_name)
         else:
             sentence = corpus.generateSentence(
                 export, user, channel, user_dict, channel_dict, cache
