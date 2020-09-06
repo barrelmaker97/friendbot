@@ -41,10 +41,11 @@ def action_endpoint():
     else:
         error = True
         payload = messages.errorMessage()
-    requests.post(data["response_url"], json=payload)
+    headers = {"Content-type": "application/json", "Accept": "text/plain"}
+    requests.post(response_url, data=payload, headers=headers)
+    req_time = round((time.time() - start_time) * 1000, 3)
     user_id = data["user"]["id"]
     real_name = user_dict[user_id]
-    req_time = round((time.time() - start_time) * 1000, 3)
     msg = f"{real_name} ({user_id}) pressed {button_text} {req_time}ms"
     if error:
         app.logger.error(msg)
