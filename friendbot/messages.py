@@ -1,4 +1,4 @@
-import json
+import ujson
 
 
 def errorMessage():
@@ -7,12 +7,12 @@ def errorMessage():
         "replace_original": False,
         "text": "Sorry, that didn't work. Please try again.",
     }
-    return json.dumps(payload)
+    return ujson.dumps(payload)
 
 
 def cancelMessage():
     payload = {"delete_original": True}
-    return json.dumps(payload)
+    return ujson.dumps(payload)
 
 
 def sendMessage(sentence, real_name):
@@ -28,7 +28,7 @@ def sendMessage(sentence, real_name):
             },
         ],
     }
-    return json.dumps(payload)
+    return ujson.dumps(payload)
 
 
 def promptMessage(sentence, user, channel):
@@ -65,4 +65,4 @@ def promptMessage(sentence, user, channel):
             },
         ],
     }
-    return json.dumps(payload)
+    return ujson.dumps(payload)

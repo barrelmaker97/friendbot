@@ -1,6 +1,6 @@
 from pathlib import Path
 import redis
-import json
+import ujson
 import re
 import sys
 import markovify
@@ -42,7 +42,7 @@ def parse_argument(arg, options):
 
 def _read_json_file(path):
     with open(path) as f:
-        return json.load(f)
+        return ujson.load(f)
 
 
 def _generate_corpus(export, userID, channel, user_dict, channel_dict):
