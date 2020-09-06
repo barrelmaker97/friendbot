@@ -35,7 +35,7 @@ def action_endpoint():
         payload = messages.sendMessage(button_value, real_name)
     elif button_text == "Shuffle":
         params = button_value.split()
-        sentence = getPregenSentence(
+        sentence = get_sentence(
             export, params[0], params[1], user_dict, channel_dict, cache
         )
         payload = messages.promptMessage(sentence, params[0], params[1])
@@ -82,10 +82,10 @@ def sentence_endpoint():
     user = "None"
     for param in params:
         try:
-            channel = corpus.parseArg(param, channels)
+            channel = corpus.parse_argument(param, channels)
         except Exception:
             try:
-                user = corpus.parseArg(param, users)
+                user = corpus.parse_argument(param, users)
             except Exception as ex:
                 msg = f"Failed to parse argument {param}"
                 app.logger.error(msg)
@@ -94,7 +94,7 @@ def sentence_endpoint():
                 )
                 resp.headers["Friendbot-Error"] = "True"
                 return resp
-    sentence = getPregenSentence(export, user, channel, user_dict, channel_dict, cache)
+    sentence = get_sentence(export, user, channel, user_dict, channel_dict, cache)
     payload = messages.promptMessage(sentence, user, channel)
     resp = flask.Response(payload, mimetype="application/json")
     resp.headers["Friendbot-Error"] = "False"
@@ -128,22 +128,22 @@ def validate_request(request):
         return False
 
 
-def getPregenSentence(export, user, channel, user_dict, channel_dict, cache):
+def get_sentence(export, user, channel, user_dict, channel_dict, cache):
     pregen_name = f"{user}_{channel}_pregen"
     try:
         if cache.exists(pregen_name):
             sentence = cache.get(pregen_name).decode("utf-8")
             cache.delete(pregen_name)
         else:
-            sentence = corpus.generateSentence(
+            sentence = corpus.create_sentence(
                 export, user, channel, user_dict, channel_dict, cache
             )
     except redis.exceptions.ConnectionError as e:
-        sentence = corpus.generateSentence(
+        sentence = corpus.create_sentence(
             export, user, channel, user_dict, channel_dict, cache
         )
     pregen_thread = threading.Thread(
-        target=corpus.pregenSentence,
+        target=corpus.pregen_sentence,
         args=(export, user, channel, user_dict, channel_dict, cache),
     )
     pregen_thread.start()

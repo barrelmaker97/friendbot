@@ -33,7 +33,7 @@ with ZipFile(zip_location, "r") as zip_object:
 # Try to load users from export
 app.logger.info("Loading Users...")
 try:
-    user_dict = corpus.getUserDict(export)
+    user_dict = corpus.get_user_dict(export)
     users = user_dict.keys()
     app.logger.info("Users loaded from export")
 except Exception as ex:
@@ -43,7 +43,7 @@ except Exception as ex:
 # Try to load channels from export
 app.logger.info("Loading Channels...")
 try:
-    channel_dict = corpus.getChannelDict(export)
+    channel_dict = corpus.get_channel_dict(export)
     channels = channel_dict.keys()
     app.logger.info("Channels loaded from export")
 except Exception as ex:
@@ -63,12 +63,12 @@ except redis.exceptions.ConnectionError as e:
     app.logger.warning(redis_error_msg)
 
 app.logger.info("Warming up cache...")
-corpus.generateSentence(export, "None", "None", user_dict, channel_dict, cache)
+corpus.create_sentence(export, "None", "None", user_dict, channel_dict, cache)
 count = 1
 for user in users:
     for channel in channels:
         try:
-            corpus.generateSentence(
+            corpus.create_sentence(
                 export, user, channel, user_dict, channel_dict, cache
             )
             count += 1

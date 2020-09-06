@@ -8,9 +8,9 @@ import markovify
 regex = re.compile(r'<(?:[^"\\]|\\.)*>', re.IGNORECASE)
 
 
-def getUserDict(export):
+def get_user_dict(export):
     user_dict = {}
-    data = _readJsonFile(f"{export}/users.json")
+    data = _read_json_file(f"{export}/users.json")
     for user in data:
         if real_name := user.get("real_name"):
             user_id = user.get("id")
@@ -18,9 +18,9 @@ def getUserDict(export):
     return user_dict
 
 
-def getChannelDict(export):
+def get_channel_dict(export):
     channel_dict = {}
-    data = _readJsonFile(f"{export}/channels.json")
+    data = _read_json_file(f"{export}/channels.json")
     for channel in data:
         if name := channel.get("name"):
             channel_id = channel.get("id")
@@ -28,7 +28,7 @@ def getChannelDict(export):
     return channel_dict
 
 
-def parseArg(arg, options):
+def parse_argument(arg, options):
     try:
         fix = arg.replace("&lt;", "<").replace("&gt;", ">")
         clean = re.search("<.(.*)>", fix).group(1)
@@ -40,12 +40,12 @@ def parseArg(arg, options):
     raise Exception(f"Argument {final} not found")
 
 
-def _readJsonFile(path):
+def _read_json_file(path):
     with open(path) as f:
         return json.load(f)
 
 
-def _generateCorpus(export, userID, channel, user_dict, channel_dict):
+def _generate_corpus(export, userID, channel, user_dict, channel_dict):
     if channel == "None":
         channel_directory = export
     else:
@@ -53,7 +53,7 @@ def _generateCorpus(export, userID, channel, user_dict, channel_dict):
     pathlist = Path(channel_directory).glob("**/*.json")
     fulltext = ""
     for path in pathlist:
-        data = _readJsonFile(str(path))
+        data = _read_json_file(str(path))
         for message in data:
             if message.get("subtype") != "bot_message":
                 text = str(message.get("text"))
@@ -73,27 +73,27 @@ def _generateCorpus(export, userID, channel, user_dict, channel_dict):
     return fulltext
 
 
-def generateSentence(export, user, channel, user_dict, channel_dict, cache):
+def create_sentence(export, user, channel, user_dict, channel_dict, cache):
     model_name = f"{user}_{channel}"
     try:
         if cache.exists(model_name):
             raw_data = cache.get(model_name)
             text_model = markovify.Text.from_json(raw_data)
         else:
-            fulltext = _generateCorpus(export, user, channel, user_dict, channel_dict)
+            fulltext = _generate_corpus(export, user, channel, user_dict, channel_dict)
             text_model = markovify.NewlineText(fulltext)
             cache.set(model_name, text_model.to_json())
     except redis.exceptions.ConnectionError as e:
-        fulltext = _generateCorpus(export, user, channel, user_dict, channel_dict)
+        fulltext = _generate_corpus(export, user, channel, user_dict, channel_dict)
         text_model = markovify.NewlineText(fulltext)
     sentence = text_model.make_sentence(tries=100)
     if isinstance(sentence, str):
         return sentence
 
 
-def pregenSentence(export, user, channel, user_dict, channel_dict, cache):
+def pregen_sentence(export, user, channel, user_dict, channel_dict, cache):
     pregen_name = f"{user}_{channel}_pregen"
-    pregen_sentence = generateSentence(
+    pregen_sentence = create_sentence(
         export, user, channel, user_dict, channel_dict, cache
     )
     try:
