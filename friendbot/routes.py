@@ -23,18 +23,15 @@ def action_endpoint():
     if signing_secret is not None:
         if validate_request(flask.request) is not True:
             return ("", 400)
-    data = flask.request.form["payload"]
-    json_data = ujson.loads(data)
-    button_value = json_data["actions"][0]["value"]
-    button_text = json_data["actions"][0]["text"]["text"]
-    response_url = json_data["response_url"]
-    user_id = json_data["user"]["id"]
-    real_name = user_dict[user_id]
+    data = ujson.loads(flask.request.form["payload"])
+    button_text = data["actions"][0]["text"]["text"]
     error = False
     if button_text == "Send":
-        payload = messages.sendMessage(button_value, real_name)
+        user_id = data["user"]["id"]
+        real_name = user_dict[user_id]
+        payload = messages.sendMessage(data["actions"][0]["value"], real_name)
     elif button_text == "Shuffle":
-        params = button_value.split()
+        params = data["actions"][0]["value"].split()
         sentence = get_sentence(
             export, params[0], params[1], user_dict, channel_dict, cache
         )
@@ -44,12 +41,9 @@ def action_endpoint():
     else:
         error = True
         payload = messages.errorMessage()
-    headers = {
-        "Content-type": "application/json",
-        "Accept": "text/plain",
-        "Friendbot-Error": str(error),
-    }
-    requests.post(response_url, data=payload, headers=headers)
+    requests.post(data["response_url"], json=payload)
+    user_id = data["user"]["id"]
+    real_name = user_dict[user_id]
     req_time = round((time.time() - start_time) * 1000, 3)
     msg = f"{real_name} ({user_id}) pressed {button_text} {req_time}ms"
     if error:

@@ -1,23 +1,18 @@
-import ujson
-
-
 def errorMessage():
-    payload = {
+    return {
         "response_type": "ephemeral",
         "replace_original": False,
         "text": "Sorry, that didn't work. Please try again.",
     }
-    return ujson.dumps(payload)
 
 
 def cancelMessage():
-    payload = {"delete_original": True}
-    return ujson.dumps(payload)
+    return {"delete_original": True}
 
 
 def sendMessage(sentence, real_name):
     context_msg = f"Sent by {real_name}"
-    payload = {
+    return {
         "delete_original": True,
         "response_type": "in_channel",
         "blocks": [
@@ -28,11 +23,10 @@ def sendMessage(sentence, real_name):
             },
         ],
     }
-    return ujson.dumps(payload)
 
 
 def promptMessage(sentence, user, channel):
-    payload = {
+    return {
         "replace_original": True,
         "response_type": "ephemeral",
         "blocks": [
@@ -65,4 +59,3 @@ def promptMessage(sentence, user, channel):
             },
         ],
     }
-    return ujson.dumps(payload)
