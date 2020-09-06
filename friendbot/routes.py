@@ -50,8 +50,8 @@ def action_endpoint():
         "Friendbot-Error": str(error),
     }
     requests.post(response_url, data=payload, headers=headers)
-    req_time = round(time.time() - start_time, 6)
-    msg = f"{real_name} ({user_id}) pressed {button_text} {req_time}s"
+    req_time = round((time.time() - start_time) * 1000, 3)
+    msg = f"{real_name} ({user_id}) pressed {button_text} {req_time}ms"
     if error:
         app.logger.error(msg)
     else:
@@ -100,8 +100,8 @@ def sentence_endpoint():
     resp.headers["Friendbot-Error"] = "False"
     resp.headers["Friendbot-User"] = user
     resp.headers["Friendbot-Channel"] = channel
-    req_time = round(time.time() - start_time, 6)
-    msg = f"{real_name} ({user_id}) generated a sentence; C: {channel} U: {user} {req_time}s"
+    req_time = round((time.time() - start_time) * 1000, 3)
+    msg = f"{real_name} ({user_id}) generated a sentence; C: {channel} U: {user} {req_time}ms"
     app.logger.info(msg)
     return resp
 
