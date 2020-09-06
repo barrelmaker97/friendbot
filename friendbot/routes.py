@@ -42,7 +42,7 @@ def action_endpoint():
         error = True
         payload = messages.errorMessage()
     headers = {"Content-type": "application/json", "Accept": "text/plain"}
-    requests.post(response_url, data=payload, headers=headers)
+    requests.post(data["response_url"], data=payload, headers=headers)
     req_time = round((time.time() - start_time) * 1000, 3)
     user_id = data["user"]["id"]
     real_name = user_dict[user_id]
