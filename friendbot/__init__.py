@@ -5,6 +5,7 @@ import logging
 import os
 import pathlib
 import redis
+import time
 
 app = Flask(__name__)
 
@@ -62,7 +63,9 @@ try:
 except redis.exceptions.ConnectionError as e:
     app.logger.warning(redis_error_msg)
 
-app.logger.info("Warming up cache...")
+# Warm up text model cache
+app.logger.info("Warming up text model cache...")
+start_time = time.time()
 corpus.create_sentence(export, "None", "None", user_dict, channel_dict, cache)
 count = 1
 for user in users:
@@ -74,7 +77,8 @@ for user in users:
             count += 1
         except KeyError as ex:
             pass
-msg = f"Generated {count} models for {len(users)} users in {len(channels)} channels"
+warmup_time = round(time.time() - start_time, 3)
+msg = f"Generated {count} models for {len(users)} users in {len(channels)} channels in {warmup_time}s"
 app.logger.info(msg)
 
 app.config["EXPORT"] = export
