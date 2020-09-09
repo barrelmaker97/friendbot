@@ -5,6 +5,9 @@ services:
   - docker
 git:
   depth: 3
+branches:
+  only:
+    - master
 jobs:
   include:
     - name: "Amd64 Build"
