@@ -1,7 +1,5 @@
-[![Build Status](https://travis-ci.org/barrelmaker97/friendbot.svg?branch=master)](https://travis-ci.org/barrelmaker97/friendbot)
 [![Coverage Status](https://coveralls.io/repos/github/barrelmaker97/friendbot/badge.svg?branch=master)](https://coveralls.io/github/barrelmaker97/friendbot?branch=master)
 [![CodeFactor](https://www.codefactor.io/repository/github/barrelmaker97/friendbot/badge/master)](https://www.codefactor.io/repository/github/barrelmaker97/friendbot/overview/master)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 # friendbot
 Friendbot is a Markov-chain based chatbot which uses Slack messages as its corpus. It reads in messages from a Slack data export, generates a corpus from them, and feeds this to a markov chain generator to naively simulate a conversation. It is built with [Flask](https://palletsprojects.com/p/flask/), served by [Gunicorn](https://gunicorn.org/), cached by [Redis](https://redis.io/), and run in Docker. The sentences which it generates can be accessed via an API which is designed to connect to the existing Slack API.

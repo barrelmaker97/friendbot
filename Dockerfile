@@ -1,5 +1,4 @@
-ARG BASE_IMAGE=python:3.8-alpine
-FROM $BASE_IMAGE as base
+FROM python:3.8-alpine as base
 
 FROM base as dependencies
 WORKDIR /app
