@@ -43,31 +43,31 @@ def post_one_arg(context, arg0, endpoint, user):
 
 
 @when("we make a blank POST request at {endpoint} with no user_id")
-def post_endpoint_blank(context, endpoint):
+def post_endpoint_blank_no_user(context, endpoint):
     data_dict = dict(text="")
     context.res = context.client.post(endpoint, data=data_dict, headers=generate_signed_headers(data_dict))
     assert context.res
 
 
 @when("we make a blank POST request at {endpoint} as {user}")
-def post_endpoint_blank(context, endpoint, user):
+def post_endpoint_blank_with_user(context, endpoint, user):
     data_dict = dict(text="", user_id=user)
     context.res = context.client.post(endpoint, data=data_dict, headers=generate_signed_headers(data_dict))
     assert context.res
 
 
 @when("we make a blank POST request at {endpoint} that isn't signed")
-def post_endpoint_blank(context, endpoint):
+def post_endpoint_blank_unsigned(context, endpoint):
     data_dict = dict(text="", user_id="healthcheck")
     context.res = context.client.post(endpoint, data=data_dict)
     assert context.res
 
 
 @when("we make a blank POST request at {endpoint} that is too old")
-def post_endpoint_blank(context, endpoint):
+def post_endpoint_blank_too_old(context, endpoint):
     data_dict = dict(text="", user_id="healthcheck")
-    headers = generate_signed_headers(data_dict)
-    context.res = context.client.post(endpoint, data=data_dict, headers=generate_signed_headers(data_dict, timestamp=(time.time() - 600)))
+    headers = generate_signed_headers(data_dict, timestamp=(time.time() - 600))
+    context.res = context.client.post(endpoint, data=data_dict, headers=headers)
     assert context.res
 
 
@@ -80,7 +80,7 @@ def read_header(context, key, value):
 
 
 @when("we make a POST request at {endpoint} using {path}")
-def post_two_args(context, endpoint, path):
+def post_basic(context, endpoint, path):
     with open(path) as f:
         data = json.load(f)
     data_dict = dict(payload=json.dumps(data))

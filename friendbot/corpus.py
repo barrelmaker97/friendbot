@@ -2,7 +2,6 @@ from pathlib import Path
 import redis
 import ujson
 import re
-import sys
 import markovify
 
 regex = re.compile(r'<(?:[^"\\]|\\.)*>', re.IGNORECASE)
