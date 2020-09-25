@@ -1,4 +1,5 @@
 from friendbot import app, corpus, messages
+from prometheus_client import Counter
 import requests
 import flask
 import ujson
@@ -15,6 +16,9 @@ user_dict = app.config["USER_DICT"]
 users = app.config["USERS"]
 signing_secret = app.config["SLACK_SIGNING_SECRET"]
 cache = app.config["REDIS_CACHE"]
+sentence_counter = Counter(
+    "friendbot_sentences_requested", "Number of Sentences Generated"
+)
 
 
 @app.route("/action", methods=["POST"])
@@ -146,4 +150,5 @@ def get_sentence(export, user, channel, user_dict, channel_dict, cache):
         args=(export, user, channel, user_dict, channel_dict, cache),
     )
     pregen_thread.start()
+    sentence_counter.inc()
     return sentence

@@ -1,6 +1,8 @@
 from zipfile import ZipFile
 from flask import Flask
 from friendbot import corpus
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
+from prometheus_client import make_wsgi_app
 import logging
 import os
 import pathlib
@@ -8,6 +10,9 @@ import redis
 import time
 
 app = Flask(__name__)
+
+# Add prometheus wsgi middleware to route /metrics requests
+app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {"/metrics": make_wsgi_app()})
 
 if __name__ != "__main__":
     gunicorn_logger = logging.getLogger("gunicorn.error")
