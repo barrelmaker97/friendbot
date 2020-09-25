@@ -25,3 +25,13 @@ Feature: Responding to Actions
 		Given friendbot is running
 		When we make a GET request at /action
 		Then we will get a 405 status code
+
+	Scenario: Perform an action with an unsigned request
+		Given friendbot is running
+		When we make a blank POST request at /action that isn't signed
+		Then we will get a 400 status code
+
+	Scenario: Perform an action with an old request
+		Given friendbot is running
+		When we make a blank POST request at /action that is too old
+		Then we will get a 400 status code
