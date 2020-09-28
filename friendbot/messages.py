@@ -1,8 +1,8 @@
 import ujson
 
 
-def health_message():
-    return ujson.dumps({"status": "running"})
+def health_message(sentence):
+    return ujson.dumps({"status": "running", "sentence": sentence})
 
 
 def errorMessage():

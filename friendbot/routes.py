@@ -107,9 +107,11 @@ def sentence_endpoint():
 
 @app.route("/health", methods=["GET"])
 def health_endpoint():
-    msg = f"Health Checked"
-    app.logger.debug(msg)
-    resp = flask.Response(messages.health_message(), mimetype="application/json")
+    sentence = get_sentence(export, "None", "None", user_dict, channel_dict, cache)
+    resp = flask.Response(
+        messages.health_message(sentence), mimetype="application/json"
+    )
+    app.logger.debug("Health Check Successful")
     return resp
 
 
