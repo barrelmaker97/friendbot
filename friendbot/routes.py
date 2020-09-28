@@ -1,10 +1,8 @@
 from friendbot import app, utils, messages
-from prometheus_client import Counter
 import requests
 import flask
 import ujson
 import time
-import threading
 import redis
 
 export = app.config["EXPORT"]
@@ -14,9 +12,6 @@ user_dict = app.config["USER_DICT"]
 users = app.config["USERS"]
 signing_secret = app.config["SLACK_SIGNING_SECRET"]
 cache = app.config["REDIS_CACHE"]
-sentence_counter = Counter(
-    "friendbot_sentences_requested", "Number of Sentences Generated"
-)
 
 
 @app.route("/action", methods=["POST"])
@@ -36,7 +31,7 @@ def action_endpoint():
         payload = messages.send_message(data["actions"][0]["value"], real_name)
     elif button_text == "Shuffle":
         params = data["actions"][0]["value"].split()
-        sentence = get_sentence(
+        sentence = utils.get_sentence(
             export, params[0], params[1], user_dict, channel_dict, cache
         )
         payload = messages.prompt_message(sentence, params[0], params[1])
@@ -92,7 +87,7 @@ def sentence_endpoint():
                 )
                 resp.headers["Friendbot-Error"] = "True"
                 return resp
-    sentence = get_sentence(export, user, channel, user_dict, channel_dict, cache)
+    sentence = utils.get_sentence(export, user, channel, user_dict, channel_dict, cache)
     payload = messages.prompt_message(sentence, user, channel)
     resp = flask.Response(payload, mimetype="application/json")
     resp.headers["Friendbot-Error"] = "False"
@@ -106,32 +101,11 @@ def sentence_endpoint():
 
 @app.route("/health", methods=["GET"])
 def health_endpoint():
-    sentence = get_sentence(export, "None", "None", user_dict, channel_dict, cache)
+    sentence = utils.get_sentence(
+        export, "None", "None", user_dict, channel_dict, cache
+    )
     resp = flask.Response(
         messages.health_message(sentence), mimetype="application/json"
     )
     app.logger.debug("Health Check Successful")
     return resp
-
-
-def get_sentence(export, user, channel, user_dict, channel_dict, cache):
-    pregen_name = f"{user}_{channel}_pregen"
-    try:
-        if cache.exists(pregen_name):
-            sentence = cache.get(pregen_name).decode("utf-8")
-            cache.delete(pregen_name)
-        else:
-            sentence = utils.create_sentence(
-                export, user, channel, user_dict, channel_dict, cache
-            )
-    except redis.exceptions.ConnectionError as e:
-        sentence = utils.create_sentence(
-            export, user, channel, user_dict, channel_dict, cache
-        )
-    pregen_thread = threading.Thread(
-        target=utils.pregen_sentence,
-        args=(export, user, channel, user_dict, channel_dict, cache),
-    )
-    pregen_thread.start()
-    sentence_counter.inc()
-    return sentence

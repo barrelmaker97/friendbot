@@ -1,4 +1,5 @@
 from pathlib import Path
+from prometheus_client import Counter
 import redis
 import ujson
 import re
@@ -6,8 +7,12 @@ import markovify
 import hmac
 import hashlib
 import time
+import threading
 
 regex = re.compile(r'<(?:[^"\\]|\\.)*>', re.IGNORECASE)
+sentence_counter = Counter(
+    "friendbot_sentences_requested", "Number of Sentences Generated"
+)
 
 
 def get_user_dict(export):
@@ -123,3 +128,26 @@ def validate_request(request, signing_secret):
     except Exception as ex:
         err = "Request verification failed! Signature did not match"
         return (False, err)
+
+
+def get_sentence(export, user, channel, user_dict, channel_dict, cache):
+    pregen_name = f"{user}_{channel}_pregen"
+    try:
+        if cache.exists(pregen_name):
+            sentence = cache.get(pregen_name).decode("utf-8")
+            cache.delete(pregen_name)
+        else:
+            sentence = create_sentence(
+                export, user, channel, user_dict, channel_dict, cache
+            )
+    except redis.exceptions.ConnectionError as e:
+        sentence = create_sentence(
+            export, user, channel, user_dict, channel_dict, cache
+        )
+    pregen_thread = threading.Thread(
+        target=pregen_sentence,
+        args=(export, user, channel, user_dict, channel_dict, cache),
+    )
+    pregen_thread.start()
+    sentence_counter.inc()
+    return sentence
