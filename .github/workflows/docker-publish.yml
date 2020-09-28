@@ -45,6 +45,8 @@ jobs:
       env:
         EXPORT_ZIP: ./test_data/export.zip
         SLACK_SIGNING_SECRET: abcdef12345abcdef12345abcdef1234
+        FRIENDBOT_REDIS_HOST: localhost
+        FRIENDBOT_REDIS_PORT: 6379
       run: coverage run --source="./friendbot" -m behave
     - name: Coveralls
       env:
