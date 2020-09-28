@@ -33,18 +33,18 @@ def action_endpoint():
     if button_text == "Send":
         user_id = data["user"]["id"]
         real_name = user_dict[user_id]
-        payload = messages.sendMessage(data["actions"][0]["value"], real_name)
+        payload = messages.send_message(data["actions"][0]["value"], real_name)
     elif button_text == "Shuffle":
         params = data["actions"][0]["value"].split()
         sentence = get_sentence(
             export, params[0], params[1], user_dict, channel_dict, cache
         )
-        payload = messages.promptMessage(sentence, params[0], params[1])
+        payload = messages.prompt_message(sentence, params[0], params[1])
     elif button_text == "Cancel":
-        payload = messages.cancelMessage()
+        payload = messages.cancel_message()
     else:
         error = True
-        payload = messages.errorMessage()
+        payload = messages.error_message()
     headers = {"Content-type": "application/json", "Accept": "text/plain"}
     requests.post(data["response_url"], data=payload, headers=headers)
     req_time = round((time.time() - start_time) * 1000, 3)
@@ -73,7 +73,7 @@ def sentence_endpoint():
     except Exception as ex:
         msg = "Cannot find user_id of request sender"
         app.logger.error(msg)
-        resp = flask.Response(messages.errorMessage(), mimetype="application/json")
+        resp = flask.Response(messages.error_message(), mimetype="application/json")
         resp.headers["Friendbot-Error"] = "True"
         return resp
     params = flask.request.form["text"].split()
@@ -89,12 +89,12 @@ def sentence_endpoint():
                 msg = f"Failed to parse argument {param}"
                 app.logger.error(msg)
                 resp = flask.Response(
-                    messages.errorMessage(), mimetype="application/json"
+                    messages.error_message(), mimetype="application/json"
                 )
                 resp.headers["Friendbot-Error"] = "True"
                 return resp
     sentence = get_sentence(export, user, channel, user_dict, channel_dict, cache)
-    payload = messages.promptMessage(sentence, user, channel)
+    payload = messages.prompt_message(sentence, user, channel)
     resp = flask.Response(payload, mimetype="application/json")
     resp.headers["Friendbot-Error"] = "False"
     resp.headers["Friendbot-User"] = user
