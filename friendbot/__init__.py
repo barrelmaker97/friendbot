@@ -1,6 +1,6 @@
 from zipfile import ZipFile
 from flask import Flask
-from friendbot import corpus
+from friendbot import utils
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from prometheus_client import make_wsgi_app
 import logging
@@ -39,7 +39,7 @@ with ZipFile(zip_location, "r") as zip_object:
 # Try to load users from export
 app.logger.info("Loading Users...")
 try:
-    user_dict = corpus.get_user_dict(export)
+    user_dict = utils.get_user_dict(export)
     users = user_dict.keys()
     app.logger.info("Users loaded from export")
 except Exception as ex:
@@ -49,7 +49,7 @@ except Exception as ex:
 # Try to load channels from export
 app.logger.info("Loading Channels...")
 try:
-    channel_dict = corpus.get_channel_dict(export)
+    channel_dict = utils.get_channel_dict(export)
     channels = channel_dict.keys()
     app.logger.info("Channels loaded from export")
 except Exception as ex:
@@ -71,12 +71,12 @@ except redis.exceptions.ConnectionError as e:
 # Warm up text model cache
 app.logger.info("Warming up text model cache...")
 start_time = time.time()
-corpus.create_sentence(export, "None", "None", user_dict, channel_dict, cache)
+utils.create_sentence(export, "None", "None", user_dict, channel_dict, cache)
 count = 1
 for user in users:
     for channel in channels:
         try:
-            corpus.create_sentence(
+            utils.create_sentence(
                 export, user, channel, user_dict, channel_dict, cache
             )
             count += 1

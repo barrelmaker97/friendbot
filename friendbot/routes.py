@@ -1,4 +1,4 @@
-from friendbot import app, corpus, messages
+from friendbot import app, utils, messages
 from prometheus_client import Counter
 import requests
 import flask
@@ -81,10 +81,10 @@ def sentence_endpoint():
     user = "None"
     for param in params:
         try:
-            channel = corpus.parse_argument(param, channels)
+            channel = utils.parse_argument(param, channels)
         except Exception:
             try:
-                user = corpus.parse_argument(param, users)
+                user = utils.parse_argument(param, users)
             except Exception as ex:
                 msg = f"Failed to parse argument {param}"
                 app.logger.error(msg)
@@ -138,15 +138,15 @@ def get_sentence(export, user, channel, user_dict, channel_dict, cache):
             sentence = cache.get(pregen_name).decode("utf-8")
             cache.delete(pregen_name)
         else:
-            sentence = corpus.create_sentence(
+            sentence = utils.create_sentence(
                 export, user, channel, user_dict, channel_dict, cache
             )
     except redis.exceptions.ConnectionError as e:
-        sentence = corpus.create_sentence(
+        sentence = utils.create_sentence(
             export, user, channel, user_dict, channel_dict, cache
         )
     pregen_thread = threading.Thread(
-        target=corpus.pregen_sentence,
+        target=utils.pregen_sentence,
         args=(export, user, channel, user_dict, channel_dict, cache),
     )
     pregen_thread.start()
