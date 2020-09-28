@@ -21,17 +21,17 @@ if __name__ != "__main__":
 
 # Check for signing secret
 signing_secret = os.environ.get("SLACK_SIGNING_SECRET")
-if signing_secret is None:
-    app.logger.warning("Signing secret not set! Requests will not be verified")
-else:
+if signing_secret:
     app.logger.info("Signing secret loaded")
+else:
+    app.logger.warning("Signing secret not set! Requests will not be verified")
 
 # Check for specific export location
-zip_location_env = os.environ.get("EXPORT_ZIP")
-if zip_location_env is None:
-    zip_location = pathlib.Path("/export.zip").resolve()
+export_zip = os.environ.get("EXPORT_ZIP")
+if export_zip:
+    zip_location = pathlib.Path(export_zip).resolve()
 else:
-    zip_location = pathlib.Path(os.environ.get("EXPORT_ZIP")).resolve()
+    zip_location = pathlib.Path("/export.zip").resolve()
 export = zip_location.parent / "export_unzip"
 with ZipFile(zip_location, "r") as zip_object:
     zip_object.extractall(export)
