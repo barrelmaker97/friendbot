@@ -71,17 +71,17 @@ except redis.exceptions.ConnectionError as e:
 # Warm up text model cache
 app.logger.info("Warming up text model cache...")
 start_time = time.time()
-utils.create_sentence(export, "None", "None", user_dict, channel_dict, cache)
+utils.get_sentence(export, "None", "None", user_dict, channel_dict, cache)
 count = 1
 for user in users:
     for channel in channels:
         try:
-            utils.create_sentence(export, user, channel, user_dict, channel_dict, cache)
+            utils.get_sentence(export, user, channel, user_dict, channel_dict, cache)
             count += 1
         except KeyError as ex:
             pass
 warmup_time = round(time.time() - start_time, 3)
-msg = f"Generated {count} models for {len(users)} users in {len(channels)} channels in {warmup_time}s"
+msg = f"Generated {count} models and {count} sentences for {len(users)} users in {len(channels)} channels in {warmup_time}s"
 app.logger.info(msg)
 
 app.config["EXPORT"] = export
