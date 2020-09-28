@@ -3,8 +3,6 @@ from prometheus_client import Counter
 import requests
 import flask
 import ujson
-import hmac
-import hashlib
 import time
 import threading
 import redis
@@ -25,7 +23,9 @@ sentence_counter = Counter(
 def action_endpoint():
     start_time = time.time()
     if signing_secret:
-        if not validate_request(flask.request):
+        valid, valid_err = utils.validate_request(flask.request, signing_secret)
+        if not valid:
+            app.logger.error(valid_err)
             return ("", 400)
     data = ujson.loads(flask.request.form["payload"])
     button_text = data["actions"][0]["text"]["text"]
@@ -62,7 +62,9 @@ def action_endpoint():
 def sentence_endpoint():
     start_time = time.time()
     if signing_secret:
-        if not validate_request(flask.request):
+        valid, valid_err = utils.validate_request(flask.request, signing_secret)
+        if not valid:
+            app.logger.error(valid_err)
             return ("", 400)
     try:
         user_id = flask.request.form["user_id"]
@@ -110,32 +112,6 @@ def health_endpoint():
     )
     app.logger.debug("Health Check Successful")
     return resp
-
-
-def validate_request(request):
-    max_time = 5  # This is in minutes
-    try:
-        request_body = request.get_data().decode("utf-8")
-        timestamp = request.headers["X-Slack-Request-Timestamp"]
-        if abs(time.time() - int(timestamp)) > 60 * max_time:
-            app.logger.error(
-                f"Request verification failed! Request older than {max_time} minutes"
-            )
-            return False
-        slack_signature = request.headers["X-Slack-Signature"]
-        slack_basestring = f"v0:{timestamp}:{request_body}".encode("utf-8")
-        slack_signing_secret = bytes(signing_secret, "utf-8")
-        my_signature = (
-            "v0="
-            + hmac.new(
-                slack_signing_secret, slack_basestring, hashlib.sha256
-            ).hexdigest()
-        )
-        assert hmac.compare_digest(my_signature, slack_signature)
-        return True
-    except Exception as ex:
-        app.logger.error("Request verification failed! Signature did not match")
-        return False
 
 
 def get_sentence(export, user, channel, user_dict, channel_dict, cache):

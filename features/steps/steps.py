@@ -90,7 +90,7 @@ def post_basic(context, endpoint, path):
 
 def generate_signed_headers(data_dict, timestamp=time.time()):
     signing_secret = os.environ.get("SLACK_SIGNING_SECRET")
-    if signing_secret is not None:
+    if signing_secret:
         request_body = urllib.parse.urlencode(data_dict)
         str_timestamp = str(int(timestamp))
         slack_basestring = f"v0:{str_timestamp}:{request_body}".encode("utf-8")
