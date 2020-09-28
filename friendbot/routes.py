@@ -105,6 +105,14 @@ def sentence_endpoint():
     return resp
 
 
+@app.route("/health", methods=["GET"])
+def health_endpoint():
+    msg = f"Health Checked"
+    app.logger.debug(msg)
+    resp = flask.Response(messages.health_message(), mimetype="application/json")
+    return resp
+
+
 def validate_request(request):
     max_time = 5  # This is in minutes
     try:

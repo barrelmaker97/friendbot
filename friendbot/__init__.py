@@ -76,9 +76,7 @@ count = 1
 for user in users:
     for channel in channels:
         try:
-            utils.create_sentence(
-                export, user, channel, user_dict, channel_dict, cache
-            )
+            utils.create_sentence(export, user, channel, user_dict, channel_dict, cache)
             count += 1
         except KeyError as ex:
             pass

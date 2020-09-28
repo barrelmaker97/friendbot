@@ -1,6 +1,10 @@
 import ujson
 
 
+def health_message():
+    return ujson.dumps({"status": "running"})
+
+
 def errorMessage():
     return ujson.dumps(
         {
