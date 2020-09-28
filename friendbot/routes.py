@@ -24,8 +24,8 @@ sentence_counter = Counter(
 @app.route("/action", methods=["POST"])
 def action_endpoint():
     start_time = time.time()
-    if signing_secret is not None:
-        if validate_request(flask.request) is not True:
+    if signing_secret:
+        if not validate_request(flask.request):
             return ("", 400)
     data = ujson.loads(flask.request.form["payload"])
     button_text = data["actions"][0]["text"]["text"]
@@ -61,8 +61,8 @@ def action_endpoint():
 @app.route("/sentence", methods=["POST"])
 def sentence_endpoint():
     start_time = time.time()
-    if signing_secret is not None:
-        if validate_request(flask.request) is not True:
+    if signing_secret:
+        if not validate_request(flask.request):
             return ("", 400)
     try:
         user_id = flask.request.form["user_id"]
