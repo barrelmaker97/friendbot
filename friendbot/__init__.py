@@ -56,33 +56,31 @@ except Exception as ex:
     msg = f"An exception of type {type(ex).__name__} occurred. Channels not loaded!"
     app.logger.error(msg)
 
-# Check if Redis is available
+# Check if Redis is available and warm up cache
 app.logger.info("Checking Redis connection...")
 cache = redis.Redis(host="redis", port=6379)
 redis_error_msg = "Could not connect to Redis cache. This will impact performance"
 try:
-    if not cache.ping():
-        app.logger.warning(redis_error_msg)
-    else:
+    if cache.ping():
         app.logger.info("Redis connected")
+        app.logger.info("Warming up text model cache...")
+        start_time = time.time()
+        utils.get_sentence(export, "None", "None", user_dict, channel_dict, cache)
+        count = 1
+        for user in users:
+            for channel in channels:
+                try:
+                    utils.get_sentence(export, user, channel, user_dict, channel_dict, cache)
+                    count += 1
+                except KeyError as ex:
+                    pass
+        warmup_time = round(time.time() - start_time, 3)
+        msg = f"Generated {count} models and {count} sentences for {len(users)} users in {len(channels)} channels in {warmup_time}s"
+        app.logger.info(msg)
+    else:
+        app.logger.warning(redis_error_msg)
 except redis.exceptions.ConnectionError as e:
     app.logger.warning(redis_error_msg)
-
-# Warm up text model cache
-app.logger.info("Warming up text model cache...")
-start_time = time.time()
-utils.get_sentence(export, "None", "None", user_dict, channel_dict, cache)
-count = 1
-for user in users:
-    for channel in channels:
-        try:
-            utils.get_sentence(export, user, channel, user_dict, channel_dict, cache)
-            count += 1
-        except KeyError as ex:
-            pass
-warmup_time = round(time.time() - start_time, 3)
-msg = f"Generated {count} models and {count} sentences for {len(users)} users in {len(channels)} channels in {warmup_time}s"
-app.logger.info(msg)
 
 app.config["EXPORT"] = export
 app.config["USER_DICT"] = user_dict
