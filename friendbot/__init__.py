@@ -57,8 +57,14 @@ except Exception as ex:
     app.logger.error(msg)
 
 # Check if Redis is available and warm up cache
+redis_host = os.environ.get("FRIENDBOT_REDIS_HOST")
+if not redis_host:
+    redis_host = "redis"
+redis_port = os.environ.get("FRIENDBOT_REDIS_PORT")
+if not redis_port:
+    redis_port = 6379
 app.logger.info("Checking Redis connection...")
-cache = redis.Redis(host="redis", port=6379)
+cache = redis.Redis(host=redis_host, port=redis_port)
 redis_error_msg = "Could not connect to Redis cache. This will impact performance"
 try:
     if cache.ping():
