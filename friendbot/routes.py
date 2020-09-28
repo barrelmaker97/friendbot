@@ -66,10 +66,7 @@ def sentence_endpoint():
             return ("", 400)
     try:
         user_id = flask.request.form["user_id"]
-        if user_id == "healthcheck":
-            real_name = "Health Check"
-        else:
-            real_name = user_dict[user_id]
+        real_name = user_dict[user_id]
     except Exception as ex:
         msg = "Cannot find user_id of request sender"
         app.logger.error(msg)

@@ -9,14 +9,6 @@ Feature: Generating Sentences
 		And we will get a Friendbot-Channel: None header
 		And we will get a Friendbot-User: None header
 
-	Scenario: Request a sentence as the healthcheck user
-		Given friendbot is running
-		When we make a blank POST request at /sentence as healthcheck
-		Then we will get a 200 status code
-		And we will get a Friendbot-Error: False header
-		And we will get a Friendbot-Channel: None header
-		And we will get a Friendbot-User: None header
-
 	Scenario: Request a sentence with a bad user_id
 		Given friendbot is running
 		When we make a blank POST request at /sentence as nobody
