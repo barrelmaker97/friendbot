@@ -90,7 +90,7 @@ def create_sentence(export, user, channel, user_dict, channel_dict, cache):
             fulltext = _generate_corpus(export, user, channel, user_dict, channel_dict)
             text_model = markovify.NewlineText(fulltext)
             cache.set(model_name, text_model.to_json())
-    except redis.exceptions.ConnectionError as e:
+    except redis.exceptions.ConnectionError as ex:
         fulltext = _generate_corpus(export, user, channel, user_dict, channel_dict)
         text_model = markovify.NewlineText(fulltext)
     sentence = text_model.make_sentence(tries=100)
@@ -105,7 +105,7 @@ def pregen_sentence(export, user, channel, user_dict, channel_dict, cache):
     )
     try:
         cache.set(pregen_name, pregen_sentence)
-    except redis.exceptions.ConnectionError as e:
+    except redis.exceptions.ConnectionError as ex:
         pass
 
 
@@ -140,7 +140,7 @@ def get_sentence(export, user, channel, user_dict, channel_dict, cache):
             sentence = create_sentence(
                 export, user, channel, user_dict, channel_dict, cache
             )
-    except redis.exceptions.ConnectionError as e:
+    except redis.exceptions.ConnectionError as ex:
         sentence = create_sentence(
             export, user, channel, user_dict, channel_dict, cache
         )

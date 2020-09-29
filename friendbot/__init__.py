@@ -85,7 +85,7 @@ try:
         app.logger.info(msg)
     else:
         app.logger.warning(redis_error_msg)
-except redis.exceptions.ConnectionError as e:
+except redis.exceptions.ConnectionError as ex:
     app.logger.warning(redis_error_msg)
 
 app.config["EXPORT"] = export
