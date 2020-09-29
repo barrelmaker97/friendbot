@@ -1,5 +1,4 @@
 from pathlib import Path
-from prometheus_client import Counter
 import redis
 import ujson
 import re
@@ -10,9 +9,6 @@ import time
 import threading
 
 regex = re.compile(r'<(?:[^"\\]|\\.)*>', re.IGNORECASE)
-sentence_counter = Counter(
-    "friendbot_sentences_requested", "Number of Sentences Generated"
-)
 
 
 def get_user_dict(export):
@@ -149,5 +145,4 @@ def get_sentence(export, user, channel, user_dict, channel_dict, cache):
         args=(export, user, channel, user_dict, channel_dict, cache),
     )
     pregen_thread.start()
-    sentence_counter.inc()
     return sentence
