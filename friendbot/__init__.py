@@ -20,15 +20,13 @@ if __name__ != "__main__":
     app.logger.setLevel(gunicorn_logger.level)
 
 # Check for signing secret
-signing_secret = os.environ.get("SLACK_SIGNING_SECRET")
-if signing_secret:
+if signing_secret := os.environ.get("SLACK_SIGNING_SECRET"):
     app.logger.info("Signing secret loaded")
 else:
     app.logger.warning("Signing secret not set! Requests will not be verified")
 
 # Check for specific export location
-export_zip = os.environ.get("EXPORT_ZIP")
-if export_zip:
+if export_zip := os.environ.get("EXPORT_ZIP"):
     zip_location = pathlib.Path(export_zip).resolve()
 else:
     zip_location = pathlib.Path("/export.zip").resolve()
@@ -76,7 +74,9 @@ try:
         for user in users:
             for channel in channels:
                 try:
-                    utils.create_sentence(export, user, channel, user_dict, channel_dict, cache)
+                    utils.create_sentence(
+                        export, user, channel, user_dict, channel_dict, cache
+                    )
                     count += 1
                 except KeyError as ex:
                     pass

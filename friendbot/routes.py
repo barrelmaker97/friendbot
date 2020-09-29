@@ -41,8 +41,8 @@ def action_endpoint():
         error = True
         payload = messages.error_message()
     headers = {"Content-type": "application/json", "Accept": "text/plain"}
-    requests.post(data["response_url"], data=payload, headers=headers)
     req_time = round((time.time() - start_time) * 1000, 3)
+    requests.post(data["response_url"], data=payload, headers=headers)
     user_id = data["user"]["id"]
     real_name = user_dict[user_id]
     msg = f"{real_name} ({user_id}) pressed {button_text} {req_time}ms"
