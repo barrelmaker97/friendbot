@@ -1,4 +1,5 @@
 from friendbot import app, utils, messages
+from prometheus_client import Summary
 import requests
 import flask
 import ujson
@@ -11,6 +12,8 @@ user_dict = app.config["USER_DICT"]
 users = app.config["USERS"]
 signing_secret = app.config["SLACK_SIGNING_SECRET"]
 cache = app.config["REDIS_CACHE"]
+
+length_summary = Summary("friendbot_request_time", "Length of Friendbot Requests")
 
 
 @app.route("/action", methods=["POST"])
@@ -40,11 +43,13 @@ def action_endpoint():
         error = True
         payload = messages.error_message()
     headers = {"Content-type": "application/json", "Accept": "text/plain"}
-    req_time = round((time.time() - start_time) * 1000, 3)
+    req_time = time.time() - start_time
+    req_time_ms = round(req_time * 1000, 3)
+    length_summary.observe(req_time)
     requests.post(data["response_url"], data=payload, headers=headers)
     user_id = data["user"]["id"]
     real_name = user_dict[user_id]
-    msg = f"{real_name} ({user_id}) pressed {button_text} {req_time}ms"
+    msg = f"{real_name} ({user_id}) pressed {button_text} {req_time_ms}ms"
     if error:
         app.logger.error(msg)
     else:
@@ -94,19 +99,25 @@ def sentence_endpoint():
     resp.headers["Friendbot-Error"] = "False"
     resp.headers["Friendbot-User"] = user
     resp.headers["Friendbot-Channel"] = channel
-    req_time = round((time.time() - start_time) * 1000, 3)
-    msg = f"{real_name} ({user_id}) generated a sentence; C: {channel} U: {user} {req_time}ms"
+    req_time = time.time() - start_time
+    req_time_ms = round(req_time * 1000, 3)
+    length_summary.observe(req_time)
+    msg = f"{real_name} ({user_id}) generated a sentence; C: {channel} U: {user} {req_time_ms}ms"
     app.logger.info(msg)
     return resp
 
 
 @app.route("/health", methods=["GET"])
 def health_endpoint():
+    start_time = time.time()
     sentence = utils.get_sentence(
         export, "None", "None", user_dict, channel_dict, cache
     )
     resp = flask.Response(
         messages.health_message(sentence), mimetype="application/json"
     )
-    app.logger.debug("Health Check Successful")
+    req_time = time.time() - start_time
+    req_time_ms = round(req_time * 1000, 3)
+    length_summary.observe(req_time)
+    app.logger.debug(f"Health Check Successful {req_time_ms}ms")
     return resp
