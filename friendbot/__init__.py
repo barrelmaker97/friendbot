@@ -82,7 +82,6 @@ try:
                     count += 1
                 except KeyError as ex:
                     app.logger.debug(ex)
-                    pass
         warmup_time = round(time.time() - start_time, 3)
         msg = f"Generated {count} models for {len(users)} users in {len(channels)} channels in {warmup_time}s"
         app.logger.info(msg)
