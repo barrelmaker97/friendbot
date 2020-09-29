@@ -43,6 +43,7 @@ try:
 except Exception as ex:
     msg = f"An exception of type {type(ex).__name__} occurred. Users not loaded!"
     app.logger.error(msg)
+    app.logger.debug(ex)
 
 # Try to load channels from export
 app.logger.info("Loading Channels...")
@@ -53,6 +54,7 @@ try:
 except Exception as ex:
     msg = f"An exception of type {type(ex).__name__} occurred. Channels not loaded!"
     app.logger.error(msg)
+    app.logger.debug(ex)
 
 # Check if Redis is available and warm up cache
 redis_host = os.environ.get("FRIENDBOT_REDIS_HOST")
@@ -79,6 +81,7 @@ try:
                     )
                     count += 1
                 except KeyError as ex:
+                    app.logger.debug(ex)
                     pass
         warmup_time = round(time.time() - start_time, 3)
         msg = f"Generated {count} models for {len(users)} users in {len(channels)} channels in {warmup_time}s"
@@ -87,6 +90,7 @@ try:
         app.logger.warning(redis_error_msg)
 except redis.exceptions.ConnectionError as ex:
     app.logger.warning(redis_error_msg)
+    app.logger.debug(ex)
 
 app.config["EXPORT"] = export
 app.config["USER_DICT"] = user_dict

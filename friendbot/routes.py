@@ -66,6 +66,7 @@ def sentence_endpoint():
     except Exception as ex:
         msg = "Cannot find user_id of request sender"
         app.logger.error(msg)
+        app.logger.debug(ex)
         resp = flask.Response(messages.error_message(), mimetype="application/json")
         resp.headers["Friendbot-Error"] = "True"
         return resp
@@ -81,6 +82,7 @@ def sentence_endpoint():
             except Exception as ex:
                 msg = f"Failed to parse argument {param}"
                 app.logger.error(msg)
+                app.logger.debug(ex)
                 resp = flask.Response(
                     messages.error_message(), mimetype="application/json"
                 )
