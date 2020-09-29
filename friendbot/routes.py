@@ -3,7 +3,6 @@ import requests
 import flask
 import ujson
 import time
-import redis
 
 export = app.config["EXPORT"]
 channel_dict = app.config["CHANNEL_DICT"]
