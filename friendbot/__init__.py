@@ -2,7 +2,7 @@ from zipfile import ZipFile
 from flask import Flask
 from friendbot import utils
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
-from prometheus_client import make_wsgi_app
+from prometheus_client import make_wsgi_app, Gauge
 import logging
 import os
 import pathlib
@@ -40,6 +40,8 @@ try:
     user_dict = utils.get_user_dict(export)
     users = user_dict.keys()
     app.logger.info("Users loaded from export")
+    user_gauge = Gauge('friendbot_slack_users', 'Number of Users Detected in Export')
+    user_gauge.set(len(users))
 except Exception as ex:
     msg = f"An exception of type {type(ex).__name__} occurred. Users not loaded!"
     app.logger.error(msg)
@@ -51,6 +53,8 @@ try:
     channel_dict = utils.get_channel_dict(export)
     channels = channel_dict.keys()
     app.logger.info("Channels loaded from export")
+    channel_gauge = Gauge('friendbot_slack_channels', 'Number of Channels Detected in Export')
+    channel_gauge.set(len(channels))
 except Exception as ex:
     msg = f"An exception of type {type(ex).__name__} occurred. Channels not loaded!"
     app.logger.error(msg)
