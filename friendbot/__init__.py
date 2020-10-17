@@ -40,7 +40,7 @@ try:
     user_dict = utils.get_user_dict(export)
     users = user_dict.keys()
     app.logger.info("Users loaded from export")
-    user_gauge = Gauge('friendbot_slack_users', 'Number of Users Detected in Export')
+    user_gauge = Gauge("friendbot_slack_users", "Number of Users Detected in Export")
     user_gauge.set(len(users))
 except Exception as ex:
     msg = f"An exception of type {type(ex).__name__} occurred. Users not loaded!"
@@ -53,7 +53,7 @@ try:
     channel_dict = utils.get_channel_dict(export)
     channels = channel_dict.keys()
     app.logger.info("Channels loaded from export")
-    channel_gauge = Gauge('friendbot_slack_channels', 'Number of Channels Detected in Export')
+    channel_gauge = Gauge("friendbot_slack_channels", "Number of Channels Detected in Export")
     channel_gauge.set(len(channels))
 except Exception as ex:
     msg = f"An exception of type {type(ex).__name__} occurred. Channels not loaded!"
@@ -88,7 +88,7 @@ try:
         msg = f"Generated {count} models for {len(users)} users in {len(channels)} channels in {warmup_time}s"
         app.logger.info(msg)
     else:
-        app.logger.warning(redis_error_msg)
+        raise redis.exceptions.ConnectionError
 except redis.exceptions.ConnectionError as ex:
     app.logger.warning(redis_error_msg)
     app.logger.debug(ex)
