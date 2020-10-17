@@ -67,31 +67,38 @@ if not (redis_port := os.environ.get("FRIENDBOT_REDIS_PORT")):
     redis_port = 6379
 app.logger.info("Checking Redis connection...")
 cache = redis.Redis(host=redis_host, port=redis_port)
-redis_error_msg = "Could not connect to Redis cache. This will impact performance"
-try:
-    if cache.ping():
-        app.logger.info("Redis connected")
-        app.logger.info("Warming up text model cache...")
-        start_time = time.time()
-        utils.create_sentence(export, "None", "None", user_dict, channel_dict, cache)
-        count = 1
-        for user in users:
-            for channel in channels:
-                try:
-                    utils.create_sentence(
-                        export, user, channel, user_dict, channel_dict, cache
-                    )
-                    count += 1
-                except KeyError as ex:
-                    app.logger.debug(ex)
-        warmup_time = round(time.time() - start_time, 3)
-        msg = f"Generated {count} models for {len(users)} users in {len(channels)} channels in {warmup_time}s"
-        app.logger.info(msg)
-    else:
-        raise redis.exceptions.ConnectionError
-except redis.exceptions.ConnectionError as ex:
-    app.logger.warning(redis_error_msg)
-    app.logger.debug(ex)
+tries = 5
+delay = 3
+counter = 0
+while counter < tries:
+    try:
+        if cache.ping():
+            app.logger.info("Redis connected")
+            app.logger.info("Warming up text model cache...")
+            start_time = time.time()
+            utils.create_sentence(export, "None", "None", user_dict, channel_dict, cache)
+            count = 1
+            for user in users:
+                for channel in channels:
+                    try:
+                        utils.create_sentence(
+                            export, user, channel, user_dict, channel_dict, cache
+                        )
+                        count += 1
+                    except KeyError as ex:
+                        app.logger.debug(ex)
+            warmup_time = round(time.time() - start_time, 3)
+            msg = f"Generated {count} models for {len(users)} users in {len(channels)} channels in {warmup_time}s"
+            app.logger.info(msg)
+            break
+        else:
+            raise redis.exceptions.ConnectionError
+    except redis.exceptions.ConnectionError as ex:
+        app.logger.warning(f"Attempt {counter+1} of {tries}: Redis connectionn failed. Trying again in {delay} seconds")
+        app.logger.debug(ex)
+        time.sleep(delay)
+        counter += 1
+app.logger.warning("Could not connect to Redis cache. This will impact performance")
 
 app.config["EXPORT"] = export
 app.config["USER_DICT"] = user_dict
