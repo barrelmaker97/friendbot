@@ -70,6 +70,7 @@ cache = redis.Redis(host=redis_host, port=redis_port)
 tries = 5
 delay = 3
 counter = 0
+connected = False
 while counter < tries:
     try:
         if cache.ping():
@@ -90,15 +91,17 @@ while counter < tries:
             warmup_time = round(time.time() - start_time, 3)
             msg = f"Generated {count} models for {len(users)} users in {len(channels)} channels in {warmup_time}s"
             app.logger.info(msg)
+            connected = True
             break
         else:
             raise redis.exceptions.ConnectionError
     except redis.exceptions.ConnectionError as ex:
-        app.logger.warning(f"Attempt {counter+1} of {tries}: Redis connectionn failed. Trying again in {delay} seconds")
+        app.logger.warning(f"Attempt {counter+1} of {tries}: Redis connection failed. Trying again in {delay} seconds")
         app.logger.debug(ex)
         time.sleep(delay)
         counter += 1
-app.logger.warning("Could not connect to Redis cache. This will impact performance")
+if not connected:
+    app.logger.warning("Could not connect to Redis cache. This will impact performance")
 
 app.config["EXPORT"] = export
 app.config["USER_DICT"] = user_dict
