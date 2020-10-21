@@ -20,7 +20,7 @@ if __name__ != "__main__":
     app.logger.setLevel(gunicorn_logger.level)
 
 # Check for signing secret
-if signing_secret := os.environ.get("SLACK_SIGNING_SECRET"):
+if signing_secret := os.environ.get("FRIENDBOT_SIGNING_SECRET"):
     app.logger.info("Signing secret loaded")
 else:
     app.logger.warning("Signing secret not set! Requests will not be verified")
@@ -108,7 +108,7 @@ app.config["USER_DICT"] = user_dict
 app.config["USERS"] = users
 app.config["CHANNEL_DICT"] = channel_dict
 app.config["CHANNELS"] = channels
-app.config["SLACK_SIGNING_SECRET"] = signing_secret
+app.config["FRIENDBOT_SIGNING_SECRET"] = signing_secret
 app.config["REDIS_CACHE"] = cache
 
 from friendbot import routes

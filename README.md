@@ -15,7 +15,7 @@ If you would like Friendbot to verify that requests are actually coming from Sla
 services:
   app:
     environment:
-      SLACK_SIGNING_SECRET: <your Slack Signing Secret>
+      FRIENDBOT_SIGNING_SECRET: <your Slack Signing Secret>
 ...
 ```
 

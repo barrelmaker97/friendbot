@@ -10,7 +10,7 @@ channel_dict = app.config["CHANNEL_DICT"]
 channels = app.config["CHANNELS"]
 user_dict = app.config["USER_DICT"]
 users = app.config["USERS"]
-signing_secret = app.config["SLACK_SIGNING_SECRET"]
+signing_secret = app.config["FRIENDBOT_SIGNING_SECRET"]
 cache = app.config["REDIS_CACHE"]
 
 length_summary = Summary("friendbot_request_time", "Length of Friendbot Requests")
