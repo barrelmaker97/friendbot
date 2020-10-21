@@ -26,7 +26,7 @@ else:
     app.logger.warning("Signing secret not set! Requests will not be verified")
 
 # Check for specific export location
-if export_zip := os.environ.get("EXPORT_ZIP"):
+if export_zip := os.environ.get("FRIENDBOT_EXPORT_ZIP"):
     zip_location = pathlib.Path(export_zip).resolve()
 else:
     zip_location = pathlib.Path("/export.zip").resolve()

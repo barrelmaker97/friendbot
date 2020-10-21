@@ -44,7 +44,7 @@ jobs:
         run: docker run -d -p 6379:6379 redis:alpine
       - name: Run Tests
         env:
-          EXPORT_ZIP: ./test_data/export.zip
+          FRIENDBOT_EXPORT_ZIP: ./test_data/export.zip
           SLACK_SIGNING_SECRET: abcdef12345abcdef12345abcdef1234
           FRIENDBOT_REDIS_HOST: localhost
           FRIENDBOT_REDIS_PORT: 6379
