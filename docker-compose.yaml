@@ -6,6 +6,9 @@ services:
     container_name: friendbot
     ports:
       - "6000:6000"
+    environment:
+      FRIENDBOT_EXPORT_ZIP: /export.zip
+      FRIENDBOT_LOG_LEVEL: info
     volumes:
       - type: bind
         source: ${FB_EXPORT}
