@@ -1,0 +1,7 @@
+---
+replicas: 1
+image:
+  repo: "ghcr.io"
+  name: "barrelmaker97/friendbot"
+  tag: "latest"
+logLevel: info

@@ -2,11 +2,12 @@
 name: Docker
 
 on:
+  # Publish `master` as Docker `latest` image.
   push:
-    # Publish `master` as Docker `latest` image.
     branches:
       - master
-
+    paths-ignore:
+      - 'charts/**'
     # Publish `v1.2.3` tags as releases.
     tags:
       - v*
@@ -15,6 +16,8 @@ on:
   pull_request:
     branches:
       - master
+    paths-ignore:
+      - 'charts/**'
 
 env:
   IMAGE_NAME: friendbot

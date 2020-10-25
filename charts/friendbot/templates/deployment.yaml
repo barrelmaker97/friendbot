@@ -1,0 +1,41 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: friendbot
+  labels:
+    app: friendbot
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: friendbot
+  template:
+    metadata:
+      labels:
+        app: friendbot
+    spec:
+      containers:
+        - name: friendbot
+          image: "{{ .Values.image.repo }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: 6000
+          env:
+            - name: FRIENDBOT_LOG_LEVEL
+              value: "{{ .Values.logLevel }}"
+            - name: FRIENDBOT_EXPORT_ZIP
+              value: /friendbot/export.zip
+            - name: FRIENDBOT_SIGNING_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: friendbot-signing-secret
+                  key: signingSecret
+                  optional: true
+          volumeMounts:
+            - mountPath: /friendbot
+              name: friendbot-export-volume
+      volumes:
+        - name: friendbot-export-volume
+          nfs:
+            server: soteria.lan
+            path: /volume1/Nolan/friendbot
