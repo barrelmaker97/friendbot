@@ -19,7 +19,8 @@ spec:
         - name: friendbot
           image: "{{ .Values.image.repo }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
           ports:
-            - containerPort: 6000
+            - name: friendbot-port
+              containerPort: 6000
           env:
             - name: FRIENDBOT_LOG_LEVEL
               value: "{{ .Values.logLevel }}"
@@ -34,6 +35,18 @@ spec:
           volumeMounts:
             - mountPath: /friendbot
               name: friendbot-export-volume
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: friendbot-port
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: friendbot-port
+            initialDelaySeconds: 3
+            periodSeconds: 10
       volumes:
         - name: friendbot-export-volume
           nfs:
