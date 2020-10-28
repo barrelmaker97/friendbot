@@ -22,6 +22,10 @@ spec:
             - name: friendbot-port
               containerPort: 6000
           env:
+            - name: FRIENDBOT_REDIS_HOST
+              value: "{{ .Values.redis.host }}"
+            - name: FRIENDBOT_REDIS_PORT
+              value: "{{ .Values.redis.port }}"
             - name: FRIENDBOT_LOG_LEVEL
               value: "{{ .Values.logLevel }}"
             - name: FRIENDBOT_EXPORT_ZIP
