@@ -9,6 +9,8 @@ services:
     environment:
       FRIENDBOT_EXPORT_ZIP: /export.zip
       FRIENDBOT_LOG_LEVEL: info
+      FRIENDBOT_REDIS_HOST: redis
+      FRIENDBOT_REDIS_PORT: 6379
     volumes:
       - type: bind
         source: ${FB_EXPORT}

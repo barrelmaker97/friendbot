@@ -9,15 +9,15 @@ Download the `docker-compose.yaml` file (or clone this repo), and start by letti
 ```
 FB_EXPORT=<path to your Slack export> docker compose-up -d
 ```
-If you would like Friendbot to verify that requests are actually coming from Slack (recommended) then you can add your Slack Signing Secret as an environment variable in the compose file, like so:
-```
-...
-services:
-  app:
-    environment:
-      FRIENDBOT_SIGNING_SECRET: <your Slack Signing Secret>
-...
-```
+
+## Configuration
+All config is done via environment variables, listed below:
+
+* `FRIENDBOT_LOG_LEVEL`: _Optional_. Friendbot's log level (*Options:* `debug`, `info`, `warning`, `error`, `critical`) (*Default:* `info`)
+* `FRIENDBOT_EXPORT_ZIP` _Optional_. Path (inside Friendbot) to zip file containing the Slack Export (*Default:* `/export.zip`)
+* `FRIENDBOT_REDIS_HOST` _Optional_. Hostname of Redis instance used for cache. (*Default:* `redis`)
+* `FRIENDBOT_REDIS_PORT` _Optional_. Port number of Redis instance used for cache. (*Default:* `6379`)
+* `FRIENDBOT_SIGNING_SECRET` _Optional_. Signing Secret recieved from Slack that Friendbot can use to verify requests.
 
 ## API
 ### /sentence
