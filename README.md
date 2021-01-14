@@ -12,12 +12,13 @@ FB_EXPORT=<path to your Slack export> docker compose-up -d
 
 ## Configuration
 All config is done via environment variables, listed below:
-
-* `FRIENDBOT_LOG_LEVEL`: _Optional_. Friendbot's log level (*Options:* `debug`, `info`, `warning`, `error`, `critical`) (*Default:* `info`)
-* `FRIENDBOT_EXPORT_ZIP` _Optional_. Path (inside Friendbot) to zip file containing the Slack Export (*Default:* `/export.zip`)
-* `FRIENDBOT_REDIS_HOST` _Optional_. Hostname of Redis instance used for cache. (*Default:* `redis`)
-* `FRIENDBOT_REDIS_PORT` _Optional_. Port number of Redis instance used for cache. (*Default:* `6379`)
-* `FRIENDBOT_SIGNING_SECRET` _Optional_. Signing Secret recieved from Slack that Friendbot can use to verify requests.
+| Parameter                  | Description                                                                  | Default       |
+|----------------------------|------------------------------------------------------------------------------|---------------|
+| `FRIENDBOT_LOG_LEVEL`      | Friendbot's log level                                                        | `info`        |
+| `FRIENDBOT_EXPORT_ZIP`     | Path (inside Friendbot) to zip file containing the Slack Export              | `/export.zip` |
+| `FRIENDBOT_REDIS_HOST`     | Hostname of Redis instance used for cache                                    | `redis`       |
+| `FRIENDBOT_REDIS_PORT`     | Port number of Redis instance used for cache                                 | `6379`        |
+| `FRIENDBOT_SIGNING_SECRET` | Signing Secret recieved from Slack that Friendbot can use to verify requests | `nil`         |
 
 ## API
 ### /sentence
