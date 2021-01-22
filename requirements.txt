@@ -3,5 +3,5 @@ gunicorn==20.0.4
 markovify==0.8.3
 redis==3.5.3
 requests==2.25.1
-ujson==4.0.1
+ujson==4.0.2
 prometheus-client==0.9.0
