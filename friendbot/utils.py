@@ -1,4 +1,5 @@
 from pathlib import Path
+from multiprocessing import Process
 import redis
 import ujson
 import re
@@ -6,7 +7,6 @@ import markovify
 import hmac
 import hashlib
 import time
-import threading
 
 regex = re.compile(r'<(?:[^"\\]|\\.)*>', re.IGNORECASE)
 
@@ -140,9 +140,9 @@ def get_sentence(export, user, channel, user_dict, channel_dict, cache):
         sentence = create_sentence(
             export, user, channel, user_dict, channel_dict, cache
         )
-    pregen_thread = threading.Thread(
+    pregen_process = Process(
         target=pregen_sentence,
         args=(export, user, channel, user_dict, channel_dict, cache),
     )
-    pregen_thread.start()
+    pregen_process.start()
     return sentence
