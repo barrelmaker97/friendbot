@@ -30,6 +30,8 @@ spec:
               value: "{{ .Values.logLevel }}"
             - name: FRIENDBOT_EXPORT_ZIP
               value: /friendbot/export.zip
+              # TODO Update to use new secret file
+              # Secret will need to be mounted as volume
             - name: FRIENDBOT_SIGNING_SECRET
               valueFrom:
                 secretKeyRef:

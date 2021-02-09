@@ -89,8 +89,9 @@ def post_basic(context, endpoint, path):
 
 
 def generate_signed_headers(data_dict, timestamp=time.time()):
-    signing_secret = os.environ.get("FRIENDBOT_SIGNING_SECRET")
-    if signing_secret:
+    if signing_secret_file := os.environ.get("FRIENDBOT_SECRET_FILE"):
+        with open(signing_secret_file, "r") as f:
+            signing_secret = f.readline().replace('\n', '')
         request_body = urllib.parse.urlencode(data_dict)
         str_timestamp = str(int(timestamp))
         slack_basestring = f"v0:{str_timestamp}:{request_body}".encode("utf-8")

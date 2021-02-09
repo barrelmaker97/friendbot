@@ -10,8 +10,9 @@ RUN apk add --no-cache --virtual .deps g++ \
 	&& apk add --no-cache libstdc++
 
 FROM dependencies as test
-ENV FRIENDBOT_SIGNING_SECRET=abcdef12345abcdef12345abcdef1234
-RUN pip install behave --no-cache-dir
+ENV FRIENDBOT_SECRET_FILE=./test-secret
+RUN echo abcdef12345abcdef12345abcdef1234 > ./test-secret \
+	&& pip install behave --no-cache-dir
 COPY ./features /app/features
 COPY ./test_data/actions /app/test_data/actions
 COPY ./test_data/export.zip /
