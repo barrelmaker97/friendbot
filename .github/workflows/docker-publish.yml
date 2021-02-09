@@ -45,10 +45,12 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Set up Redis
         run: docker run -d -p 6379:6379 redis:alpine
+      - name: Create test secret file
+        run: echo abcdef12345abcdef12345abcdef1234 > ./test-secret
       - name: Run Tests
         env:
           FRIENDBOT_EXPORT_ZIP: ./test_data/export.zip
-          FRIENDBOT_SIGNING_SECRET: abcdef12345abcdef12345abcdef1234
+          FRIENDBOT_SIGNING_SECRET: ./test-secret
           FRIENDBOT_REDIS_HOST: localhost
           FRIENDBOT_REDIS_PORT: 6379
         run: coverage run --source="./friendbot" -m behave
