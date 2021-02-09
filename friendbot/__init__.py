@@ -23,7 +23,7 @@ if __name__ != "__main__":
 signing_secret = None
 if signing_secret_file := os.environ.get("FRIENDBOT_SECRET_FILE"):
     with open(signing_secret_file, "r") as f:
-        signing_secret = f.readline()
+        signing_secret = f.readline().replace('\n', '')
     app.logger.info("Signing secret loaded")
 else:
     app.logger.warning("Signing secret not set! Requests will not be verified")
