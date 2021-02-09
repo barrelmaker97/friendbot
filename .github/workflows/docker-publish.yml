@@ -50,7 +50,7 @@ jobs:
       - name: Run Tests
         env:
           FRIENDBOT_EXPORT_ZIP: ./test_data/export.zip
-          FRIENDBOT_SIGNING_SECRET: ./test-secret
+          FRIENDBOT_SECRET_FILE: ./test-secret
           FRIENDBOT_REDIS_HOST: localhost
           FRIENDBOT_REDIS_PORT: 6379
         run: coverage run --source="./friendbot" -m behave
