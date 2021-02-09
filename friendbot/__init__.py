@@ -20,7 +20,10 @@ if __name__ != "__main__":
     app.logger.setLevel(gunicorn_logger.level)
 
 # Check for signing secret
-if signing_secret := os.environ.get("FRIENDBOT_SIGNING_SECRET"):
+signing_secret = None
+if signing_secret_file := os.environ.get("FRIENDBOT_SECRET_FILE"):
+    with open(signing_secret_file, "r") as f:
+        signing_secret = f.readline()
     app.logger.info("Signing secret loaded")
 else:
     app.logger.warning("Signing secret not set! Requests will not be verified")
