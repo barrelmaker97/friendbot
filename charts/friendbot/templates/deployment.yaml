@@ -30,17 +30,13 @@ spec:
               value: "{{ .Values.logLevel }}"
             - name: FRIENDBOT_EXPORT_ZIP
               value: /friendbot/export.zip
-              # TODO Update to use new secret file
-              # Secret will need to be mounted as volume
-            - name: FRIENDBOT_SIGNING_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: friendbot-signing-secret
-                  key: signingSecret
-                  optional: true
+            - name: FRIENDBOT_SECRET_FILE
+              value: /friendbot-secret/signingSecret
           volumeMounts:
-            - mountPath: /friendbot
-              name: friendbot-export-volume
+            - name: friendbot-export-volume
+              mountPath: /friendbot/export.zip
+            - name: friendbot-signing-secret-volume
+              mountPath: /friendbot-secret
           livenessProbe:
             httpGet:
               path: /health
@@ -55,6 +51,9 @@ spec:
             periodSeconds: 10
       volumes:
         - name: friendbot-export-volume
-          nfs:
-            server: soteria.lan
-            path: /volume1/Nolan/friendbot
+          hostPath:
+            path: /home/barrelmaker/export.zip
+            type: File
+        - name: friendbot-signing-secret-volume
+          secret:
+            secretName: friendbot-signing-secret
