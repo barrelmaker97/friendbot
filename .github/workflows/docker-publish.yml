@@ -53,7 +53,7 @@ jobs:
           FRIENDBOT_SECRET_FILE: ./test-secret
           FRIENDBOT_REDIS_HOST: localhost
           FRIENDBOT_REDIS_PORT: 6379
-        run: coverage run --concurrency=multiprocessing --source="./friendbot" -m behave && coverage combine
+        run: coverage run --concurrency=multiprocessing -m behave && coverage combine
       - name: Coveralls
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
