@@ -26,6 +26,15 @@ def get_code(context, status):
     assert context.res.status_code == status
 
 
+@then("the response will be {json_object}")
+def check_response_object(context, json_object):
+    expected_json_object = json.loads(json_object)
+    json_object = json.loads(context.res.data)
+    print(f"Expected JSON Object: {expected_json_object}")
+    print(f"Received JSON Object: {json_object}")
+    assert json_object == expected_json_object
+
+
 @when("we make a POST request for {arg0} and {arg1} at {endpoint} as {user}")
 def post_two_args(context, arg0, arg1, endpoint, user):
     text = f"{arg0} {arg1}"
