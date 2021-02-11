@@ -2,7 +2,7 @@ import ujson
 
 
 def health_message(sentence):
-    return ujson.dumps({"status": "running", "sentence_generation": isinstance(sentence, bool)})
+    return ujson.dumps({"status": "running", "sentence_generation": isinstance(sentence, str)})
 
 
 def error_message():
