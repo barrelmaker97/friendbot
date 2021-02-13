@@ -8,5 +8,7 @@ spec:
     app: friendbot
   ports:
     - protocol: TCP
-      port: 80
+      port: 6000
       targetPort: 6000
+  externalIPs:
+    - 192.168.1.198
