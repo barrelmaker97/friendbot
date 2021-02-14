@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: friendbot
+  name: {{ .Release.Name }}
   labels:
     app: friendbot
 spec:
@@ -33,9 +33,9 @@ spec:
             - name: FRIENDBOT_SECRET_FILE
               value: /friendbot-secret/signingSecret
           volumeMounts:
-            - name: friendbot-export-volume
+            - name: {{ .Release.Name }}-export-volume
               mountPath: /friendbot/export.zip
-            - name: friendbot-signing-secret-volume
+            - name: {{ .Release.Name }}-signing-secret-volume
               mountPath: /friendbot-secret
           livenessProbe:
             httpGet:
@@ -50,10 +50,10 @@ spec:
             initialDelaySeconds: 3
             periodSeconds: 10
       volumes:
-        - name: friendbot-export-volume
+        - name: {{ .Release.Name }}-export-volume
           hostPath:
             path: /home/barrelmaker/export.zip
             type: File
-        - name: friendbot-signing-secret-volume
+        - name: {{ .Release.Name }}-signing-secret-volume
           secret:
-            secretName: friendbot-signing-secret
+            secretName: {{ .Release.Name }}-signing-secret
