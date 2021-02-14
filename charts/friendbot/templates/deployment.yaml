@@ -31,11 +31,11 @@ spec:
             - name: FRIENDBOT_EXPORT_ZIP
               value: /friendbot/export.zip
             - name: FRIENDBOT_SECRET_FILE
-              value: /friendbot-secret/signingSecret
+              value: /friendbot-secret/signature
           volumeMounts:
-            - name: {{ .Release.Name }}-export-volume
+            - name: {{ .Release.Name }}-export
               mountPath: /friendbot/export.zip
-            - name: {{ .Release.Name }}-signing-secret-volume
+            - name: {{ .Release.Name }}-signature
               mountPath: /friendbot-secret
           livenessProbe:
             httpGet:
@@ -50,10 +50,10 @@ spec:
             initialDelaySeconds: 3
             periodSeconds: 10
       volumes:
-        - name: {{ .Release.Name }}-export-volume
+        - name: {{ .Release.Name }}-export
           hostPath:
             path: /home/barrelmaker/export.zip
             type: File
-        - name: {{ .Release.Name }}-signing-secret-volume
+        - name: {{ .Release.Name }}-signature
           secret:
-            secretName: {{ .Release.Name }}-signing-secret
+            secretName: {{ .Release.Name }}-signature
