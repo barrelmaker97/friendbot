@@ -5,6 +5,7 @@ image:
   name: "barrelmaker97/friendbot"
   tag: "latest"
 logLevel: info
+exportLocation: "/home/barrelmaker/export.zip"
 redis:
   host: redis
   port: 6379

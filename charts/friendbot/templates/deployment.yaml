@@ -52,7 +52,7 @@ spec:
       volumes:
         - name: {{ .Release.Name }}-export
           hostPath:
-            path: /home/barrelmaker/export.zip
+            path: {{ .Values.exportLocation }}
             type: File
         - name: {{ .Release.Name }}-signature
           secret:
