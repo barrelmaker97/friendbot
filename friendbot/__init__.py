@@ -42,7 +42,7 @@ app.logger.info("Loading Users...")
 try:
     user_dict = utils.get_user_dict(export)
     users = user_dict.keys()
-    app.logger.info("Users loaded from export")
+    app.logger.info(f"{len(users)} users loaded from export")
     user_gauge = Gauge("friendbot_slack_users", "Number of Users Detected in Export")
     user_gauge.set(len(users))
 except Exception as ex:
@@ -55,7 +55,7 @@ app.logger.info("Loading Channels...")
 try:
     channel_dict = utils.get_channel_dict(export)
     channels = channel_dict.keys()
-    app.logger.info("Channels loaded from export")
+    app.logger.info(f"{len(channels)} channels loaded from export")
     channel_gauge = Gauge("friendbot_slack_channels", "Number of Channels Detected in Export")
     channel_gauge.set(len(channels))
 except Exception as ex:
@@ -92,7 +92,7 @@ while counter < tries:
                     except KeyError as ex:
                         app.logger.debug(ex)
             warmup_time = round(time.time() - start_time, 3)
-            msg = f"Generated {count} models for {len(users)} users in {len(channels)} channels in {warmup_time}s"
+            msg = f"Generated {count} models in {warmup_time}s"
             app.logger.info(msg)
             connected = True
             break
