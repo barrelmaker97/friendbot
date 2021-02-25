@@ -1,5 +1,0 @@
----
-apiversion: v1
-description: A Helm Chart for Friendbot
-name: friendbot
-version: 0.1.0
