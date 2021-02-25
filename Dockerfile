@@ -3,6 +3,7 @@ FROM python:3.9-alpine as base
 FROM base as dependencies
 WORKDIR /app
 COPY ./requirements.txt /app
+COPY ./test_data/export.zip /test-export.zip
 RUN apk add --no-cache --virtual .deps g++ \
 	&& pip install --upgrade pip --no-cache-dir \
 	&& pip install -r requirements.txt --no-cache-dir \
@@ -12,10 +13,10 @@ RUN apk add --no-cache --virtual .deps g++ \
 FROM dependencies as test
 ENV FRIENDBOT_SECRET_FILE=./test-secret
 RUN echo abcdef12345abcdef12345abcdef1234 > ./test-secret \
-	&& pip install behave --no-cache-dir
+	&& pip install behave --no-cache-dir \
+	&& mv /test-export.zip /export.zip
 COPY ./features /app/features
 COPY ./test_data/actions /app/test_data/actions
-COPY ./test_data/export.zip /
 COPY ./friendbot/ /app/friendbot
 RUN behave --no-logcapture && touch /test-success
 
