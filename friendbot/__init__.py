@@ -70,8 +70,8 @@ if not (redis_port := os.environ.get("FRIENDBOT_REDIS_PORT")):
     redis_port = 6379
 app.logger.info("Checking Redis connection...")
 cache = redis.Redis(host=redis_host, port=redis_port)
-tries = 5
-delay = 3
+tries = 4
+delay = 2
 counter = 0
 connected = False
 while counter < tries:
