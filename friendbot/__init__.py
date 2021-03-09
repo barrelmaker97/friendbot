@@ -3,11 +3,13 @@ from flask import Flask
 from friendbot import utils
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from prometheus_client import make_wsgi_app, Gauge
+from collections import defaultdict
 import logging
 import os
 import pathlib
 import redis
 import time
+import ujson
 
 app = Flask(__name__)
 
@@ -29,39 +31,46 @@ else:
     app.logger.warning("Signing secret not set! Requests will not be verified")
 
 # Check for specific export location
-if export_zip := os.environ.get("FRIENDBOT_EXPORT_ZIP"):
-    zip_location = pathlib.Path(export_zip).resolve()
-else:
-    zip_location = pathlib.Path("/export.zip").resolve()
-export = zip_location.parent / "export_unzip"
+app.logger.info("Loading export data...")
+export_zip = os.environ.get("FRIENDBOT_EXPORT_ZIP", "/export.zip")
+zip_location = pathlib.Path(export_zip).resolve()
+export_data = {}
+message_data = defaultdict(list)
+message_count = 0
 with ZipFile(zip_location, "r") as zip_object:
-    zip_object.extractall(export)
+    for name in zip_object.namelist():
+        filename = pathlib.PurePath(name)
+        if filename.match("*.json"):
+            file_data = ujson.load(zip_object.open(name))
+            if len(filename.parents) == 1:
+                data_dict = {}
+                for item in file_data:
+                    if filename.stem == "users":
+                        if real_name := item.get("real_name"):
+                            data_dict.update({item.get("id"): real_name})
+                    if filename.stem == "channels":
+                        if name := item.get("name"):
+                            data_dict.update({item.get("id"): name})
+                export_data[filename.stem] = data_dict
+            else:
+                for message in file_data:
+                    if not message.get("subtype"):
+                        message.pop("blocks", None)
+                        message_data[str(filename.parent)].append(message)
+                        message_count += 1
+export_data["messages"] = message_data
+app.logger.info("Export data loaded")
+app.logger.info(f"{message_count} messages loaded from export")
 
-# Try to load users from export
-app.logger.info("Loading Users...")
-try:
-    user_dict = utils.get_user_dict(export)
-    users = user_dict.keys()
-    app.logger.info(f"{len(users)} users loaded from export")
-    user_gauge = Gauge("friendbot_slack_users", "Number of Users Detected in Export")
-    user_gauge.set(len(users))
-except Exception as ex:
-    msg = f"An exception of type {type(ex).__name__} occurred. Users not loaded!"
-    app.logger.error(msg)
-    app.logger.debug(ex)
+user_count = len(export_data["users"].keys())
+app.logger.info(f"{user_count} users loaded from export")
+user_gauge = Gauge("friendbot_slack_users", "Number of Users Detected in Export")
+user_gauge.set(user_count)
 
-# Try to load channels from export
-app.logger.info("Loading Channels...")
-try:
-    channel_dict = utils.get_channel_dict(export)
-    channels = channel_dict.keys()
-    app.logger.info(f"{len(channels)} channels loaded from export")
-    channel_gauge = Gauge("friendbot_slack_channels", "Number of Channels Detected in Export")
-    channel_gauge.set(len(channels))
-except Exception as ex:
-    msg = f"An exception of type {type(ex).__name__} occurred. Channels not loaded!"
-    app.logger.error(msg)
-    app.logger.debug(ex)
+channel_count = len(export_data["channels"].keys())
+app.logger.info(f"{channel_count} channels loaded from export")
+channel_gauge = Gauge("friendbot_slack_channels", "Number of Channels Detected in Export")
+channel_gauge.set(channel_count)
 
 # Check if Redis is available and warm up cache
 if not (redis_host := os.environ.get("FRIENDBOT_REDIS_HOST")):
@@ -80,14 +89,12 @@ while counter < tries:
             app.logger.info("Redis connected")
             app.logger.info("Warming up text model cache...")
             start_time = time.time()
-            utils.create_sentence(export, "None", "None", user_dict, channel_dict, cache)
+            utils.create_sentence(export_data, "None", "None", cache)
             count = 1
-            for user in users:
-                for channel in channels:
+            for user in export_data["users"]:
+                for channel in export_data["channels"]:
                     try:
-                        utils.create_sentence(
-                            export, user, channel, user_dict, channel_dict, cache
-                        )
+                        utils.create_sentence(export_data, user, channel, cache)
                         count += 1
                     except KeyError as ex:
                         app.logger.debug(ex)
@@ -106,11 +113,7 @@ while counter < tries:
 if not connected:
     app.logger.warning("Could not connect to Redis cache. This will impact performance")
 
-app.config["EXPORT"] = export
-app.config["USER_DICT"] = user_dict
-app.config["USERS"] = users
-app.config["CHANNEL_DICT"] = channel_dict
-app.config["CHANNELS"] = channels
+app.config["EXPORT"] = export_data
 app.config["FRIENDBOT_SIGNING_SECRET"] = signing_secret
 app.config["REDIS_CACHE"] = cache
 

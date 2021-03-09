@@ -18,6 +18,13 @@ RUN echo abcdef12345abcdef12345abcdef1234 > ./test-secret \
 COPY ./features /app/features
 COPY ./test_data/actions /app/test_data/actions
 COPY ./friendbot/ /app/friendbot
+#RUN adduser \
+#	--disabled-password \
+#	--gecos "" \
+#	--no-create-home \
+#	--uid "1234" \
+#	"friendbot"
+#USER friendbot
 RUN behave --no-logcapture && touch /test-success
 
 FROM dependencies as production
