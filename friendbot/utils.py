@@ -1,6 +1,5 @@
 from multiprocessing import Process
 import redis
-import ujson
 import re
 import markovify
 import hmac
@@ -20,11 +19,6 @@ def parse_argument(arg, options):
     if final in options:
         return final
     raise Exception(f"Argument {final} not found")
-
-
-def _read_json_file(path):
-    with open(path) as f:
-        return ujson.load(f)
 
 
 def _generate_corpus(export, userID, channel):
