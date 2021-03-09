@@ -10,6 +10,7 @@ import pathlib
 import redis
 import time
 import ujson
+import sys
 
 app = Flask(__name__)
 
@@ -32,6 +33,7 @@ else:
 
 # Check for specific export location
 app.logger.info("Loading export data...")
+load_start_time = time.time()
 export_zip = os.environ.get("FRIENDBOT_EXPORT_ZIP", "/export.zip")
 zip_location = pathlib.Path(export_zip).resolve()
 export_data = {}
@@ -55,21 +57,28 @@ with ZipFile(zip_location, "r") as zip_object:
             else:
                 for message in file_data:
                     if not message.get("subtype"):
-                        message.pop("blocks", None)
+                        for key in list(message.keys()):
+                            if key not in ["text", "user"]:
+                                message.pop(key, None)
                         message_data[str(filename.parent)].append(message)
                         message_count += 1
 export_data["messages"] = message_data
-app.logger.info("Export data loaded")
+load_time = round(time.time() - load_start_time, 3)
+export_size = sys.getsizeof(ujson.dumps(export_data))
+app.logger.info(f"Loaded {export_size} bytes of data from {export_zip} in {load_time}s")
+
 app.logger.info(f"{message_count} messages loaded from export")
+message_gauge = Gauge("friendbot_slack_messages", "Number of Messages Loaded from Export")
+message_gauge.set(message_count)
 
 user_count = len(export_data["users"].keys())
 app.logger.info(f"{user_count} users loaded from export")
-user_gauge = Gauge("friendbot_slack_users", "Number of Users Detected in Export")
+user_gauge = Gauge("friendbot_slack_users", "Number of Users Loaded from Export")
 user_gauge.set(user_count)
 
 channel_count = len(export_data["channels"].keys())
 app.logger.info(f"{channel_count} channels loaded from export")
-channel_gauge = Gauge("friendbot_slack_channels", "Number of Channels Detected in Export")
+channel_gauge = Gauge("friendbot_slack_channels", "Number of Channels Loaded from Export")
 channel_gauge.set(channel_count)
 
 # Check if Redis is available and warm up cache
