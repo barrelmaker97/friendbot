@@ -14,7 +14,7 @@ RUN apk add --no-cache --virtual .deps g++ \
 	--gecos "" \
 	--no-create-home \
 	--uid "1234" \
-	"friendbot"
+	"1234"
 
 FROM dependencies as test
 ENV FRIENDBOT_SECRET_FILE=./test-secret
@@ -27,7 +27,7 @@ COPY ./friendbot/ /app/friendbot
 RUN behave --no-logcapture && touch /test-success
 
 FROM dependencies as production
-USER friendbot
+USER 1234
 EXPOSE 8000
 COPY --from=test /test-success /
 HEALTHCHECK --interval=60s --timeout=3s --retries=1 CMD python healthcheck.py
