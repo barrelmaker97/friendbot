@@ -8,7 +8,13 @@ RUN apk add --no-cache --virtual .deps g++ \
 	&& pip install --upgrade pip --no-cache-dir \
 	&& pip install -r requirements.txt --no-cache-dir \
 	&& apk del --no-cache .deps \
-	&& apk add --no-cache libstdc++
+	&& apk add --no-cache libstdc++ \
+	&& adduser \
+	--disabled-password \
+	--gecos "" \
+	--no-create-home \
+	--uid "1234" \
+	"friendbot"
 
 FROM dependencies as test
 ENV FRIENDBOT_SECRET_FILE=./test-secret
@@ -18,16 +24,10 @@ RUN echo abcdef12345abcdef12345abcdef1234 > ./test-secret \
 COPY ./features /app/features
 COPY ./test_data/actions /app/test_data/actions
 COPY ./friendbot/ /app/friendbot
-#RUN adduser \
-#	--disabled-password \
-#	--gecos "" \
-#	--no-create-home \
-#	--uid "1234" \
-#	"friendbot"
-#USER friendbot
 RUN behave --no-logcapture && touch /test-success
 
 FROM dependencies as production
+USER friendbot
 EXPOSE 8000
 COPY --from=test /test-success /
 HEALTHCHECK --interval=60s --timeout=3s --retries=1 CMD python healthcheck.py
