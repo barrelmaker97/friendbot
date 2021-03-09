@@ -32,9 +32,9 @@ else:
     app.logger.warning("Signing secret not set! Requests will not be verified")
 
 # Check for specific export location
-app.logger.info("Loading export data...")
 load_start_time = time.time()
 export_zip = os.environ.get("FRIENDBOT_EXPORT_ZIP", "/export.zip")
+app.logger.info(f"Loading export data from {export_zip}")
 zip_location = pathlib.Path(export_zip).resolve()
 export_data = {}
 message_data = defaultdict(list)
@@ -65,7 +65,7 @@ with ZipFile(zip_location, "r") as zip_object:
 export_data["messages"] = message_data
 load_time = round(time.time() - load_start_time, 3)
 export_size = sys.getsizeof(ujson.dumps(export_data))
-app.logger.info(f"Loaded {export_size} bytes of data from {export_zip} in {load_time}s")
+app.logger.info(f"Loaded {export_size} bytes of data in {load_time}s")
 
 app.logger.info(f"{message_count} messages loaded from export")
 message_gauge = Gauge("friendbot_slack_messages", "Number of Messages Loaded from Export")
