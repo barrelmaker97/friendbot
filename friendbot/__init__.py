@@ -98,12 +98,15 @@ while counter < tries:
             app.logger.info("Redis connected")
             app.logger.info("Warming up text model cache...")
             start_time = time.time()
-            utils.create_sentence(export_data, "None", "None", cache)
             count = 1
-            for user in export_data["users"]:
-                for channel in export_data["channels"]:
+            all_users = list(export_data["users"].keys())
+            all_channels = list(export_data["channels"].keys())
+            all_users.append("None")
+            all_channels.append("None")
+            for user in all_users:
+                for channel in all_channels:
                     try:
-                        utils.create_sentence(export_data, user, channel, cache)
+                        utils.get_sentence(export_data, user, channel, cache)
                         count += 1
                     except KeyError as ex:
                         app.logger.debug(ex)
