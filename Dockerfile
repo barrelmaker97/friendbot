@@ -18,9 +18,9 @@ RUN apk add --no-cache --virtual .deps g++ \
 
 FROM dependencies as test
 ENV FRIENDBOT_SECRET_FILE=./test-secret
-RUN echo abcdef12345abcdef12345abcdef1234 > ./test-secret \
-	&& pip install behave --no-cache-dir \
-	&& mv /test-export.zip /export.zip
+ENV FRIENDBOT_EXPORT_ZIP=/test-export.zip
+RUN pip install behave --no-cache-dir
+COPY ./test_data/test-secret ./test-secret
 COPY ./features /app/features
 COPY ./test_data/actions /app/test_data/actions
 COPY ./friendbot/ /app/friendbot
