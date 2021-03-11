@@ -2,22 +2,25 @@
 version: "3.7"
 services:
   app:
-    image: "barrelmaker97/friendbot:latest"
+    image: ghcr.io/barrelmaker97/friendbot:latest
     container_name: friendbot
     ports:
       - "8000:8000"
     environment:
       FRIENDBOT_EXPORT_ZIP: /export.zip
-      FRIENDBOT_LOG_LEVEL: info
-      FRIENDBOT_REDIS_HOST: redis
-      FRIENDBOT_REDIS_PORT: 6379
+# Uncomment and change these to configure Friendbot
+#     FRIENDBOT_LOG_LEVEL: info
+#     FRIENDBOT_REDIS_HOST: redis
+#     FRIENDBOT_REDIS_PORT: 6379
+#     FRIENDBOT_SECRET_FILE: /my/secret/file
     volumes:
       - type: bind
         source: ${FB_EXPORT}
         target: /export.zip
         read_only: true
     restart: always
-  redis:
-    image: "redis:alpine"
-    container_name: redis
-    restart: always
+# Uncomment this section to cache Friendbot using Redis
+# redis:
+#   image: "redis:alpine"
+#   container_name: redis
+#   restart: always
