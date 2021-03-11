@@ -90,13 +90,10 @@ all_users.append("None")
 all_channels.append("None")
 for user in all_users:
     for channel in all_channels:
-        model_name = f"{user}_{channel}"
-        fulltext = utils.generate_corpus(export_data, user, channel, message_data)
-        try:
+        if fulltext := utils.generate_corpus(export_data, user, channel, message_data):
             text_model = markovify.NewlineText(fulltext)
+            model_name = f"{user}_{channel}"
             models.update({model_name: text_model.to_json()})
-        except KeyError as ex:
-            app.logger.debug(ex)
 export_data.update({"models": models})
 
 # Check if Redis is available and warm up cache
