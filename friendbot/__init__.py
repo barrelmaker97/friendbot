@@ -122,8 +122,8 @@ while counter < tries:
             count = 0
             for user in all_users:
                 for channel in all_channels:
-                    utils.get_sentence(export_data, user, channel, cache)
-                    count += 1
+                    if utils.get_sentence(export_data, user, channel, cache):
+                        count += 1
             warmup_time = round(time.time() - start_time, 3)
             msg = f"Generated {count} models in {warmup_time}s"
             app.logger.info(msg)
