@@ -4,6 +4,7 @@ from friendbot import utils
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from prometheus_client import make_wsgi_app, Gauge
 from collections import defaultdict
+import markovify
 import logging
 import os
 import pathlib
@@ -55,14 +56,14 @@ with ZipFile(zip_location, "r") as zip_object:
                             data_dict.update({item.get("id"): name})
                 export_data[filename.stem] = data_dict
             else:
-                for message in file_data:
-                    if not message.get("subtype"):
-                        for key in list(message.keys()):
+                for item in file_data:
+                    if not item.get("subtype"):
+                        for key in list(item.keys()):
                             if key not in ["text", "user"]:
-                                message.pop(key, None)
-                        message_data[str(filename.parent)].append(message)
+                                item.pop(key, None)
+                        message_data[str(filename.parent)].append(item)
                         message_count += 1
-export_data["messages"] = message_data
+
 load_time = round(time.time() - load_start_time, 3)
 export_size = sys.getsizeof(ujson.dumps(export_data))
 app.logger.info(f"Loaded {export_size} bytes of data in {load_time}s")
@@ -81,6 +82,23 @@ app.logger.info(f"{channel_count} channels loaded from export")
 channel_gauge = Gauge("friendbot_slack_channels", "Number of Channels Loaded from Export")
 channel_gauge.set(channel_count)
 
+# Generate text models
+models = {}
+all_users = list(export_data["users"].keys())
+all_channels = list(export_data["channels"].keys())
+all_users.append("None")
+all_channels.append("None")
+for user in all_users:
+    for channel in all_channels:
+        model_name = f"{user}_{channel}"
+        fulltext = utils.generate_corpus(export_data, user, channel, message_data)
+        try:
+            text_model = markovify.NewlineText(fulltext)
+            models.update({model_name: text_model.to_json()})
+        except KeyError as ex:
+            app.logger.debug(ex)
+export_data.update({"models": models})
+
 # Check if Redis is available and warm up cache
 if not (redis_host := os.environ.get("FRIENDBOT_REDIS_HOST")):
     redis_host = "redis"
@@ -98,11 +116,7 @@ while counter < tries:
             app.logger.info("Redis connected")
             app.logger.info("Warming up text model cache...")
             start_time = time.time()
-            count = 1
-            all_users = list(export_data["users"].keys())
-            all_channels = list(export_data["channels"].keys())
-            all_users.append("None")
-            all_channels.append("None")
+            count = 0
             for user in all_users:
                 for channel in all_channels:
                     try:

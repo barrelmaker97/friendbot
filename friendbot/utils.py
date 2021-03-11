@@ -21,17 +21,17 @@ def parse_argument(arg, options):
     raise Exception(f"Argument {final} not found")
 
 
-def _generate_corpus(export, userID, channel):
+def generate_corpus(export, userID, channel, messages):
     fulltext = ""
     if channel == "None":
-        data = [item for sublist in export["messages"].values() for item in sublist]
+        data = [item for sublist in messages.values() for item in sublist]
     else:
-        data = export["messages"][export["channels"].get(channel)]
+        data = messages[export["channels"].get(channel)]
     for message in data:
         text = str(message.get("text"))
         if "<@U" in text:
             for user in export["users"]:
-                text = text.replace(f"<@{user}>", export["users"][user])
+                text = text.replace(f"<@{user}>", export["users"].get(user))
         text = regex.sub("", text)
         if text:
             if userID == "None":
@@ -52,12 +52,10 @@ def create_sentence(export, user, channel, cache):
             raw_data = cache.get(model_name)
             text_model = markovify.Text.from_json(raw_data)
         else:
-            fulltext = _generate_corpus(export, user, channel)
-            text_model = markovify.NewlineText(fulltext)
+            text_model = markovify.Text.from_json(export["models"].get(model_name))
             cache.set(model_name, text_model.to_json())
     except redis.exceptions.ConnectionError as ex:
-        fulltext = _generate_corpus(export, user, channel)
-        text_model = markovify.NewlineText(fulltext)
+        text_model = markovify.Text.from_json(export["models"].get(model_name))
     sentence = text_model.make_sentence(tries=100)
     if isinstance(sentence, str):
         return sentence
