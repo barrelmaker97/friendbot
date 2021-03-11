@@ -49,25 +49,26 @@ def create_sentence(models, user, channel, cache):
     model_name = f"{user}_{channel}"
     try:
         if cache.exists(model_name):
-            raw_data = cache.get(model_name)
-            text_model = markovify.Text.from_json(raw_data)
+            model = cache.get(model_name)
         else:
-            text_model = markovify.Text.from_json(models.get(model_name))
-            cache.set(model_name, text_model.to_json())
+            if model := models.get(model_name):
+                cache.set(model_name, model)
     except redis.exceptions.ConnectionError as ex:
-        text_model = markovify.Text.from_json(models.get(model_name))
-    sentence = text_model.make_sentence(tries=100)
-    if isinstance(sentence, str):
-        return sentence
+        model = models.get(model_name)
+    if model:
+        loaded_model = markovify.Text.from_json(model)
+        sentence = loaded_model.make_sentence(tries=100)
+        if isinstance(sentence, str):
+            return sentence
 
 
 def pregen_sentence(models, user, channel, cache):
     pregen_name = f"{user}_{channel}_pregen"
-    pregen_sentence = create_sentence(models, user, channel, cache)
-    try:
-        cache.set(pregen_name, pregen_sentence)
-    except redis.exceptions.ConnectionError as ex:
-        pass
+    if sentence := create_sentence(models, user, channel, cache):
+        try:
+            cache.set(pregen_name, sentence)
+        except redis.exceptions.ConnectionError as ex:
+            pass
 
 
 def validate_request(request, signing_secret):
