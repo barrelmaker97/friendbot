@@ -92,7 +92,8 @@ for user in all_users:
     for channel in all_channels:
         if fulltext := utils.generate_corpus(export_data, user, channel, message_data):
             try:
-                text_model = markovify.NewlineText(fulltext)
+                text_model = markovify.NewlineText(fulltext, retain_original=False)
+                text_model = text_model.compile()
             except KeyError as ex:
                 if str(ex) == "('___BEGIN__', '___BEGIN__')":
                     msg = f"Combination of user {user} in channel {channel} did not produce enough data to create a model"
