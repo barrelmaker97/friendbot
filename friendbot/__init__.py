@@ -91,7 +91,13 @@ all_channels.append("None")
 for user in all_users:
     for channel in all_channels:
         if fulltext := utils.generate_corpus(export_data, user, channel, message_data):
-            text_model = markovify.NewlineText(fulltext)
+            try:
+                text_model = markovify.NewlineText(fulltext)
+            except KeyError as ex:
+                if str(ex) == "('___BEGIN__', '___BEGIN__')":
+                    msg = f"Combination of user {user} in channel {channel} did not produce enough data to create a model"
+                    app.logger.debug(msg)
+                    pass
             model_name = f"{user}_{channel}"
             models.update({model_name: text_model.to_json()})
 export_data.update({"models": models})
