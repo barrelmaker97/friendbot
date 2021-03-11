@@ -27,7 +27,7 @@ if __name__ != "__main__":
 signing_secret = None
 if signing_secret_file := os.environ.get("FRIENDBOT_SECRET_FILE"):
     with open(signing_secret_file, "r") as f:
-        signing_secret = f.readline().replace('\n', '')
+        signing_secret = f.readline().replace("\n", "")
     app.logger.info("Signing secret loaded")
 else:
     app.logger.warning("Signing secret not set! Requests will not be verified")
@@ -92,8 +92,7 @@ for user in all_users:
     for channel in all_channels:
         if fulltext := utils.generate_corpus(export_data, user, channel, message_data):
             try:
-                text_model = markovify.NewlineText(fulltext, retain_original=False)
-                text_model = text_model.compile()
+                text_model = markovify.NewlineText(fulltext, retain_original=False).compile(inplace=True)
             except KeyError as ex:
                 if str(ex) == "('___BEGIN__', '___BEGIN__')":
                     msg = f"Combination of user {user} in channel {channel} did not produce enough data to create a model"
