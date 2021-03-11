@@ -82,6 +82,7 @@ channel_gauge = Gauge("friendbot_slack_channels", "Number of Channels Loaded fro
 channel_gauge.set(channel_count)
 
 # Generate text models
+model_start_time = time.time()
 app.logger.info(f"Generating text models...")
 models = {}
 all_users = list(export_data["users"].keys())
@@ -100,9 +101,10 @@ for user in all_users:
             model_name = f"{user}_{channel}"
             models.update({model_name: text_model.to_json()})
 export_data.update({"models": models})
+model_time = round(time.time() - model_start_time, 3)
 
 model_count = len(export_data["models"].keys())
-app.logger.info(f"{model_count} text models generated")
+app.logger.info(f"{model_count} text models generated in {model_time}s")
 model_gauge = Gauge("friendbot_text_models", "Number of Text Models Generated")
 model_gauge.set(model_count)
 
@@ -119,11 +121,11 @@ for count in range(tries):
         if cache.ping():
             app.logger.info("Redis connected")
             app.logger.info("Warming up Redis cache...")
-            start_time = time.time()
+            warmup_start_time = time.time()
             for user in all_users:
                 for channel in all_channels:
                     utils.get_sentence(export_data, user, channel, cache)
-            warmup_time = round(time.time() - start_time, 3)
+            warmup_time = round(time.time() - warmup_start_time, 3)
             msg = f"Warmed up Redis cache in {warmup_time}s"
             app.logger.info(msg)
             connected = True
