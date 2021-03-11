@@ -62,11 +62,11 @@ def create_sentence(models, user, channel, cache):
             return sentence
 
 
-def pregen_sentence(models, user, channel, cache):
-    pregen_name = f"{user}_{channel}_pregen"
+def cache_sentence(models, user, channel, cache):
     if sentence := create_sentence(models, user, channel, cache):
+        sentence_name = f"{user}_{channel}_sentence"
         try:
-            cache.set(pregen_name, sentence)
+            cache.set(sentence_name, sentence)
         except redis.exceptions.ConnectionError as ex:
             pass
 
@@ -92,18 +92,18 @@ def validate_request(request, signing_secret):
         return (False, err)
 
 
-def get_sentence(export, user, channel, cache):
-    pregen_name = f"{user}_{channel}_pregen"
+def get_sentence(models, user, channel, cache):
+    sentence_name = f"{user}_{channel}_sentence"
     try:
-        if cache.exists(pregen_name):
-            sentence = cache.get(pregen_name).decode("utf-8")
-            cache.delete(pregen_name)
+        if cache.exists(sentence_name):
+            sentence = cache.get(sentence_name).decode("utf-8")
+            cache.delete(sentence_name)
         else:
-            sentence = create_sentence(export["models"], user, channel, cache)
+            sentence = create_sentence(models, user, channel, cache)
     except redis.exceptions.ConnectionError as ex:
-        sentence = create_sentence(export["models"], user, channel, cache)
-    pregen_process = Process(
-        target=pregen_sentence, args=(export["models"], user, channel, cache)
+        sentence = create_sentence(models, user, channel, cache)
+    cache_process = Process(
+        target=cache_sentence, args=(models, user, channel, cache)
     )
-    pregen_process.start()
+    cache_process.start()
     return sentence
