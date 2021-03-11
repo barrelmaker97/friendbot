@@ -107,17 +107,14 @@ model_gauge = Gauge("friendbot_text_models", "Number of Text Models Generated")
 model_gauge.set(model_count)
 
 # Check if Redis is available and warm up cache
-if not (redis_host := os.environ.get("FRIENDBOT_REDIS_HOST")):
-    redis_host = "redis"
-if not (redis_port := os.environ.get("FRIENDBOT_REDIS_PORT")):
-    redis_port = 6379
 app.logger.info("Checking Redis connection...")
+redis_host = os.environ.get("FRIENDBOT_REDIS_HOST", "redis")
+redis_port = os.environ.get("FRIENDBOT_REDIS_PORT", 6379)
 cache = redis.Redis(host=redis_host, port=redis_port)
 tries = 4
 delay = 2
-counter = 0
 connected = False
-while counter < tries:
+for count in range(tries):
     try:
         if cache.ping():
             app.logger.info("Redis connected")
@@ -134,10 +131,9 @@ while counter < tries:
         else:
             raise redis.exceptions.ConnectionError
     except redis.exceptions.ConnectionError as ex:
-        app.logger.warning(f"Attempt {counter+1} of {tries}: Redis connection failed. Trying again in {delay} seconds")
+        app.logger.warning(f"Attempt {count+1} of {tries}: Connection to Redis at {redis_host}:{redis_port} failed. Trying again in {delay}s")
         app.logger.debug(ex)
         time.sleep(delay)
-        counter += 1
 if not connected:
     app.logger.warning("Could not connect to Redis cache. This will impact performance")
 
