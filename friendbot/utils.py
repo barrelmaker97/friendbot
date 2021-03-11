@@ -45,25 +45,25 @@ def generate_corpus(export, userID, channel, messages):
     return fulltext
 
 
-def create_sentence(export, user, channel, cache):
+def create_sentence(models, user, channel, cache):
     model_name = f"{user}_{channel}"
     try:
         if cache.exists(model_name):
             raw_data = cache.get(model_name)
             text_model = markovify.Text.from_json(raw_data)
         else:
-            text_model = markovify.Text.from_json(export["models"].get(model_name))
+            text_model = markovify.Text.from_json(models.get(model_name))
             cache.set(model_name, text_model.to_json())
     except redis.exceptions.ConnectionError as ex:
-        text_model = markovify.Text.from_json(export["models"].get(model_name))
+        text_model = markovify.Text.from_json(models.get(model_name))
     sentence = text_model.make_sentence(tries=100)
     if isinstance(sentence, str):
         return sentence
 
 
-def pregen_sentence(export, user, channel, cache):
+def pregen_sentence(models, user, channel, cache):
     pregen_name = f"{user}_{channel}_pregen"
-    pregen_sentence = create_sentence(export, user, channel, cache)
+    pregen_sentence = create_sentence(models, user, channel, cache)
     try:
         cache.set(pregen_name, pregen_sentence)
     except redis.exceptions.ConnectionError as ex:
@@ -98,11 +98,11 @@ def get_sentence(export, user, channel, cache):
             sentence = cache.get(pregen_name).decode("utf-8")
             cache.delete(pregen_name)
         else:
-            sentence = create_sentence(export, user, channel, cache)
+            sentence = create_sentence(export["models"], user, channel, cache)
     except redis.exceptions.ConnectionError as ex:
-        sentence = create_sentence(export, user, channel, cache)
+        sentence = create_sentence(export["models"], user, channel, cache)
     pregen_process = Process(
-        target=pregen_sentence, args=(export, user, channel, cache)
+        target=pregen_sentence, args=(export["models"], user, channel, cache)
     )
     pregen_process.start()
     return sentence
