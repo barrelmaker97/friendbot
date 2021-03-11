@@ -97,7 +97,6 @@ for user in all_users:
                 if str(ex) == "('___BEGIN__', '___BEGIN__')":
                     msg = f"Combination of user {user} in channel {channel} did not produce enough data to create a model"
                     app.logger.debug(msg)
-                    pass
             model_name = f"{user}_{channel}"
             models.update({model_name: text_model.to_json()})
 export_data.update({"models": models})
