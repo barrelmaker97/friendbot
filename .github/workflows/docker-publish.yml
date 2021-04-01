@@ -48,11 +48,10 @@ jobs:
           FRIENDBOT_REDIS_HOST: localhost
           FRIENDBOT_REDIS_PORT: 6379
         run: coverage run -m behave && coverage combine
-      - name: Upload Coverage Results to Coveralls
-        uses: coverallsapp/github-action@v1.1.2
+      - name: Upload Coverage Results to Codecov
+        uses: codecov/codecov-action@v1
         with:
-          github-token: ${{ github.token }}
-          path-to-lcov: ./.coverage
+          fail_ci_if_error: true
 
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
