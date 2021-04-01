@@ -41,17 +41,17 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Set up Redis
         run: docker run -d -p 6379:6379 redis:alpine
-      - name: Run Tests
+      - name: Run Tests and Generate Coverage Report
         env:
           FRIENDBOT_EXPORT_ZIP: ./test_data/export.zip
           FRIENDBOT_SECRET_FILE: ./features/steps/test
           FRIENDBOT_REDIS_HOST: localhost
           FRIENDBOT_REDIS_PORT: 6379
         run: coverage run -m behave && coverage combine
-      - name: Coveralls
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: coveralls
+      - name: Upload Coverage Results to Coveralls
+        uses: coverallsapp/github-action@v1.1.2
+        with:
+          github-token: ${{ github.token }}
 
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
