@@ -1,4 +1,3 @@
-[![Coverage Status](https://coveralls.io/repos/github/barrelmaker97/friendbot/badge.svg?branch=master)](https://coveralls.io/github/barrelmaker97/friendbot?branch=master)
 [![codecov](https://codecov.io/gh/barrelmaker97/friendbot/branch/master/graph/badge.svg?token=l6jB2bxHzn)](https://codecov.io/gh/barrelmaker97/friendbot)
 [![CodeFactor](https://www.codefactor.io/repository/github/barrelmaker97/friendbot/badge/master)](https://www.codefactor.io/repository/github/barrelmaker97/friendbot/overview/master)
 
