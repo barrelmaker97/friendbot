@@ -62,7 +62,7 @@ jobs:
   github-push:
     # Ensure test job passes before pushing image.
     needs: test
-
+    name: Push
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
 
