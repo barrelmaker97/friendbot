@@ -42,12 +42,16 @@ jobs:
       - name: Set up Redis
         run: docker run -d -p 6379:6379 redis:alpine
       - name: Run Tests and Generate Coverage Report
+        run: |
+          coverage run -m behave
+          unset FRIENDBOT_REDIS_HOST
+          coverage run -m behave
+          coverage combine
         env:
           FRIENDBOT_EXPORT_ZIP: ./test_data/export.zip
           FRIENDBOT_SECRET_FILE: ./features/steps/test
           FRIENDBOT_REDIS_HOST: localhost
           FRIENDBOT_REDIS_PORT: 6379
-        run: coverage run -m behave && coverage combine
       - name: Upload Coverage Results to Codecov
         uses: codecov/codecov-action@v1
         with:
