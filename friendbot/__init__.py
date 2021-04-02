@@ -83,7 +83,7 @@ channel_gauge.set(channel_count)
 
 # Generate text models
 model_start_time = time.time()
-app.logger.info(f"Generating text models...")
+app.logger.info("Generating text models...")
 models = {}
 all_users = list(export_data["users"].keys())
 all_channels = list(export_data["channels"].keys())
