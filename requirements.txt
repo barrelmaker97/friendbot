@@ -4,4 +4,4 @@ markovify==0.9.0
 redis==3.5.3
 requests==2.25.1
 ujson==4.0.2
-prometheus-client==0.10.1
+prometheus-client==0.11.0
