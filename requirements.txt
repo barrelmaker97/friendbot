@@ -2,6 +2,6 @@ Flask==2.0.1
 gunicorn==20.1.0
 markovify==0.9.0
 redis==3.5.3
-requests==2.25.1
+requests==2.26.0
 ujson==4.0.2
 prometheus-client==0.11.0
