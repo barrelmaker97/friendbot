@@ -1,6 +1,6 @@
 Flask==2.0.1
 gunicorn==20.1.0
-markovify==0.9.0
+markovify==0.9.3
 redis==3.5.3
 requests==2.26.0
 ujson==4.0.2
