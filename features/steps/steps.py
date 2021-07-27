@@ -97,6 +97,25 @@ def post_basic(context, endpoint, path):
     assert context.res
 
 
+@when("we make a POST request that isn't signed at {endpoint} using {path}")
+def post_basic_unsigned(context, endpoint, path):
+    with open(path) as f:
+        data = json.load(f)
+    data_dict = dict(payload=json.dumps(data))
+    context.res = context.client.post(endpoint, data=data_dict)
+    assert context.res
+
+
+@when("we make a POST request that is too old at {endpoint} using {path}")
+def post_basic_too_old(context, endpoint, path):
+    with open(path) as f:
+        data = json.load(f)
+    data_dict = dict(payload=json.dumps(data))
+    headers = generate_signed_headers(data_dict, timestamp=(time.time() - 600))
+    context.res = context.client.post(endpoint, data=data_dict, headers=headers)
+    assert context.res
+
+
 def generate_signed_headers(data_dict, timestamp=time.time()):
     if signing_secret_file := os.environ.get("FRIENDBOT_SECRET_FILE"):
         with open(signing_secret_file, "r") as f:
