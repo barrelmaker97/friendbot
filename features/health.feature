@@ -1,5 +1,5 @@
 @PostStart
-Feature: Responding to Actions
+Feature: Checking Application Health
 
 	Scenario: Request at /health
 		Given friendbot is running

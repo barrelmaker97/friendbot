@@ -65,16 +65,16 @@ def post_endpoint_blank_with_user(context, endpoint, user):
     assert context.res
 
 
-@when("we make a blank POST request at {endpoint} that isn't signed")
-def post_endpoint_blank_unsigned(context, endpoint):
-    data_dict = dict(text="", user_id="")
+@when("we make a blank POST request as {user} at {endpoint} that isn't signed")
+def post_endpoint_blank_unsigned(context, endpoint, user):
+    data_dict = dict(text="", user_id=user)
     context.res = context.client.post(endpoint, data=data_dict)
     assert context.res
 
 
-@when("we make a blank POST request at {endpoint} that is too old")
-def post_endpoint_blank_too_old(context, endpoint):
-    data_dict = dict(text="", user_id="")
+@when("we make a blank POST request as {user} at {endpoint} that is too old")
+def post_endpoint_blank_too_old(context, endpoint, user):
+    data_dict = dict(text="", user_id=user)
     headers = generate_signed_headers(data_dict, timestamp=(time.time() - 600))
     context.res = context.client.post(endpoint, data=data_dict, headers=headers)
     assert context.res

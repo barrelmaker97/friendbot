@@ -23,12 +23,12 @@ Feature: Generating Sentences
 
 	Scenario: Request a sentence with an unsigned request
 		Given friendbot is running
-		When we make a blank POST request at /sentence that isn't signed
+		When we make a blank POST request as UCF55PTPV at /sentence that isn't signed
 		Then we will get a 400 status code
 
 	Scenario: Request a sentence with an old request
 		Given friendbot is running
-		When we make a blank POST request at /sentence that is too old
+		When we make a blank POST request as UCF55PTPV at /sentence that is too old
 		Then we will get a 400 status code
 
 	Scenario: Request a sentence using a specific channel
