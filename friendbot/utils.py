@@ -1,4 +1,4 @@
-from multiprocessing import Process
+from threading import Thread
 import redis
 import re
 import markovify
@@ -102,7 +102,7 @@ def get_sentence(models, user, channel, cache):
             sentence = create_sentence(models, user, channel, cache)
     except redis.exceptions.ConnectionError as ex:
         sentence = create_sentence(models, user, channel, cache)
-    cache_process = Process(
+    cache_process = Thread(
         target=cache_sentence, args=(models, user, channel, cache)
     )
     cache_process.start()
