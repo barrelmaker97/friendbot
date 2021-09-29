@@ -9,14 +9,9 @@ RUN apk add --no-cache --virtual .deps g++ \
 	&& pip install -r requirements.txt --no-cache-dir \
 	&& apk del --no-cache .deps \
 	&& apk add --no-cache libstdc++ \
-	&& adduser \
-	--disabled-password \
-	--gecos "" \
-	--no-create-home \
-	--uid "1234" \
-	"1234"
-
-FROM dependencies as production
+	&& adduser --disabled-password \
+	--gecos "" --no-create-home \
+	--uid "1234" "1234"
 USER 1234
 EXPOSE 8000
 HEALTHCHECK --interval=60s --timeout=3s --retries=1 CMD python healthcheck.py
