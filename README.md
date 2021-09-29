@@ -7,7 +7,7 @@ Friendbot is a Markov-chain based chatbot which uses Slack messages as its corpu
 ## Installation
 Download the `docker-compose.yaml` file (or clone this repo), and start by letting Friendbot know the location of your Slack export zip file by running
 ```
-FB_EXPORT=<path to your Slack export> docker compose-up -d
+FB_EXPORT=<path to your Slack export> docker-compose up -d
 ```
 
 ## Configuration
