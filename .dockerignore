@@ -1,5 +1,5 @@
 *
 !requirements.txt
 !friendbot/
-!test_data/
+!example-data/
 !healthcheck.py

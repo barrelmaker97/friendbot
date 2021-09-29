@@ -12,13 +12,13 @@ FB_EXPORT=<path to your Slack export> docker-compose up -d
 
 ## Configuration
 All config is done via environment variables, listed below:
-| Parameter                 | Description                                                                   | Default       |
-|---------------------------|-------------------------------------------------------------------------------|---------------|
-| `FRIENDBOT_LOG_LEVEL`     | Friendbot's log level                                                         | `info`        |
-| `FRIENDBOT_EXPORT_ZIP`    | Path (inside Friendbot) to zip file containing the Slack Export               | `/export.zip` |
-| `FRIENDBOT_REDIS_HOST`    | Hostname of Redis instance used for cache                                     | `redis`       |
-| `FRIENDBOT_REDIS_PORT`    | Port number of Redis instance used for cache                                  | `6379`        |
-| `FRIENDBOT_SECRET_FILE`   | File containing a Signing Secret recieved from Slack, used to verify requests | `nil`         |
+| Parameter                 | Description                                                                   | Default                      |
+|---------------------------|-------------------------------------------------------------------------------|------------------------------|
+| `FRIENDBOT_LOG_LEVEL`     | Friendbot's log level                                                         | `info`                       |
+| `FRIENDBOT_EXPORT_ZIP`    | Path (inside Friendbot) to zip file containing the Slack Export               | `/home/friendbot/export.zip` |
+| `FRIENDBOT_REDIS_HOST`    | Hostname of Redis instance used for cache                                     | `redis`                      |
+| `FRIENDBOT_REDIS_PORT`    | Port number of Redis instance used for cache                                  | `6379`                       |
+| `FRIENDBOT_SECRET_FILE`   | File containing a Signing Secret recieved from Slack, used to verify requests | `nil`                        |
 
 ## API
 ### /sentence

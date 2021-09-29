@@ -33,7 +33,7 @@ else:
 
 # Check for specific export location
 load_start_time = time.time()
-export_zip = os.environ.get("FRIENDBOT_EXPORT_ZIP", "/export.zip")
+export_zip = os.environ.get("FRIENDBOT_EXPORT_ZIP", "/home/friendbot/export.zip")
 app.logger.info(f"Loading export data from {export_zip}")
 zip_location = pathlib.Path(export_zip).resolve()
 export_data = {}
