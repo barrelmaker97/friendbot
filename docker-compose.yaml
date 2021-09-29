@@ -6,9 +6,9 @@ services:
     container_name: friendbot
     ports:
       - "8000:8000"
-    environment:
-      FRIENDBOT_EXPORT_ZIP: /export.zip
 # Uncomment and change these to configure Friendbot
+#   environment:
+#     FRIENDBOT_EXPORT_ZIP: /different/location/export.zip
 #     FRIENDBOT_LOG_LEVEL: info
 #     FRIENDBOT_REDIS_HOST: redis
 #     FRIENDBOT_REDIS_PORT: 6379
@@ -16,7 +16,7 @@ services:
     volumes:
       - type: bind
         source: ${FB_EXPORT}
-        target: /export.zip
+        target: /home/friendbot/export.zip
         read_only: true
     restart: always
 # Uncomment this section to cache Friendbot using Redis
