@@ -1,11 +1,11 @@
-FROM python:3.9.7-alpine as base
-
-FROM base as dependencies
-COPY ./requirements.txt /
-COPY ./install.sh /
-RUN /install.sh
-WORKDIR /home/friendbot
+FROM python:3.9.7-alpine
+RUN adduser --disabled-password --gecos "" --uid "1234" "friendbot"
 USER friendbot
+WORKDIR /home/friendbot
+ENV PATH="/home/friendbot/.local/bin:${PATH}"
+COPY ./requirements.txt .
+RUN pip install --user --no-cache-dir -r requirements.txt \
+	&& rm requirements.txt
 EXPOSE 8000
 HEALTHCHECK --interval=60s --timeout=3s --retries=1 CMD python healthcheck.py
 ENV FRIENDBOT_LOG_LEVEL=info
