@@ -52,8 +52,8 @@ jobs:
           coverage combine
           coverage xml
         env:
-          FRIENDBOT_EXPORT_ZIP: ./test_data/export.zip
-          FRIENDBOT_SECRET_FILE: ./test_data/test-secret
+          FRIENDBOT_EXPORT_ZIP: ./example-data/export.zip
+          FRIENDBOT_SECRET_FILE: ./example-data/example-secret
           FRIENDBOT_REDIS_HOST: localhost
           FRIENDBOT_REDIS_PORT: 6379
       - name: Upload Coverage Results to Codecov
