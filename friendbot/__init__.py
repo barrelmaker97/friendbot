@@ -1,12 +1,12 @@
+import os
+import time
+import redis
+import logging
+import markovify
 from flask import Flask
 from friendbot import utils
-from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from prometheus_client import make_wsgi_app, Gauge
-import markovify
-import logging
-import os
-import redis
-import time
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 app = Flask(__name__)
 

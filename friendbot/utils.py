@@ -1,14 +1,14 @@
-from multiprocessing import Process
-from zipfile import ZipFile
-from collections import defaultdict
-import pathlib
+import re
+import time
+import hmac
 import ujson
 import redis
-import re
-import markovify
-import hmac
+import pathlib
 import hashlib
-import time
+import markovify
+from zipfile import ZipFile
+from multiprocessing import Process
+from collections import defaultdict
 
 regex = re.compile(r'<(?:[^"\\]|\\.)*>', re.IGNORECASE)
 

@@ -1,9 +1,9 @@
-from friendbot import app, utils, messages
-from prometheus_client import Summary
-import requests
+import time
 import flask
 import ujson
-import time
+import requests
+from prometheus_client import Summary
+from friendbot import app, utils, messages
 
 export = app.config["EXPORT"]
 signing_secret = app.config["FRIENDBOT_SIGNING_SECRET"]
