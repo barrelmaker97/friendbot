@@ -88,7 +88,7 @@ def create_sentence(models, user, channel, cache):
         else:
             if model := models.get(model_name):
                 cache.set(model_name, model)
-    except redis.exceptions.ConnectionError as ex:
+    except redis.exceptions.ConnectionError:
         model = models.get(model_name)
     if model:
         loaded_model = markovify.Text.from_json(model)
@@ -102,7 +102,7 @@ def cache_sentence(models, user, channel, cache):
         sentence_name = f"{user}_{channel}_sentence"
         try:
             cache.set(sentence_name, sentence)
-        except redis.exceptions.ConnectionError as ex:
+        except redis.exceptions.ConnectionError:
             pass
 
 
@@ -122,7 +122,7 @@ def validate_request(request, signing_secret):
         ).hexdigest()
         assert hmac.compare_digest(f"v0={my_signature}", slack_signature)
         return (True, "")
-    except Exception as ex:
+    except Exception:
         err = "Request verification failed! Signature did not match"
         return (False, err)
 
@@ -135,7 +135,7 @@ def get_sentence(models, user, channel, cache):
             cache.delete(sentence_name)
         else:
             sentence = create_sentence(models, user, channel, cache)
-    except redis.exceptions.ConnectionError as ex:
+    except redis.exceptions.ConnectionError:
         sentence = create_sentence(models, user, channel, cache)
     cache_process = Process(
         target=cache_sentence, args=(models, user, channel, cache)
