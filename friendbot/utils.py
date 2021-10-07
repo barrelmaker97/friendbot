@@ -1,4 +1,8 @@
 from multiprocessing import Process
+from zipfile import ZipFile
+from collections import defaultdict
+import pathlib
+import ujson
 import redis
 import re
 import markovify
@@ -19,6 +23,37 @@ def parse_argument(arg, options):
     if final in options:
         return final
     raise Exception(f"Argument {final} not found")
+
+
+def read_export(location):
+    zip_location = pathlib.Path(location).resolve()
+    export_data = {}
+    message_data = defaultdict(list)
+    message_count = 0
+    with ZipFile(zip_location, "r") as zip_object:
+        for name in zip_object.namelist():
+            filename = pathlib.PurePath(name)
+            if filename.match("*.json"):
+                file_data = ujson.load(zip_object.open(name))
+                if len(filename.parents) == 1:
+                    data_dict = {}
+                    for item in file_data:
+                        if filename.stem == "users":
+                            if real_name := item.get("real_name"):
+                                data_dict.update({item.get("id"): real_name})
+                        if filename.stem == "channels":
+                            if name := item.get("name"):
+                                data_dict.update({item.get("id"): name})
+                    export_data[filename.stem] = data_dict
+                else:
+                    for item in file_data:
+                        if not item.get("subtype"):
+                            for key in list(item.keys()):
+                                if key not in ["text", "user"]:
+                                    item.pop(key, None)
+                            message_data[str(filename.parent)].append(item)
+                            message_count += 1
+    return export_data, message_data, message_count
 
 
 def generate_corpus(export, userID, channel, messages):

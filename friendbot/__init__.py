@@ -1,16 +1,12 @@
-from zipfile import ZipFile
 from flask import Flask
 from friendbot import utils
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from prometheus_client import make_wsgi_app, Gauge
-from collections import defaultdict
 import markovify
 import logging
 import os
-import pathlib
 import redis
 import time
-import ujson
 
 app = Flask(__name__)
 
@@ -35,36 +31,10 @@ else:
 load_start_time = time.time()
 export_zip = os.environ.get("FRIENDBOT_EXPORT_ZIP", "/home/friendbot/export.zip")
 app.logger.info(f"Loading export data from {export_zip}")
-zip_location = pathlib.Path(export_zip).resolve()
-export_data = {}
-message_data = defaultdict(list)
-message_count = 0
-with ZipFile(zip_location, "r") as zip_object:
-    for name in zip_object.namelist():
-        filename = pathlib.PurePath(name)
-        if filename.match("*.json"):
-            file_data = ujson.load(zip_object.open(name))
-            if len(filename.parents) == 1:
-                data_dict = {}
-                for item in file_data:
-                    if filename.stem == "users":
-                        if real_name := item.get("real_name"):
-                            data_dict.update({item.get("id"): real_name})
-                    if filename.stem == "channels":
-                        if name := item.get("name"):
-                            data_dict.update({item.get("id"): name})
-                export_data[filename.stem] = data_dict
-            else:
-                for item in file_data:
-                    if not item.get("subtype"):
-                        for key in list(item.keys()):
-                            if key not in ["text", "user"]:
-                                item.pop(key, None)
-                        message_data[str(filename.parent)].append(item)
-                        message_count += 1
+export_data, message_data, message_count = utils.read_export(export_zip)
 
 load_time = round(time.time() - load_start_time, 3)
-export_size = zip_location.stat().st_size
+export_size = os.stat(export_zip).st_size
 app.logger.info(f"Loaded {export_size} bytes of data in {load_time}s")
 
 app.logger.info(f"{message_count} messages loaded from export")
