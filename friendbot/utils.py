@@ -41,7 +41,7 @@ def read_export(location):
                         if filename.stem == "users":
                             if real_name := item.get("real_name"):
                                 data_dict.update({item.get("id"): real_name})
-                        if filename.stem == "channels":
+                        elif filename.stem == "channels":
                             if name := item.get("name"):
                                 data_dict.update({item.get("id"): name})
                     export_data[filename.stem] = data_dict
