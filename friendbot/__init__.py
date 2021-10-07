@@ -40,10 +40,6 @@ users, channels, message_data = utils.read_export(export_zip)
 load_time = round(time.time() - load_start_time, 3)
 app.logger.info(f"Loaded {export_size} bytes of data in {load_time}s")
 
-export_data = {}
-export_data['users'] = users
-export_data['channels'] = channels
-
 message_count = len([item for sublist in message_data.values() for item in sublist])
 message_gauge = Gauge("friendbot_slack_messages", "Number of Messages Loaded from Export")
 message_gauge.set(message_count)
@@ -56,6 +52,11 @@ channel_count = len(channels.keys())
 channel_gauge = Gauge("friendbot_slack_channels", "Number of Channels Loaded from Export")
 channel_gauge.set(channel_count)
 app.logger.info(f"Loaded {message_count} messages from {user_count} users in {channel_count} channels")
+
+# Create Export Data Object
+export_data = {}
+export_data['users'] = users
+export_data['channels'] = channels
 
 # Generate text models
 model_start_time = time.time()
