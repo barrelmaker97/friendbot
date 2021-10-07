@@ -27,11 +27,9 @@ def parse_argument(arg, options):
 
 def read_export(location):
     zip_location = pathlib.Path(location).resolve()
-    export_data = {}
     users = {}
     channels = {}
     messages = defaultdict(list)
-    message_count = 0
     with ZipFile(zip_location, "r") as zip_object:
         for name in zip_object.namelist():
             filename = pathlib.PurePath(name)
@@ -53,10 +51,7 @@ def read_export(location):
                                 if key not in ["text", "user"]:
                                     item.pop(key, None)
                             messages[str(filename.parent)].append(item)
-                            message_count += 1
-    export_data['users'] = users
-    export_data['channels'] = channels
-    return export_data, messages, message_count
+    return users, channels, messages
 
 
 def generate_corpus(export, userID, channel, messages):

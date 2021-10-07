@@ -31,22 +31,27 @@ else:
 load_start_time = time.time()
 export_zip = os.environ.get("FRIENDBOT_EXPORT_ZIP", "/home/friendbot/export.zip")
 app.logger.info(f"Loading export data from {export_zip}")
-export_data, message_data, message_count = utils.read_export(export_zip)
+users, channels, message_data = utils.read_export(export_zip)
+
+export_data = {}
+export_data['users'] = users
+export_data['channels'] = channels
 
 load_time = round(time.time() - load_start_time, 3)
 export_size = os.stat(export_zip).st_size
 app.logger.info(f"Loaded {export_size} bytes of data in {load_time}s")
 
+message_count = len([item for sublist in message_data.values() for item in sublist])
 app.logger.info(f"{message_count} messages loaded from export")
 message_gauge = Gauge("friendbot_slack_messages", "Number of Messages Loaded from Export")
 message_gauge.set(message_count)
 
-user_count = len(export_data["users"].keys())
+user_count = len(users.keys())
 app.logger.info(f"{user_count} users loaded from export")
 user_gauge = Gauge("friendbot_slack_users", "Number of Users Loaded from Export")
 user_gauge.set(user_count)
 
-channel_count = len(export_data["channels"].keys())
+channel_count = len(channels.keys())
 app.logger.info(f"{channel_count} channels loaded from export")
 channel_gauge = Gauge("friendbot_slack_channels", "Number of Channels Loaded from Export")
 channel_gauge.set(channel_count)
@@ -55,8 +60,8 @@ channel_gauge.set(channel_count)
 model_start_time = time.time()
 app.logger.info("Generating text models...")
 models = {}
-all_users = list(export_data["users"].keys())
-all_channels = list(export_data["channels"].keys())
+all_users = list(users.keys())
+all_channels = list(channels.keys())
 all_users.append("None")
 all_channels.append("None")
 for user in all_users:
@@ -73,7 +78,7 @@ for user in all_users:
 export_data.update({"models": models})
 model_time = round(time.time() - model_start_time, 3)
 
-model_count = len(export_data["models"].keys())
+model_count = len(models.keys())
 app.logger.info(f"{model_count} text models generated in {model_time}s")
 model_gauge = Gauge("friendbot_text_models", "Number of Text Models Generated")
 model_gauge.set(model_count)
