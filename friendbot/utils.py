@@ -28,7 +28,9 @@ def parse_argument(arg, options):
 def read_export(location):
     zip_location = pathlib.Path(location).resolve()
     export_data = {}
-    message_data = defaultdict(list)
+    users = {}
+    channels = {}
+    messages = defaultdict(list)
     message_count = 0
     with ZipFile(zip_location, "r") as zip_object:
         for name in zip_object.namelist():
@@ -36,24 +38,25 @@ def read_export(location):
             if filename.match("*.json"):
                 file_data = ujson.load(zip_object.open(name))
                 if len(filename.parents) == 1:
-                    data_dict = {}
-                    for item in file_data:
-                        if filename.stem == "users":
+                    if filename.stem == "users":
+                        for item in file_data:
                             if real_name := item.get("real_name"):
-                                data_dict.update({item.get("id"): real_name})
-                        elif filename.stem == "channels":
+                                users.update({item.get("id"): real_name})
+                    elif filename.stem == "channels":
+                        for item in file_data:
                             if name := item.get("name"):
-                                data_dict.update({item.get("id"): name})
-                    export_data[filename.stem] = data_dict
+                                channels.update({item.get("id"): name})
                 else:
                     for item in file_data:
                         if not item.get("subtype"):
                             for key in list(item.keys()):
                                 if key not in ["text", "user"]:
                                     item.pop(key, None)
-                            message_data[str(filename.parent)].append(item)
+                            messages[str(filename.parent)].append(item)
                             message_count += 1
-    return export_data, message_data, message_count
+    export_data['users'] = users
+    export_data['channels'] = channels
+    return export_data, messages, message_count
 
 
 def generate_corpus(export, userID, channel, messages):
