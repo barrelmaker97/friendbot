@@ -53,11 +53,6 @@ channel_gauge = Gauge("friendbot_slack_channels", "Number of Channels Loaded fro
 channel_gauge.set(channel_count)
 app.logger.info(f"Loaded {message_count} messages from {user_count} users in {channel_count} channels")
 
-# Create Export Data Object
-export_data = {}
-export_data['users'] = users
-export_data['channels'] = channels
-
 # Generate text models
 model_start_time = time.time()
 app.logger.info("Generating text models...")
@@ -68,7 +63,7 @@ all_users.append("None")
 all_channels.append("None")
 for user in all_users:
     for channel in all_channels:
-        if fulltext := utils.generate_corpus(export_data, user, channel, message_data):
+        if fulltext := utils.generate_corpus(users, channels, user, channel, message_data):
             try:
                 text_model = markovify.NewlineText(fulltext, retain_original=False).compile(inplace=True)
             except KeyError as ex:
@@ -77,7 +72,6 @@ for user in all_users:
                     app.logger.debug(msg)
             model_name = f"{user}_{channel}"
             models.update({model_name: text_model.to_json()})
-export_data.update({"models": models})
 model_time = round(time.time() - model_start_time, 3)
 
 model_count = len(models.keys())
@@ -101,7 +95,7 @@ for count in range(tries):
             warmup_start_time = time.time()
             for user in all_users:
                 for channel in all_channels:
-                    utils.get_sentence(export_data, user, channel, cache)
+                    utils.get_sentence(models, user, channel, cache)
             warmup_time = round(time.time() - warmup_start_time, 3)
             msg = f"Warmed up Redis cache in {warmup_time}s"
             app.logger.info(msg)
@@ -115,6 +109,12 @@ for count in range(tries):
         time.sleep(delay)
 if not connected:
     app.logger.warning("Could not connect to Redis cache. This will impact performance")
+
+# Create Export Data Object
+export_data = {}
+export_data['users'] = users
+export_data['channels'] = channels
+export_data['models'] = models
 
 app.config["EXPORT"] = export_data
 app.config["FRIENDBOT_SIGNING_SECRET"] = signing_secret

@@ -54,17 +54,17 @@ def read_export(location):
     return users, channels, messages
 
 
-def generate_corpus(export, userID, channel, messages):
+def generate_corpus(users, channels, userID, channel, messages):
     fulltext = ""
     if channel == "None":
         data = [item for sublist in messages.values() for item in sublist]
     else:
-        data = messages[export["channels"].get(channel)]
+        data = messages[channels.get(channel)]
     for message in data:
         text = str(message.get("text"))
         if "<@U" in text:
-            for user in export["users"]:
-                text = text.replace(f"<@{user}>", export["users"].get(user))
+            for user in users:
+                text = text.replace(f"<@{user}>", users.get(user))
         text = regex.sub("", text)
         if text:
             if userID == "None":
