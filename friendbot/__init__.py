@@ -27,34 +27,35 @@ if signing_secret_file := os.environ.get("FRIENDBOT_SECRET_FILE"):
 else:
     app.logger.warning("Signing secret not set! Requests will not be verified")
 
-# Check for specific export location
-load_start_time = time.time()
+# Check export size
 export_zip = os.environ.get("FRIENDBOT_EXPORT_ZIP", "/home/friendbot/export.zip")
+export_size = os.stat(export_zip).st_size
+export_size_gauge = Gauge("friendbot_export_size", "Size of export file in bytes")
+export_size_gauge.set(export_size)
+
+# Load export
 app.logger.info(f"Loading export data from {export_zip}")
+load_start_time = time.time()
 users, channels, message_data = utils.read_export(export_zip)
+load_time = round(time.time() - load_start_time, 3)
+app.logger.info(f"Loaded {export_size} bytes of data in {load_time}s")
 
 export_data = {}
 export_data['users'] = users
 export_data['channels'] = channels
 
-load_time = round(time.time() - load_start_time, 3)
-export_size = os.stat(export_zip).st_size
-app.logger.info(f"Loaded {export_size} bytes of data in {load_time}s")
-
 message_count = len([item for sublist in message_data.values() for item in sublist])
-app.logger.info(f"{message_count} messages loaded from export")
 message_gauge = Gauge("friendbot_slack_messages", "Number of Messages Loaded from Export")
 message_gauge.set(message_count)
 
 user_count = len(users.keys())
-app.logger.info(f"{user_count} users loaded from export")
 user_gauge = Gauge("friendbot_slack_users", "Number of Users Loaded from Export")
 user_gauge.set(user_count)
 
 channel_count = len(channels.keys())
-app.logger.info(f"{channel_count} channels loaded from export")
 channel_gauge = Gauge("friendbot_slack_channels", "Number of Channels Loaded from Export")
 channel_gauge.set(channel_count)
+app.logger.info(f"Loaded {message_count} messages from {user_count} users in {channel_count} channels")
 
 # Generate text models
 model_start_time = time.time()
