@@ -2,7 +2,7 @@
 version: "3.7"
 services:
   app:
-    image: test:latest
+    image: ghcr.io/barrelmaker97/friendbot:latest
     container_name: friendbot
     ports:
       - "8000:8000"
@@ -20,7 +20,7 @@ services:
         read_only: true
     restart: always
 # Uncomment this section to cache Friendbot using Redis
-  redis:
-    image: "redis:alpine"
-    container_name: redis
-    restart: always
+# redis:
+#   image: "redis:alpine"
+#   container_name: redis
+#   restart: always
