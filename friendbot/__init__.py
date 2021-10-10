@@ -68,31 +68,34 @@ redis_port = os.environ.get("FRIENDBOT_REDIS_PORT", 6379)
 cache = redis.Redis(host=redis_host, port=redis_port)
 tries = 4
 delay = 2
-connected = False
-all_users = list(users.keys())
-all_channels = list(channels.keys())
+
+redis_connected = False
 for count in range(tries):
     try:
         if cache.ping():
+            redis_connected = True
             app.logger.info("Redis connected")
-            app.logger.info("Warming up Redis cache...")
-            warmup_start_time = time.time()
-            for user in all_users:
-                for channel in all_channels:
-                    utils.get_sentence(models, user, channel, cache)
-            warmup_time = round(time.time() - warmup_start_time, 3)
-            msg = f"Warmed up Redis cache in {warmup_time}s"
-            app.logger.info(msg)
-            connected = True
             break
-        else:
-            raise redis.exceptions.ConnectionError
     except redis.exceptions.ConnectionError as ex:
         app.logger.warning(f"Attempt {count+1} of {tries}: Connection to Redis at {redis_host}:{redis_port} failed. Trying again in {delay}s")
         app.logger.debug(ex)
         time.sleep(delay)
-if not connected:
+else:
     app.logger.warning("Could not connect to Redis cache. This will impact performance")
+
+if redis_connected:
+    app.logger.info("Warming up Redis cache...")
+    all_users = list(users.keys())
+    all_channels = list(channels.keys())
+    all_users.append("None")
+    all_channels.append("None")
+    warmup_start_time = time.time()
+    for user in all_users:
+        for channel in all_channels:
+            utils.get_sentence(models, user, channel, cache)
+    warmup_time = round(time.time() - warmup_start_time, 3)
+    msg = f"Warmed up Redis cache in {warmup_time}s"
+    app.logger.info(msg)
 
 # Create Export Data Object
 export_data = {}
