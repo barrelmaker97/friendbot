@@ -10,8 +10,13 @@ from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 app = Flask(__name__)
 
-# Add prometheus wsgi middleware to route /metrics requests
+# Add prometheus wsgi middleware to route /metrics requests and create Gauges
 app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {"/metrics": make_wsgi_app()})
+export_size_gauge = Gauge("friendbot_export_size", "Size of export file in bytes")
+message_gauge = Gauge("friendbot_slack_messages", "Number of Messages Loaded from Export")
+user_gauge = Gauge("friendbot_slack_users", "Number of Users Loaded from Export")
+channel_gauge = Gauge("friendbot_slack_channels", "Number of Channels Loaded from Export")
+model_gauge = Gauge("friendbot_text_models", "Number of Text Models Generated")
 
 if __name__ != "__main__":
     gunicorn_logger = logging.getLogger("gunicorn.error")
@@ -30,7 +35,6 @@ else:
 # Check export size
 export_zip = os.environ.get("FRIENDBOT_EXPORT_ZIP", "/home/friendbot/export.zip")
 export_size = os.stat(export_zip).st_size
-export_size_gauge = Gauge("friendbot_export_size", "Size of export file in bytes")
 export_size_gauge.set(export_size)
 
 # Load export
@@ -40,16 +44,12 @@ users, channels, message_data = utils.read_export(export_zip)
 load_time = round(time.time() - load_start_time, 3)
 app.logger.info(f"Loaded {export_size} bytes of data in {load_time}s")
 
+# Print/Set Export metrics
 message_count = len([item for sublist in message_data.values() for item in sublist])
-message_gauge = Gauge("friendbot_slack_messages", "Number of Messages Loaded from Export")
-message_gauge.set(message_count)
-
 user_count = len(users.keys())
-user_gauge = Gauge("friendbot_slack_users", "Number of Users Loaded from Export")
-user_gauge.set(user_count)
-
 channel_count = len(channels.keys())
-channel_gauge = Gauge("friendbot_slack_channels", "Number of Channels Loaded from Export")
+message_gauge.set(message_count)
+user_gauge.set(user_count)
 channel_gauge.set(channel_count)
 app.logger.info(f"Loaded {message_count} messages from {user_count} users in {channel_count} channels")
 
@@ -76,7 +76,6 @@ model_time = round(time.time() - model_start_time, 3)
 
 model_count = len(models.keys())
 app.logger.info(f"{model_count} text models generated in {model_time}s")
-model_gauge = Gauge("friendbot_text_models", "Number of Text Models Generated")
 model_gauge.set(model_count)
 
 # Check if Redis is available and warm up cache
