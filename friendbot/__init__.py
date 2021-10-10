@@ -62,28 +62,12 @@ app.logger.info(f"{model_count} text models generated in {model_time}s")
 model_gauge.set(model_count)
 
 # Check if Redis is available and warm up cache
-app.logger.info("Checking Redis connection...")
 redis_host = os.environ.get("FRIENDBOT_REDIS_HOST", "redis")
 redis_port = os.environ.get("FRIENDBOT_REDIS_PORT", 6379)
 cache = redis.Redis(host=redis_host, port=redis_port)
-tries = 4
-delay = 2
 
-redis_connected = False
-for count in range(tries):
-    try:
-        if cache.ping():
-            redis_connected = True
-            app.logger.info("Redis connected")
-            break
-    except redis.exceptions.ConnectionError as ex:
-        app.logger.warning(f"Attempt {count+1} of {tries}: Connection to Redis at {redis_host}:{redis_port} failed. Trying again in {delay}s")
-        app.logger.debug(ex)
-        time.sleep(delay)
-else:
-    app.logger.warning("Could not connect to Redis cache. This will impact performance")
-
-if redis_connected:
+try:
+    cache.ping()
     app.logger.info("Warming up Redis cache...")
     all_users = list(users.keys())
     all_channels = list(channels.keys())
@@ -96,6 +80,9 @@ if redis_connected:
     warmup_time = round(time.time() - warmup_start_time, 3)
     msg = f"Warmed up Redis cache in {warmup_time}s"
     app.logger.info(msg)
+except redis.exceptions.ConnectionError as ex:
+    app.logger.warning("Could not connect to Redis cache. This will impact performance")
+    app.logger.debug(ex)
 
 # Create Export Data Object
 export_data = {}
