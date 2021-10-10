@@ -25,6 +25,24 @@ def parse_argument(arg, options):
     raise Exception(f"Argument {final} not found")
 
 
+def generate_models(users, channels, messages):
+    models = {}
+    all_users = list(users.keys())
+    all_channels = list(channels.keys())
+    all_users.append("None")
+    all_channels.append("None")
+    for user in all_users:
+        for channel in all_channels:
+            if fulltext := generate_corpus(users, channels, user, channel, messages):
+                try:
+                    text_model = markovify.NewlineText(fulltext, retain_original=False).compile(inplace=True)
+                except KeyError:
+                    pass
+                model_name = f"{user}_{channel}"
+                models.update({model_name: text_model.to_json()})
+    return models
+
+
 def read_export(location):
     zip_location = pathlib.Path(location).resolve()
     users = {}

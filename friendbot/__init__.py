@@ -2,7 +2,6 @@ import os
 import time
 import redis
 import logging
-import markovify
 from flask import Flask
 from friendbot import utils
 from prometheus_client import make_wsgi_app, Gauge
@@ -54,26 +53,10 @@ channel_gauge.set(channel_count)
 app.logger.info(f"Loaded {message_count} messages from {user_count} users in {channel_count} channels")
 
 # Generate text models
-model_start_time = time.time()
 app.logger.info("Generating text models...")
-models = {}
-all_users = list(users.keys())
-all_channels = list(channels.keys())
-all_users.append("None")
-all_channels.append("None")
-for user in all_users:
-    for channel in all_channels:
-        if fulltext := utils.generate_corpus(users, channels, user, channel, message_data):
-            try:
-                text_model = markovify.NewlineText(fulltext, retain_original=False).compile(inplace=True)
-            except KeyError as ex:
-                if str(ex) == "('___BEGIN__', '___BEGIN__')":
-                    msg = f"Combination of user {user} in channel {channel} did not produce enough data to create a model"
-                    app.logger.debug(msg)
-            model_name = f"{user}_{channel}"
-            models.update({model_name: text_model.to_json()})
+model_start_time = time.time()
+models = utils.generate_models(users, channels, message_data)
 model_time = round(time.time() - model_start_time, 3)
-
 model_count = len(models.keys())
 app.logger.info(f"{model_count} text models generated in {model_time}s")
 model_gauge.set(model_count)
@@ -86,6 +69,8 @@ cache = redis.Redis(host=redis_host, port=redis_port)
 tries = 4
 delay = 2
 connected = False
+all_users = list(users.keys())
+all_channels = list(channels.keys())
 for count in range(tries):
     try:
         if cache.ping():
