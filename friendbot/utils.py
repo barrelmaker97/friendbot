@@ -1,10 +1,14 @@
-from multiprocessing import Process
-import redis
 import re
-import markovify
-import hmac
-import hashlib
 import time
+import hmac
+import ujson
+import redis
+import pathlib
+import hashlib
+import markovify
+from zipfile import ZipFile
+from multiprocessing import Process
+from collections import defaultdict
 
 regex = re.compile(r'<(?:[^"\\]|\\.)*>', re.IGNORECASE)
 
@@ -21,17 +25,64 @@ def parse_argument(arg, options):
     raise Exception(f"Argument {final} not found")
 
 
-def generate_corpus(export, userID, channel, messages):
+def generate_models(users, channels, messages):
+    models = {}
+    all_users = list(users.keys())
+    all_channels = list(channels.keys())
+    all_users.append("None")
+    all_channels.append("None")
+    for user in all_users:
+        for channel in all_channels:
+            if fulltext := generate_corpus(users, channels, user, channel, messages):
+                try:
+                    text_model = markovify.NewlineText(fulltext, retain_original=False).compile(inplace=True)
+                except KeyError:
+                    pass
+                model_name = f"{user}_{channel}"
+                models.update({model_name: text_model.to_json()})
+    return models
+
+
+def read_export(location):
+    zip_location = pathlib.Path(location).resolve()
+    users = {}
+    channels = {}
+    messages = defaultdict(list)
+    with ZipFile(zip_location, "r") as zip_object:
+        for name in zip_object.namelist():
+            filename = pathlib.PurePath(name)
+            if filename.match("*.json"):
+                file_data = ujson.load(zip_object.open(name))
+                if len(filename.parents) == 1:
+                    if filename.stem == "users":
+                        for item in file_data:
+                            if real_name := item.get("real_name"):
+                                users.update({item.get("id"): real_name})
+                    elif filename.stem == "channels":
+                        for item in file_data:
+                            if name := item.get("name"):
+                                channels.update({item.get("id"): name})
+                else:
+                    for item in file_data:
+                        if not item.get("subtype"):
+                            for key in list(item.keys()):
+                                if key not in ["text", "user"]:
+                                    item.pop(key, None)
+                            messages[str(filename.parent)].append(item)
+    return users, channels, messages
+
+
+def generate_corpus(users, channels, userID, channel, messages):
     fulltext = ""
     if channel == "None":
         data = [item for sublist in messages.values() for item in sublist]
     else:
-        data = messages[export["channels"].get(channel)]
+        data = messages[channels.get(channel)]
     for message in data:
         text = str(message.get("text"))
         if "<@U" in text:
-            for user in export["users"]:
-                text = text.replace(f"<@{user}>", export["users"].get(user))
+            for user in users:
+                text = text.replace(f"<@{user}>", users.get(user))
         text = regex.sub("", text)
         if text:
             if userID == "None":
@@ -53,7 +104,7 @@ def create_sentence(models, user, channel, cache):
         else:
             if model := models.get(model_name):
                 cache.set(model_name, model)
-    except redis.exceptions.ConnectionError as ex:
+    except redis.exceptions.ConnectionError:
         model = models.get(model_name)
     if model:
         loaded_model = markovify.Text.from_json(model)
@@ -67,7 +118,7 @@ def cache_sentence(models, user, channel, cache):
         sentence_name = f"{user}_{channel}_sentence"
         try:
             cache.set(sentence_name, sentence)
-        except redis.exceptions.ConnectionError as ex:
+        except redis.exceptions.ConnectionError:
             pass
 
 
@@ -87,7 +138,7 @@ def validate_request(request, signing_secret):
         ).hexdigest()
         assert hmac.compare_digest(f"v0={my_signature}", slack_signature)
         return (True, "")
-    except Exception as ex:
+    except Exception:
         err = "Request verification failed! Signature did not match"
         return (False, err)
 
@@ -100,7 +151,7 @@ def get_sentence(models, user, channel, cache):
             cache.delete(sentence_name)
         else:
             sentence = create_sentence(models, user, channel, cache)
-    except redis.exceptions.ConnectionError as ex:
+    except redis.exceptions.ConnectionError:
         sentence = create_sentence(models, user, channel, cache)
     cache_process = Process(
         target=cache_sentence, args=(models, user, channel, cache)
