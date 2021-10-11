@@ -96,6 +96,18 @@ def generate_corpus(users, channels, userID, channel, messages):
     return fulltext
 
 
+def get_sentence(models, user, channel, cache):
+    sentence_name = f"{user}_{channel}_sentence"
+    cache_process = Process(target=cache_sentence, args=(models, user, channel, cache))
+    try:
+        sentence = cache.get(sentence_name).decode("utf-8")
+        cache.delete(sentence_name)
+    except Exception:
+        sentence = create_sentence(models, user, channel, cache)
+    cache_process.start()
+    return sentence
+
+
 def create_sentence(models, user, channel, cache):
     model_name = f"{user}_{channel}"
     try:
@@ -141,15 +153,3 @@ def validate_request(request, signing_secret):
     except Exception:
         err = "Request verification failed! Signature did not match"
         return (False, err)
-
-
-def get_sentence(models, user, channel, cache):
-    sentence_name = f"{user}_{channel}_sentence"
-    cache_process = Process(target=cache_sentence, args=(models, user, channel, cache))
-    try:
-        sentence = cache.get(sentence_name).decode("utf-8")
-        cache.delete(sentence_name)
-    except Exception:
-        sentence = create_sentence(models, user, channel, cache)
-    cache_process.start()
-    return sentence
