@@ -8,7 +8,6 @@ from friendbot import app, utils, messages
 export = app.config["EXPORT"]
 signing_secret = app.config["FRIENDBOT_SIGNING_SECRET"]
 cache = app.config["REDIS_CACHE"]
-models = export["models"]
 
 length_summary = Summary("friendbot_request_time", "Length of Friendbot Requests")
 
@@ -30,7 +29,7 @@ def action_endpoint():
         payload = messages.send_message(data["actions"][0]["value"], real_name)
     elif button_text == "Shuffle":
         params = data["actions"][0]["value"].split()
-        sentence = utils.get_sentence(models, params[0], params[1], cache)
+        sentence = utils.get_sentence(params[0], params[1], cache)
         payload = messages.prompt_message(sentence, params[0], params[1])
     elif button_text == "Cancel":
         payload = messages.cancel_message()
@@ -88,7 +87,7 @@ def sentence_endpoint():
                 )
                 resp.headers["Friendbot-Error"] = "True"
                 return resp
-    sentence = utils.get_sentence(models, user, channel, cache)
+    sentence = utils.get_sentence(user, channel, cache)
     payload = messages.prompt_message(sentence, user, channel)
     resp = flask.Response(payload, mimetype="application/json")
     resp.headers["Friendbot-Error"] = "False"
@@ -105,7 +104,7 @@ def sentence_endpoint():
 @app.route("/health", methods=["GET"])
 def health_endpoint():
     start_time = time.time()
-    sentence = utils.get_sentence(models, "None", "None", cache)
+    sentence = utils.get_sentence("None", "None", cache)
     resp = flask.Response(
         messages.health_message(sentence), mimetype="application/json"
     )

@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import redis
 import logging
@@ -70,26 +71,32 @@ cache = redis.Redis(host=redis_host, port=redis_port)
 try:
     cache.ping()
     app.logger.info("Warming up Redis cache...")
+    warmup_start_time = time.time()
+    for model in models:
+        cache.set(model, models.get(model))
+
+    # Test cache
     all_users = list(users.keys())
     all_channels = list(channels.keys())
     all_users.append("None")
     all_channels.append("None")
-    warmup_start_time = time.time()
     for user in all_users:
         for channel in all_channels:
-            utils.get_sentence(models, user, channel, cache)
+            utils.get_sentence(user, channel, cache)
+
     warmup_time = round(time.time() - warmup_start_time, 3)
     msg = f"Warmed up Redis cache in {warmup_time}s"
     app.logger.info(msg)
+
 except redis.exceptions.ConnectionError as ex:
-    app.logger.warning("Could not connect to Redis cache. This will impact performance")
+    app.logger.warning("Could not connect to Redis cache. Exiting.")
     app.logger.debug(ex)
+    sys.exit(1)
 
 # Create Export Data Object
 export_data = {}
 export_data['users'] = users
 export_data['channels'] = channels
-export_data['models'] = models
 
 app.config["EXPORT"] = export_data
 app.config["FRIENDBOT_SIGNING_SECRET"] = signing_secret

@@ -96,37 +96,30 @@ def generate_corpus(users, channels, userID, channel, messages):
     return fulltext
 
 
-def get_sentence(models, user, channel, cache):
+def get_sentence(user, channel, cache):
     sentence_name = f"{user}_{channel}_sentence"
-    cache_process = Process(target=cache_sentence, args=(models, user, channel, cache))
+    cache_process = Process(target=cache_sentence, args=(user, channel, cache))
     try:
         sentence = cache.get(sentence_name).decode("utf-8")
         cache.delete(sentence_name)
     except Exception:
-        sentence = create_sentence(models, user, channel, cache)
+        sentence = create_sentence(user, channel, cache)
     cache_process.start()
     return sentence
 
 
-def create_sentence(models, user, channel, cache):
+def create_sentence(user, channel, cache):
     model_name = f"{user}_{channel}"
-    try:
-        if cache.exists(model_name):
-            model = cache.get(model_name)
-        else:
-            if model := models.get(model_name):
-                cache.set(model_name, model)
-    except redis.exceptions.ConnectionError:
-        model = models.get(model_name)
-    if model:
+    if cache.exists(model_name):
+        model = cache.get(model_name)
         loaded_model = markovify.Text.from_json(model)
         sentence = loaded_model.make_sentence(tries=100)
         if isinstance(sentence, str):
             return sentence
 
 
-def cache_sentence(models, user, channel, cache):
-    if sentence := create_sentence(models, user, channel, cache):
+def cache_sentence(user, channel, cache):
+    if sentence := create_sentence(user, channel, cache):
         sentence_name = f"{user}_{channel}_sentence"
         try:
             cache.set(sentence_name, sentence)
