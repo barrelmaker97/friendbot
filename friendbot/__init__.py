@@ -74,6 +74,10 @@ try:
     warmup_start_time = time.time()
     for model in models:
         cache.set(model, models.get(model))
+    for user in users:
+        cache.set(user, users.get(user))
+    for channel in channels:
+        cache.set(channel, channels.get(channel))
 
     # Test cache
     all_users = list(users.keys())
