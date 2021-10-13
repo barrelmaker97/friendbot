@@ -1,28 +1,22 @@
-import json
-
-
 def health_message(sentence):
-    return json.dumps({"status": "running", "sentence_generation": isinstance(sentence, str)})
+    return {"status": "running", "sentence_generation": isinstance(sentence, str)}
 
 
 def error_message():
-    return json.dumps(
-        {
+    return {
             "response_type": "ephemeral",
             "replace_original": False,
             "text": "Sorry, that didn't work. Please try again.",
         }
-    )
 
 
 def cancel_message():
-    return json.dumps({"delete_original": True})
+    return {"delete_original": True}
 
 
 def send_message(sentence, real_name):
     context_msg = f"Sent by {real_name}"
-    return json.dumps(
-        {
+    return {
             "delete_original": True,
             "response_type": "in_channel",
             "blocks": [
@@ -33,12 +27,10 @@ def send_message(sentence, real_name):
                 },
             ],
         }
-    )
 
 
 def prompt_message(sentence, user, channel):
-    return json.dumps(
-        {
+    return {
             "replace_original": True,
             "response_type": "ephemeral",
             "blocks": [
@@ -79,4 +71,3 @@ def prompt_message(sentence, user, channel):
                 },
             ],
         }
-    )
