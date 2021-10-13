@@ -2,7 +2,6 @@ import re
 import time
 import hmac
 import ujson
-import redis
 import pathlib
 import hashlib
 import markovify

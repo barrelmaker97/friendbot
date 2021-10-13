@@ -74,20 +74,12 @@ try:
     warmup_start_time = time.time()
     for model in models:
         cache.set(model, models.get(model))
+        params = model.split("_")
+        utils.get_sentence(params[0], params[1], cache)
     for user in users:
         cache.set(user, users.get(user))
     for channel in channels:
         cache.set(channel, channels.get(channel))
-
-    # Test cache
-    all_users = list(users.keys())
-    all_channels = list(channels.keys())
-    all_users.append("None")
-    all_channels.append("None")
-    for user in all_users:
-        for channel in all_channels:
-            utils.get_sentence(user, channel, cache)
-
     warmup_time = round(time.time() - warmup_start_time, 3)
     msg = f"Warmed up Redis cache in {warmup_time}s"
     app.logger.info(msg)
