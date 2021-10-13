@@ -99,10 +99,12 @@ def generate_corpus(users, channels, userID, channel, messages):
 def get_sentence(user, channel, cache):
     sentence_name = f"{user}_{channel}_sentence"
     cache_process = Process(target=cache_sentence, args=(user, channel, cache))
-    try:
-        sentence = cache.get(sentence_name).decode("utf-8")
-        cache.delete(sentence_name)
-    except Exception:
+    if raw_sentence := cache.rpop(sentence_name):
+        try:
+            sentence = raw_sentence.decode("utf-8")
+        except Exception:
+            sentence = create_sentence(user, channel, cache)
+    else:
         sentence = create_sentence(user, channel, cache)
     cache_process.start()
     return sentence
@@ -119,12 +121,12 @@ def create_sentence(user, channel, cache):
 
 
 def cache_sentence(user, channel, cache):
-    if sentence := create_sentence(user, channel, cache):
-        sentence_name = f"{user}_{channel}_sentence"
-        try:
-            cache.set(sentence_name, sentence)
-        except redis.exceptions.ConnectionError:
-            pass
+    sentence_name = f"{user}_{channel}_sentence"
+    while cache.llen(sentence_name) < 10:
+        if sentence := create_sentence(user, channel, cache):
+            cache.lpush(sentence_name, sentence)
+        else:
+            break
 
 
 def validate_request(request, signing_secret):
