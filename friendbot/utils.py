@@ -1,7 +1,7 @@
 import re
 import time
 import hmac
-import ujson
+import json
 import pathlib
 import hashlib
 import markovify
@@ -51,7 +51,7 @@ def read_export(location):
         for name in zip_object.namelist():
             filename = pathlib.PurePath(name)
             if filename.match("*.json"):
-                file_data = ujson.load(zip_object.open(name))
+                file_data = json.load(zip_object.open(name))
                 if len(filename.parents) == 1:
                     if filename.stem == "users":
                         for item in file_data:

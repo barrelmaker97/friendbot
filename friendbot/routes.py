@@ -1,6 +1,6 @@
 import time
 import flask
-import ujson
+import json
 import requests
 from prometheus_client import Summary
 from friendbot import app, utils, messages
@@ -19,7 +19,7 @@ def action_endpoint():
         if not valid:
             app.logger.error(valid_err)
             return ("", 400)
-    data = ujson.loads(flask.request.form["payload"])
+    data = json.loads(flask.request.form["payload"])
     button_text = data["actions"][0]["text"]["text"]
     error = False
     if button_text == "Send":

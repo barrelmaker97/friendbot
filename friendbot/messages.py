@@ -1,12 +1,12 @@
-import ujson
+import json
 
 
 def health_message(sentence):
-    return ujson.dumps({"status": "running", "sentence_generation": isinstance(sentence, str)})
+    return json.dumps({"status": "running", "sentence_generation": isinstance(sentence, str)})
 
 
 def error_message():
-    return ujson.dumps(
+    return json.dumps(
         {
             "response_type": "ephemeral",
             "replace_original": False,
@@ -16,12 +16,12 @@ def error_message():
 
 
 def cancel_message():
-    return ujson.dumps({"delete_original": True})
+    return json.dumps({"delete_original": True})
 
 
 def send_message(sentence, real_name):
     context_msg = f"Sent by {real_name}"
-    return ujson.dumps(
+    return json.dumps(
         {
             "delete_original": True,
             "response_type": "in_channel",
@@ -37,7 +37,7 @@ def send_message(sentence, real_name):
 
 
 def prompt_message(sentence, user, channel):
-    return ujson.dumps(
+    return json.dumps(
         {
             "replace_original": True,
             "response_type": "ephemeral",
