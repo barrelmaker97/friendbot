@@ -87,12 +87,6 @@ except redis.exceptions.ConnectionError as ex:
     app.logger.debug(ex)
     sys.exit(1)
 
-# Create Export Data Object
-export_data = {}
-export_data['users'] = users
-export_data['channels'] = channels
-
-app.config["EXPORT"] = export_data
 app.config["FRIENDBOT_SIGNING_SECRET"] = signing_secret
 app.config["REDIS_CACHE"] = cache
 

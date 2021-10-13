@@ -5,7 +5,6 @@ import requests
 from prometheus_client import Summary
 from friendbot import app, utils, messages
 
-export = app.config["EXPORT"]
 signing_secret = app.config["FRIENDBOT_SIGNING_SECRET"]
 cache = app.config["REDIS_CACHE"]
 
@@ -25,7 +24,7 @@ def action_endpoint():
     error = False
     if button_text == "Send":
         user_id = data["user"]["id"]
-        real_name = export["users"][user_id]
+        real_name = cache.hget("users", user_id).decode("utf-8")
         payload = messages.send_message(data["actions"][0]["value"], real_name)
     elif button_text == "Shuffle":
         params = data["actions"][0]["value"].split()
@@ -42,7 +41,7 @@ def action_endpoint():
     length_summary.observe(req_time)
     requests.post(data["response_url"], data=payload, headers=headers)
     user_id = data["user"]["id"]
-    real_name = export["users"][user_id]
+    real_name = cache.hget("users", user_id).decode("utf-8")
     msg = f"{real_name} ({user_id}) pressed {button_text} {req_time_ms}ms"
     if error:
         app.logger.error(msg)
@@ -61,7 +60,10 @@ def sentence_endpoint():
             return ("", 400)
     try:
         user_id = flask.request.form["user_id"]
-        real_name = export["users"][user_id]
+        if raw_name := cache.hget("users", user_id):
+            real_name = raw_name.decode("utf-8")
+        else:
+            raise Exception
     except Exception as ex:
         msg = "Cannot find user_id of request sender"
         app.logger.error(msg)
@@ -74,10 +76,10 @@ def sentence_endpoint():
     user = "None"
     for param in params:
         try:
-            channel = utils.parse_argument(param, export["channels"].keys())
+            channel = utils.parse_argument(param, cache.hkeys("channels"))
         except Exception:
             try:
-                user = utils.parse_argument(param, export["users"].keys())
+                user = utils.parse_argument(param, cache.hkeys("users"))
             except Exception as ex:
                 msg = f"Failed to parse argument {param}"
                 app.logger.error(msg)
