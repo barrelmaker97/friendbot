@@ -1,8 +1,7 @@
 import re
 import time
 import hmac
-import ujson
-import redis
+import json
 import pathlib
 import hashlib
 import markovify
@@ -52,7 +51,7 @@ def read_export(location):
         for name in zip_object.namelist():
             filename = pathlib.PurePath(name)
             if filename.match("*.json"):
-                file_data = ujson.load(zip_object.open(name))
+                file_data = json.load(zip_object.open(name))
                 if len(filename.parents) == 1:
                     if filename.stem == "users":
                         for item in file_data:
@@ -96,30 +95,37 @@ def generate_corpus(users, channels, userID, channel, messages):
     return fulltext
 
 
-def create_sentence(models, user, channel, cache):
+def get_sentence(user, channel, cache):
+    sentence_name = f"{user}_{channel}_sentence"
+    cache_process = Process(target=cache_sentence, args=(user, channel, cache))
+    if raw_sentence := cache.rpop(sentence_name):
+        try:
+            sentence = raw_sentence.decode("utf-8")
+        except Exception:
+            sentence = create_sentence(user, channel, cache)
+    else:
+        sentence = create_sentence(user, channel, cache)
+    cache_process.start()
+    return sentence
+
+
+def create_sentence(user, channel, cache):
     model_name = f"{user}_{channel}"
-    try:
-        if cache.exists(model_name):
-            model = cache.get(model_name)
-        else:
-            if model := models.get(model_name):
-                cache.set(model_name, model)
-    except redis.exceptions.ConnectionError:
-        model = models.get(model_name)
-    if model:
+    if cache.exists(model_name):
+        model = cache.get(model_name)
         loaded_model = markovify.Text.from_json(model)
         sentence = loaded_model.make_sentence(tries=100)
         if isinstance(sentence, str):
             return sentence
 
 
-def cache_sentence(models, user, channel, cache):
-    if sentence := create_sentence(models, user, channel, cache):
-        sentence_name = f"{user}_{channel}_sentence"
-        try:
-            cache.set(sentence_name, sentence)
-        except redis.exceptions.ConnectionError:
-            pass
+def cache_sentence(user, channel, cache):
+    sentence_name = f"{user}_{channel}_sentence"
+    while cache.llen(sentence_name) < 10:
+        if sentence := create_sentence(user, channel, cache):
+            cache.lpush(sentence_name, sentence)
+        else:
+            break
 
 
 def validate_request(request, signing_secret):
@@ -141,20 +147,3 @@ def validate_request(request, signing_secret):
     except Exception:
         err = "Request verification failed! Signature did not match"
         return (False, err)
-
-
-def get_sentence(models, user, channel, cache):
-    sentence_name = f"{user}_{channel}_sentence"
-    try:
-        if cache.exists(sentence_name):
-            sentence = cache.get(sentence_name).decode("utf-8")
-            cache.delete(sentence_name)
-        else:
-            sentence = create_sentence(models, user, channel, cache)
-    except redis.exceptions.ConnectionError:
-        sentence = create_sentence(models, user, channel, cache)
-    cache_process = Process(
-        target=cache_sentence, args=(models, user, channel, cache)
-    )
-    cache_process.start()
-    return sentence

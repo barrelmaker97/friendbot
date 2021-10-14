@@ -19,8 +19,7 @@ services:
         target: /home/friendbot/export.zip
         read_only: true
     restart: always
-# Uncomment this section to cache Friendbot using Redis
-# redis:
-#   image: "redis:alpine"
-#   container_name: redis
-#   restart: always
+  redis:
+    image: "redis:alpine"
+    container_name: redis
+    restart: always
