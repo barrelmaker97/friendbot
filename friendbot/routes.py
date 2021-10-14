@@ -73,12 +73,14 @@ def sentence_endpoint():
     params = flask.request.form["text"].split()
     channel = "None"
     user = "None"
+    channels = [item.decode() for item in cache.hkeys("channels")]
+    users = [item.decode() for item in cache.hkeys("users")]
     for param in params:
         try:
-            channel = utils.parse_argument(param, cache.hkeys("channels"))
+            channel = utils.parse_argument(param, channels)
         except Exception:
             try:
-                user = utils.parse_argument(param, cache.hkeys("users"))
+                user = utils.parse_argument(param, users)
             except Exception as ex:
                 msg = f"Failed to parse argument {param}"
                 app.logger.error(msg)
