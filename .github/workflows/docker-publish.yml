@@ -45,8 +45,6 @@ jobs:
       - name: Run Tests and Generate Coverage Report
         run: |
           coverage run -m behave
-          unset FRIENDBOT_REDIS_HOST
-          coverage run -m behave
           unset FRIENDBOT_SECRET_FILE
           coverage run -m behave --exclude verify
           coverage combine
