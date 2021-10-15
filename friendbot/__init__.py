@@ -74,7 +74,7 @@ try:
     warmup_start_time = time.time()
     for model in models:
         cache.set(model, models.get(model))
-        params = model.split("_")
+        params = model.split(":")
         utils.get_sentence(params[0], params[1], cache)
     cache.hmset("users", users)
     cache.hmset("channels", channels)
