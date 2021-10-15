@@ -110,8 +110,7 @@ def health_endpoint():
     start_time = time.time()
     sentence = utils.get_sentence("None", "None", cache)
     resp = flask.Response(
-        json.dumps(messages.health_message(sentence)),
-        mimetype="application/json",
+        messages.health_message(sentence), mimetype="application/json"
     )
     req_time = time.time() - start_time
     req_time_ms = round(req_time * 1000, 3)
