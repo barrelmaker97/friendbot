@@ -37,7 +37,7 @@ def generate_models(users, channels, messages):
                     text_model = markovify.NewlineText(fulltext, retain_original=False).compile(inplace=True)
                 except KeyError:
                     pass
-                model_name = f"{user}_{channel}"
+                model_name = f"{user}:{channel}"
                 models.update({model_name: text_model.to_json()})
     return models
 
@@ -96,7 +96,7 @@ def generate_corpus(users, channels, userID, channel, messages):
 
 
 def get_sentence(user, channel, cache):
-    sentence_name = f"{user}_{channel}_sentence"
+    sentence_name = f"{user}:{channel}:sentence"
     cache_process = Process(target=cache_sentence, args=(user, channel, cache))
     if raw_sentence := cache.rpop(sentence_name):
         try:
@@ -110,7 +110,7 @@ def get_sentence(user, channel, cache):
 
 
 def create_sentence(user, channel, cache):
-    model_name = f"{user}_{channel}"
+    model_name = f"{user}:{channel}"
     if cache.exists(model_name):
         model = cache.get(model_name)
         loaded_model = markovify.Text.from_json(model)
@@ -120,7 +120,7 @@ def create_sentence(user, channel, cache):
 
 
 def cache_sentence(user, channel, cache):
-    sentence_name = f"{user}_{channel}_sentence"
+    sentence_name = f"{user}:{channel}:sentence"
     while cache.llen(sentence_name) < 10:
         if sentence := create_sentence(user, channel, cache):
             cache.lpush(sentence_name, sentence)

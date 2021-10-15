@@ -74,7 +74,7 @@ try:
     warmup_start_time = time.time()
     for model in models:
         cache.set(model, models.get(model))
-        params = model.split("_")
+        params = model.split(":")
         utils.get_sentence(params[0], params[1], cache)
     cache.hmset("users", users)
     cache.hmset("channels", channels)
@@ -83,7 +83,7 @@ try:
     app.logger.info(msg)
 
 except redis.exceptions.ConnectionError as ex:
-    app.logger.warning("Could not connect to Redis cache. Exiting.")
+    app.logger.error("Could not connect to Redis cache. Exiting.")
     app.logger.debug(ex)
     sys.exit(1)
 
