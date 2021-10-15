@@ -83,7 +83,7 @@ try:
     app.logger.info(msg)
 
 except redis.exceptions.ConnectionError as ex:
-    app.logger.warning("Could not connect to Redis cache. Exiting.")
+    app.logger.error("Could not connect to Redis cache. Exiting.")
     app.logger.debug(ex)
     sys.exit(1)
 
