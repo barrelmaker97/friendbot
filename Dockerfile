@@ -1,4 +1,4 @@
-FROM python:3.10.3-alpine
+FROM python:3.10.4-alpine
 RUN adduser --disabled-password --gecos "" --uid "1234" "friendbot"
 USER friendbot
 WORKDIR /home/friendbot
