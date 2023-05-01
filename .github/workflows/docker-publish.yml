@@ -58,6 +58,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
