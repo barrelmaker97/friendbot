@@ -1,6 +1,6 @@
 from behave import given, when, then
 import json
-import werkzeug
+import urllib
 import os
 import time
 import hmac
@@ -120,7 +120,8 @@ def generate_signed_headers(data_dict, timestamp=time.time()):
     if signing_secret_file := os.environ.get("FRIENDBOT_SECRET_FILE"):
         with open(signing_secret_file, "r") as f:
             signing_secret = f.readline().replace('\n', '')
-        request_body = werkzeug.urls.url_encode(data_dict)
+        request_body = urllib.parse.urlencode(data_dict, safe='@;:/,')
+        print(f"Sent Request Body:\n{request_body}")
         str_timestamp = str(int(timestamp))
         slack_basestring = f"v0:{str_timestamp}:{request_body}".encode("utf-8")
         slack_signing_secret = bytes(signing_secret, "utf-8")
