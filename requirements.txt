@@ -1,6 +1,6 @@
 Flask==3.1.0
 gunicorn==23.0.0
 markovify==0.9.4
-redis==5.2.0
+redis==5.2.1
 requests==2.32.3
 prometheus-client==0.21.1
