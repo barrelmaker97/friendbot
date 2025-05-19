@@ -3,4 +3,4 @@ gunicorn==23.0.0
 markovify==0.9.4
 redis==6.1.0
 requests==2.32.3
-prometheus-client==0.21.1
+prometheus-client==0.22.0
