@@ -1,6 +1,7 @@
 venv/
 .coverage
 .coverage.*
+coverage.*
 *.pyc
 __pycache__/
 qemu*
